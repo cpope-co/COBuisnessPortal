@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "C-OBuisnessPoral": {
+    "C-OBuisnessPortal": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/c-obuisness-poral",
+            "outputPath": "dist/c-obuisness-portal",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -69,10 +69,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "C-OBuisnessPoral:build:production"
+              "buildTarget": "C-OBuisnessPortal:build:production"
             },
             "development": {
-              "buildTarget": "C-OBuisnessPoral:build:development",
+              "buildTarget": "C-OBuisnessPortal:build:development",
               "proxyConfig": "src/proxy.conf.json"
             }
           },
@@ -81,7 +81,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "C-OBuisnessPoral:build"
+            "buildTarget": "C-OBuisnessPortal:build"
           }
         },
         "test": {

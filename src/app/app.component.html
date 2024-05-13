@@ -1,12 +1,13 @@
 <mat-sidenav-container fullscreen>
-    <mat-sidenav #start (click)="start.close()">
+  <mat-sidenav #start (click)="start.close()"> </mat-sidenav>
+  <mat-toolbar color="primary">
+    <button mat-icon-button (click)="start.open('mouse')">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <button mat-icon-button (click)="onLogout()">
+      <mat-icon>exit_to_app</mat-icon>
+    </button>
+  </mat-toolbar>
 
-    </mat-sidenav>
-    <mat-toolbar color="primary">
-        <button mat-icon-button (click)="start.open('mouse')">
-            <mat-icon>menu</mat-icon>
-          </button>
-    </mat-toolbar>
-
-    <router-outlet />
+  <router-outlet />
 </mat-sidenav-container>
