@@ -3,6 +3,7 @@ import { Router } from "@angular/router";
 import { User } from "../models/user.model";
 import { environment } from "../environments/environment";
 import { jwtDecode } from "jwt-decode";
+import { MessagesService } from "../app/messages/messages.service";
 
 const USER_STORAGE_KEY = 'user';
 const TOKEN_STORAGE_KEY = 'token';
@@ -13,6 +14,7 @@ const TOKEN_STORAGE_KEY = 'token';
 export class AuthService {
     env = environment;
     router = inject(Router);
+    messageService = inject(MessagesService);
     #userSignal = signal<User | null>(null);
     user = this.#userSignal.asReadonly();
     #tokenSignal = signal<string | null>(null);
@@ -114,6 +116,8 @@ export class AuthService {
         sessionStorage.removeItem(USER_STORAGE_KEY);
         this.#userSignal.set(null);
         this.#tokenSignal.set(null);
+
+        this.messageService.showMessage('You have been logged out.', 'info');
         this.router.navigate(['auth/login']);
     }
 }

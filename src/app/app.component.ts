@@ -6,6 +6,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../services/auth.service';
 import { SessionService } from '../services/session.service';
+import { MessagesComponent } from './messages/messages.component';
+import { MessagesService } from './messages/messages.service';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +19,7 @@ import { SessionService } from '../services/session.service';
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
+    MessagesComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
@@ -24,7 +27,7 @@ import { SessionService } from '../services/session.service';
 export class AppComponent {
   authService = inject(AuthService);
   sessionService = inject(SessionService);
-
+  messageService = inject(MessagesService);
   isLoggedIn = this.authService.isLoggedIn;
 
   constructor() {
@@ -32,6 +35,7 @@ export class AppComponent {
   }
   onLogout() {
     this.authService.logout();
+
   }
 
 }

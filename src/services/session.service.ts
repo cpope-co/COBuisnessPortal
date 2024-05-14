@@ -1,13 +1,14 @@
 import { Injectable, computed, effect, inject, signal } from "@angular/core";
 import { AuthService } from "./auth.service";
 import { User } from "../models/user.model";
+import { MessagesService } from "../app/messages/messages.service";
 const USER_STORAGE_KEY = 'user';
 @Injectable({
     providedIn: 'root',
 })
 export class SessionService {
     authService = inject(AuthService);
-
+    messageService = inject(MessagesService);
     #expiringSignal = signal<boolean | null>(false);
     expiring = this.#expiringSignal.asReadonly();
     #expiredSignal = signal<boolean | null>(false);
@@ -24,7 +25,7 @@ export class SessionService {
             }
             if (this.isExpired()) {
                 console.log(`Session is expired.`);
-                this.authService.refresh();
+                this.authService.logout();
                 if(userTimeout) {
                     clearInterval(userTimeout);
                     userTimeout = null;
