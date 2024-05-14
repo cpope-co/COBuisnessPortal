@@ -11,7 +11,7 @@ const TOKEN_STORAGE_KEY = 'token';
 })
 
 export class AuthService {
-
+    env = environment;
     router = inject(Router);
     #userSignal = signal<User | null>(null);
     user = this.#userSignal.asReadonly();
@@ -21,6 +21,7 @@ export class AuthService {
 
     constructor() {
         this.loadUserFromStorage();
+        this.loadTokenFromStorage();
         effect(() => {
             const user = this.user();
             if (user) {
@@ -29,10 +30,17 @@ export class AuthService {
         });
         effect(() => {
             const token = this.token();
-            if(token) {
+            if (token) {
                 sessionStorage.setItem(TOKEN_STORAGE_KEY, token);
             }
         })
+        effect(() => {
+            if (this.isLoggedIn()) {
+                console.log(`User is logged in.`);
+            }
+
+        });
+
     }
 
     loadUserFromStorage() {
@@ -45,8 +53,18 @@ export class AuthService {
             console.log(`No user found in storage.`);
         }
     }
+    loadTokenFromStorage() {
+        const token = sessionStorage.getItem(TOKEN_STORAGE_KEY);
+        if (token) {
+            console.log(`Loaded token from storage.`);
+            this.#tokenSignal.set(token);
+        } else {
+            console.log(`No token found in storage.`);
+        }
+    }
+
     async login(email: string, password: string): Promise<User> {
-        const response = await fetch(`${environment.apiBaseUrl}usraut/login`, {
+        const response = await fetch(`${this.env.apiBaseUrl}usraut/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -56,6 +74,24 @@ export class AuthService {
             credentials: 'include'
         });
 
+
+        const token = await response.headers.get('x-id')!;
+        this.#tokenSignal.set(token);
+
+        const user = await jwtDecode(response.headers.get('x-id')!) as User;
+        this.#userSignal.set(user);
+        return user;
+
+    }
+
+    async refresh(): Promise<User> {
+        const response = await fetch(`${this.env.apiBaseUrl}usraut/refresh`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${this.token()}`
+            },
+            credentials: 'include'
+        });
         const token = await response.headers.get('x-id')!;
         this.#tokenSignal.set(token);
 
@@ -63,11 +99,10 @@ export class AuthService {
 
         this.#userSignal.set(user);
         return user;
-
     }
 
-    async logout() {
-        const response = await fetch(`${environment.apiBaseUrl}/usraut/logout`, {
+    async logout(): Promise<void> {
+        await fetch(`${this.env.apiBaseUrl}/usraut/logout`, {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${this.token()}`
@@ -75,10 +110,10 @@ export class AuthService {
             credentials: 'include'
         });
 
-        this.#tokenSignal.set(null);
         sessionStorage.removeItem(TOKEN_STORAGE_KEY);
         sessionStorage.removeItem(USER_STORAGE_KEY);
         this.#userSignal.set(null);
+        this.#tokenSignal.set(null);
         this.router.navigate(['auth/login']);
     }
 }

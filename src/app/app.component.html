@@ -4,9 +4,11 @@
     <button mat-icon-button (click)="start.open('mouse')">
       <mat-icon>menu</mat-icon>
     </button>
+    @if(isLoggedIn()) {
     <button mat-icon-button (click)="onLogout()">
       <mat-icon>exit_to_app</mat-icon>
     </button>
+    }
   </mat-toolbar>
 
   <router-outlet />
