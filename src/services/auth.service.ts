@@ -143,7 +143,7 @@ export class AuthService {
         this.#userSignal.set(null);
         this.#tokenSignal.set(null);
 
-        this.messageService.showMessage('You have been logged out.', 'info');
+        this.messageService.showMessage('You have been logged out.', 'info', 30000);
         this.router.navigate(['auth/login']);
     }
 }

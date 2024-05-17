@@ -1,5 +1,5 @@
-import { Component, effect, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit, effect, inject } from '@angular/core';
+import { NavigationStart, Router, RouterOutlet } from '@angular/router';
 import { MatSidenavModule, MatSidenavContainer } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,6 +31,7 @@ export class AppComponent {
   constructor() {
 
   }
+
   onLogout() {
     this.authService.logout();
   }

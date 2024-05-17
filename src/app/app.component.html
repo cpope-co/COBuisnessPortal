@@ -1,15 +1,19 @@
 <mat-sidenav-container fullscreen>
   <mat-sidenav #start (click)="start.close()"> </mat-sidenav>
   <mat-toolbar color="primary">
+    @if(isLoggedIn()) {
     <button mat-icon-button (click)="start.open('mouse')">
       <mat-icon>menu</mat-icon>
     </button>
-    @if(isLoggedIn()) {
+    Chambers &amp; Owen
     <button mat-icon-button (click)="onLogout()">
       <mat-icon>exit_to_app</mat-icon>
     </button>
     }
   </mat-toolbar>
-  <messages/>
+  <div class="d-flex justify-content-center mt-5">
+    <messages class="w-50" />
+  </div>
+  
   <router-outlet />
 </mat-sidenav-container>

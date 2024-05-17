@@ -5,6 +5,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { SessionService } from '../../../services/session.service';
 @Component({
   selector: 'app-login',
@@ -14,12 +15,16 @@ import { SessionService } from '../../../services/session.service';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatCardModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
+onForgotPassword() {
+throw new Error('Method not implemented.');
+}
 
   authService = inject(AuthService);
   sessionService = inject(SessionService);
@@ -47,6 +52,9 @@ export class LoginComponent {
     catch (error) {
       console.error(error);
     }
+  }
+  onRegister() {
+
   }
 
 }
