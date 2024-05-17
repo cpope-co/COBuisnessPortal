@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { AuthService } from './auth.service';
 import { openRefreshSessionDialog } from '../app/refresh-session-dialog/refresh-session-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { MessagesService } from '../app/messages/messages.service';
 
 
 const WARNING_TIMEOUT = 480000;
@@ -15,6 +16,7 @@ export class SessionService {
     #warningTimeoutId: any;
     dialog = inject(MatDialog);
     authService = inject(AuthService);
+    messagesService = inject(MessagesService);
 
 
     async startSession(): Promise<string> {
@@ -30,6 +32,7 @@ export class SessionService {
                 resolve('Your session will expire in 2 minutes.');
             }, WARNING_TIMEOUT);
             this.#sessionTimeoutId = setTimeout(async () => {
+                this.dialog.closeAll();
                 await this.authService.logout();
                 resolve('Your session has expired.');
             }, SESSION_TIMEOUT);
