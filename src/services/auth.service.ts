@@ -4,6 +4,8 @@ import { User } from "../models/user.model";
 import { environment } from "../environments/environment";
 import { jwtDecode } from "jwt-decode";
 import { MessagesService } from "../app/messages/messages.service";
+import { MatDialog } from "@angular/material/dialog";
+import { openRefreshSessionDialog } from "../app/refresh-session-dialog/refresh-session-dialog.component";
 
 const USER_STORAGE_KEY = 'user';
 const TOKEN_STORAGE_KEY = 'token';
@@ -15,10 +17,14 @@ export class AuthService {
     env = environment;
     router = inject(Router);
     messageService = inject(MessagesService);
+    dialog = inject(MatDialog);
+
     #userSignal = signal<User | null>(null);
     user = this.#userSignal.asReadonly();
+    
     #tokenSignal = signal<string | null>(null);
     token = this.#tokenSignal.asReadonly();
+    
     isLoggedIn = computed(() => !!this.user());
 
     constructor() {
@@ -35,12 +41,6 @@ export class AuthService {
             if (token) {
                 sessionStorage.setItem(TOKEN_STORAGE_KEY, token);
             }
-        })
-        effect(() => {
-            if (this.isLoggedIn()) {
-                console.log(`User is logged in.`);
-            }
-
         });
 
     }
@@ -64,7 +64,33 @@ export class AuthService {
             console.log(`No token found in storage.`);
         }
     }
-
+    clearTimer(timer: number | null) {
+        if (timer) {
+            window.clearInterval(timer);
+            timer = null;
+        }
+    }
+    checkExpiry(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            let user: User | null = null;
+            const userItem = sessionStorage.getItem(USER_STORAGE_KEY);
+            if (userItem) {
+                user = JSON.parse(userItem) as User;
+            } if (user) {
+                const currentTime = Math.floor(Date.now() / 1000);
+                const exp = user.exp;
+                if (currentTime >= exp - 580) {
+                    resolve('expiring');
+                } else if (currentTime >= exp - 540) {
+                    resolve('expired');
+                } else {
+                    resolve('valid');
+                }
+            } else {
+                reject('No user in session.');
+            }
+        });
+    }
     async login(email: string, password: string): Promise<User> {
         const response = await fetch(`${this.env.apiBaseUrl}usraut/login`, {
             method: 'POST',

@@ -5,7 +5,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../services/auth.service';
-import { SessionService } from '../services/session.service';
 import { MessagesComponent } from './messages/messages.component';
 import { MessagesService } from './messages/messages.service';
 
@@ -26,7 +25,6 @@ import { MessagesService } from './messages/messages.service';
 })
 export class AppComponent {
   authService = inject(AuthService);
-  sessionService = inject(SessionService);
   messageService = inject(MessagesService);
   isLoggedIn = this.authService.isLoggedIn;
 
@@ -35,7 +33,6 @@ export class AppComponent {
   }
   onLogout() {
     this.authService.logout();
-
   }
 
 }

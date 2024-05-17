@@ -1,12 +1,8 @@
 @if (message()) {
 
-<div class="messages-container">
-  <div class="message" [ngClass]="message()?.severity">
-    {{ message()?.text }}
-    <mat-icon (click)="onClose()">
-        close
-    </mat-icon>
-  </div>
+<div class="alert alert-dismissible fade show" [ngClass]="'alert-' + message()?.severity" role="alert">
+  {{ message()?.text }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 
 }

@@ -2,13 +2,19 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { SessionService } from '../../../services/session.service';
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
     RouterLink,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
@@ -16,6 +22,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 export class LoginComponent {
 
   authService = inject(AuthService);
+  sessionService = inject(SessionService);
   router = inject(Router);
   fb = inject(FormBuilder);
 
@@ -34,7 +41,7 @@ export class LoginComponent {
       }
 
       await this.authService.login(email, password);
-
+      this.sessionService.startSession();
       await this.router.navigate(["home"]);
     }
     catch (error) {
