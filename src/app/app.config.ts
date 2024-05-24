@@ -7,6 +7,7 @@ import { provideHttpClient, withFetch, withInterceptors } from "@angular/common/
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { loadingInterceptor } from './loading/loading.interceptor';
+import { provideEnvironmentNgxMask } from 'ngx-mask';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,6 +17,7 @@ export const appConfig: ApplicationConfig = {
       BrowserModule
     ),
     provideAnimationsAsync(),
+    provideEnvironmentNgxMask(),
     provideHttpClient(
       withFetch(),
       withInterceptors([loadingInterceptor])

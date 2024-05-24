@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { isUserAuthenticated } from './guards/auth.guard';
 import { HomeComponent } from './home/home.component';
+import { RegisterComponent } from './register/register.component';
 
 export const routes: Routes = [
     {
@@ -18,6 +19,14 @@ export const routes: Routes = [
     {
         path: 'auth/login',
         component: LoginComponent,
+    },
+    {
+        path: 'register',
+        component: RegisterComponent,
+    },
+    {
+        path: '**',
+        redirectTo: 'home'
     }
 
 ];
