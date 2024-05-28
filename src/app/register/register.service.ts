@@ -15,7 +15,7 @@ export class RegisterService {
 
     async registerAccount(register: Partial<Register>): Promise<Register> {
 
-        const register$ = this.http.post<Register>(`${this.env.apiBaseUrl}auth/register`, register);
+        const register$ = this.http.post<Register>(`${this.env.apiBaseUrl}register`, register);
 
         return await firstValueFrom(register$);
         

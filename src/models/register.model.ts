@@ -6,7 +6,7 @@ export type Register = {
     usabnum?: number;
     wcatmgr?: number;
     wacctname: string;
-    wregtype: string;
+    wregtype: RegistrationTypes;
     wphone: string;
     wrecaptchatoken: string;
   }

@@ -1,5 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { Register } from '../../models/register.model';
+import { Register, RegistrationTypes } from '../../models/register.model';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,6 +14,7 @@ import { RegisterService } from './register.service';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import { RECAPTCHA_V3_SITE_KEY, ReCaptchaV3Service, RecaptchaLoaderService, RecaptchaModule } from 'ng-recaptcha';
 import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -44,6 +45,7 @@ export class RegisterComponent {
   wcatmgrService = inject(WCatMgrService);
   registerService = inject(RegisterService);
   recaptchaV3Service = inject(ReCaptchaV3Service);
+  router = inject(Router);
   fb = inject(FormBuilder);
 
   fillin: Register = {
@@ -55,7 +57,7 @@ export class RegisterComponent {
     wcatmgr: 99928,
     wacctname: 'Test',
     wphone: '1234567890',
-    wregtype: 's',
+    wregtype: RegistrationTypes.s,
     wrecaptchatoken: ''
   };
 
@@ -101,7 +103,8 @@ export class RegisterComponent {
   }
 
   onCancel() {
-    throw new Error('Method not implemented.');
+
+    this.router.navigate(['/auth/login']);
   }
 
   getRecaptchaToken(): Promise<string> {
