@@ -128,6 +128,19 @@ export class AuthService {
         this.#userSignal.set(user);
         return user;
     }
+    
+    async verify(verifyToken: string): Promise<User> {
+        const response = await fetch(`${this.env.apiBaseUrl}usraut/verify?id=${verifyToken}`, {
+            method: 'POST',
+        });
+        const token = await response.headers.get('x-id')!;
+        this.#tokenSignal.set(token);
+
+        const user = await jwtDecode(response.headers.get('x-id')!) as User;
+        this.#userSignal.set(user);
+        return user;
+        
+    }
 
     async logout(): Promise<void> {
         await fetch(`${this.env.apiBaseUrl}/usraut/logout`, {

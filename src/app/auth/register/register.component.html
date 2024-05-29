@@ -1,162 +1,149 @@
-<div class="d-flex mt-1">
-  <div class="row g-0 justify-content-xl-center">
-    <div class="col-sm-12 col-lg-12 col-xl-8">
-      <mat-card>
-        <mat-card-header>
-          <mat-card-title
-            ><h1>Chambers &amp; Owen Buisness Portal</h1></mat-card-title
-          >
-          <mat-card-subtitle class="mt-2"><h2>Register</h2></mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <p>
-            You must be a current supplier or retailer of Chambers & Owen, Inc.
-            to register for a portal account. To register, fill out the form
-            below and click the Submit button. All fields on the form are
-            required. Once your request has been submitted and approved, you
-            will receive an email with a link to activate your account. This
-            process may take 1 to 2 business days.
-          </p>
-          <form [formGroup]="form">
-            <div class="row">
-              <div class="col-lg col-xl offset-xxl-2 col-xxl-4">
-                <h2>Choose account type:</h2>
-                <div class="form-group">
-                  <mat-radio-group formControlName="wregtype">
-                    <mat-radio-button value="Supplier">Supplier</mat-radio-button>
-                    <mat-radio-button value="Retailer">Retailer</mat-radio-button>
-                  </mat-radio-group>
-                </div>
-              </div>
-            </div>
-            @if(form.get('wregtype')?.value === 'Supplier' ||
-            form.get('wregtype')?.value === 'Retailer') {
-            <div class="row justify-content-xl-center mt-2">
-              <div class="col-lg col-xl col-xxl-4">
-                <div class="form-group">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label for="email">Email</mat-label>
-                    <input
-                      matInput
-                      type="email"
-                      name="usemail"
-                      formControlName="usemail"
-                    />
-                  </mat-form-field>
-                </div>
-                <div class="form-group">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label for="verifyemail">Verify Email</mat-label>
-                    <input
-                      matInput
-                      type="email"
-                      name="verifyemail"
-                      formControlName="verifyEmail"
-                    />
-                  </mat-form-field>
-                </div>
-                <div class="form-group">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label for="usfname">First Name</mat-label>
-                    <input
-                      matInput
-                      type="text"
-                      name="usfname"
-                      formControlName="usfname"
-                    />
-                  </mat-form-field>
-                </div>
-                <div class="form-group">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label for="uslname">Last Name</mat-label>
-                    <input
-                      matInput
-                      type="text"
-                      name="uslname"
-                      formControlName="uslname"
-                    />
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="col-lg col-xl col-xxl-4">
-                <div class="form-group">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label for="wphone">Phone</mat-label>
-                    <input
-                      matInput
-                      type="text"
-                      name="wphone"
-                      formControlName="wphone"                     
-                      [mask]="'(000) 000-0000'"
-                    />
-                  </mat-form-field>
-                </div>
-                @if(form.get('wregtype')?.value === 'Retailer'){
-                <div class="form-group">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label for="usabnum">Account number</mat-label>
-                    <input
-                      matInput
-                      type="text"
-                      name="usabnum"
-                      formControlName="usabnum"
-                    />
-                  </mat-form-field>
-                </div>
-                } 
-                @if(form.get('wregtype')?.value === 'Supplier') {
-                <div class="form-group">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label for="wcatmgr">Category Manager</mat-label>
-                    <mat-select formControlName="wcatmgr">
-                      @for(option of wcatmgrs(); track $index) {
-                      <mat-option value="{{ option.id }}">{{
-                        option.name | titlecase
-                      }}</mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                </div>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title
+      ><h1>Chambers &amp; Owen Buisness Portal</h1></mat-card-title
+    >
+    <mat-card-subtitle class="mt-2"><h2>Register</h2></mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <p>
+      You must be a current supplier or retailer of Chambers & Owen, Inc. to
+      register for a portal account. To register, fill out the form below and
+      click the Submit button. All fields on the form are required. Once your
+      request has been submitted and approved, you will receive an email with a
+      link to activate your account. This process may take 1 to 2 business days.
+    </p>
+    <form [formGroup]="form">
+      <div class="row">
+        <div class="col-lg col-xl col-xxl-4">
+          <h2>Choose account type:</h2>
+          <div class="form-group">
+            <mat-radio-group formControlName="wregtype">
+              <mat-radio-button value="Supplier">Supplier</mat-radio-button>
+              <mat-radio-button value="Retailer">Retailer</mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </div>
+      </div>
+      @if(form.get('wregtype')?.value === 'Supplier' ||
+      form.get('wregtype')?.value === 'Retailer') {
+      <div class="row justify-content-xl-center mt-2">
+        <div class="col-lg col-xl col-xxl-6">
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label for="email">Email</mat-label>
+              <input
+                matInput
+                type="email"
+                name="usemail"
+                formControlName="usemail"
+              />
+            </mat-form-field>
+          </div>
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label for="verifyemail">Verify Email</mat-label>
+              <input
+                matInput
+                type="email"
+                name="verifyemail"
+                formControlName="verifyEmail"
+              />
+            </mat-form-field>
+          </div>
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label for="usfname">First Name</mat-label>
+              <input
+                matInput
+                type="text"
+                name="usfname"
+                formControlName="usfname"
+              />
+            </mat-form-field>
+          </div>
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label for="uslname">Last Name</mat-label>
+              <input
+                matInput
+                type="text"
+                name="uslname"
+                formControlName="uslname"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="col-lg col-xl col-xxl-6">
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label for="wphone">Phone</mat-label>
+              <input
+                matInput
+                type="text"
+                name="wphone"
+                formControlName="wphone"
+                [mask]="'(000) 000-0000'"
+              />
+            </mat-form-field>
+          </div>
+          @if(form.get('wregtype')?.value === 'Retailer'){
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label for="usabnum">Account number</mat-label>
+              <input
+                matInput
+                type="text"
+                name="usabnum"
+                formControlName="usabnum"
+              />
+            </mat-form-field>
+          </div>
+          } @if(form.get('wregtype')?.value === 'Supplier') {
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label for="wcatmgr">Category Manager</mat-label>
+              <mat-select formControlName="wcatmgr">
+                @for(option of wcatmgrs(); track $index) {
+                <mat-option value="{{ option.id }}">{{
+                  option.name | titlecase
+                }}</mat-option>
                 }
-                <div class="form-group">
-                  <mat-form-field appearance="outline" class="w-100">
-                    <mat-label for="wacctname">Account Name</mat-label>
-                    <input
-                      matInput
-                      type="text"
-                      name="wacctname"
-                      formControlName="wacctname"
-                    />
-                  </mat-form-field>
-                </div>
-              </div>
-            </div>
-            }
-            <div class="row">
-              <div class="col-lg col-xl">
-                <button
-                  mat-raised-button
-                  type="submit"
-                  color="primary"
-                  class=""
-                  (click)="onRegister()"
-                >
-                  Register
-                </button>
-                <button
-                  mat-button
-                  type="button"
-                  class="mt-2"
-                  (click)="onCancel()"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </form>
-        </mat-card-content>
-        <mat-card-footer> </mat-card-footer>
-      </mat-card>
-    </div>
-  </div>
-</div>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          }
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label for="wacctname">Account Name</mat-label>
+              <input
+                matInput
+                type="text"
+                name="wacctname"
+                formControlName="wacctname"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      }
+      <div class="row">
+        <div class="col-lg col-xl">
+          <button
+            mat-raised-button
+            type="submit"
+            color="primary"
+            class=""
+            (click)="onRegister()"
+          >
+            Register
+          </button>
+          <button mat-button type="button" class="mt-2" (click)="onCancel()">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-card-content>
+  <mat-card-footer> </mat-card-footer>
+</mat-card>

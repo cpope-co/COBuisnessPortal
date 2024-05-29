@@ -12,8 +12,13 @@
     }
   </mat-toolbar>
   <div class="d-flex justify-content-center mt-5">
-    <messages class="w-50" />
+    <messages class="w-100" />
   </div>
-  
-  <router-outlet />
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 offset-xs-0 col-lg-10 offset-lg-1">
+        <router-outlet />
+      </div>
+    </div>
+  </div>
 </mat-sidenav-container>

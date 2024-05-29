@@ -1,6 +1,6 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Register, RegistrationTypes } from '../../../models/register.model';
-import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
@@ -15,9 +15,10 @@ import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import { RECAPTCHA_V3_SITE_KEY, ReCaptchaV3Service, RecaptchaLoaderService, RecaptchaModule } from 'ng-recaptcha';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
+import { MessagesService } from '../../messages/messages.service';
 
 @Component({
-  selector: 'app-register',
+  selector: 'register',
   standalone: true,
   imports: [
     RecaptchaModule,
@@ -45,6 +46,7 @@ export class RegisterComponent {
   wcatmgrService = inject(WCatMgrService);
   registerService = inject(RegisterService);
   recaptchaV3Service = inject(ReCaptchaV3Service);
+  messageService = inject(MessagesService);
   router = inject(Router);
   fb = inject(FormBuilder);
 
@@ -92,7 +94,7 @@ export class RegisterComponent {
         this.form.patchValue({ wrecaptchatoken: token });
         this.registerService.registerAccount(this.form.value as Register);
       }).catch((error) => {
-        // handle error here
+        this.messageService.showMessage('Error', error.messages.join('\n'));
       });
     }
 

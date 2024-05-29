@@ -1,1 +1,26 @@
-<p>verify works!</p>
+<div class="row">
+  <div class="col-xs-12 offset-xs-0 col-10 offset-1">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title
+          >@if(isVerifying()){
+          <h1>Verification in progress</h1>
+          } @else {
+
+          <h1>For your security, we've sent you a new link</h1>
+          }</mat-card-title
+        >
+      </mat-card-header>
+      <mat-card-content>
+        @if(isVerifying()) {
+        <p>We're verifying your identity, please wait...</p>
+        } @else {
+        <p>
+          This link has expired. Protect your account by following the link we
+          sent to your email address.
+        </p>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

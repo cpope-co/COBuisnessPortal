@@ -5,4 +5,5 @@ export type User = {
     exp: EpochTimeStamp;
     iat: EpochTimeStamp;
     refexp: EpochTimeStamp;
+    fpc: boolean;
 }
