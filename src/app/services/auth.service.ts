@@ -1,11 +1,11 @@
 import { Injectable, computed, effect, inject, signal } from "@angular/core";
 import { Router } from "@angular/router";
 import { User } from "../models/user.model";
-import { environment } from "../environments/environment";
+import { environment } from "../../environments/environment";
 import { jwtDecode } from "jwt-decode";
-import { MessagesService } from "../app/messages/messages.service";
+import { MessagesService } from "../messages/messages.service";
 import { MatDialog } from "@angular/material/dialog";
-import { openRefreshSessionDialog } from "../app/refresh-session-dialog/refresh-session-dialog.component";
+import { openRefreshSessionDialog } from "../refresh-session-dialog/refresh-session-dialog.component";
 
 const USER_STORAGE_KEY = 'user';
 const TOKEN_STORAGE_KEY = 'token';

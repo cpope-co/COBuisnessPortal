@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { Register, RegistrationTypes } from '../../../models/register.model';
+import { Register, RegistrationTypes } from '../../models/register.model';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -7,8 +7,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
-import { WCatMgrService } from '../../../services/wcatmgr.service';
-import { WCatMgr } from '../../../models/wcatmgr.model';
+import { WCatMgrService } from '../../services/wcatmgr.service';
+import { WCatMgr } from '../../models/wcatmgr.model';
 import { TitleCasePipe } from '@angular/common';
 import { RegisterService } from './register.service';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';

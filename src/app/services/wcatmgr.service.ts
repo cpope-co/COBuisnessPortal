@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { environment } from "../environments/environment";
+import { environment } from "../../environments/environment";
 import { GetWCatMgrResponse } from "../models/get-wcatmgr.response";
 import { firstValueFrom } from "rxjs";
 import { HttpClient } from "@angular/common/http";

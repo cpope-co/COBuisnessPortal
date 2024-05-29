@@ -1,5 +1,5 @@
 import {Injectable, signal} from "@angular/core";
-import { Message, MessageSeverity } from "../../models/messages.model";
+import { Message, MessageSeverity } from "../models/messages.model";
 
 
 @Injectable({

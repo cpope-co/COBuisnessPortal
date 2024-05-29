@@ -2,7 +2,7 @@ import { Injectable, inject } from "@angular/core";
 import { environment } from "../../../environments/environment";
 import { firstValueFrom } from "rxjs";
 import { HttpClient } from "@angular/common/http";
-import { Register } from "../../../models/register.model";
+import { Register } from "../../models/register.model";
 
 @Injectable({
     providedIn: 'root'
