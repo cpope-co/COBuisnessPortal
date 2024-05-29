@@ -4,7 +4,7 @@ import { MatSidenavModule, MatSidenavContainer } from '@angular/material/sidenav
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from './services/auth.service';
 import { MessagesComponent } from './messages/messages.component';
 import { MessagesService } from './messages/messages.service';
 
