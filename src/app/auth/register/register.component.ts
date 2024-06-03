@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, effect, inject, signal } from '@angular/core';
 import { Register, RegistrationTypes } from '../../models/register.model';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,8 +16,12 @@ import { RECAPTCHA_V3_SITE_KEY, ReCaptchaV3Service, RecaptchaLoaderService, Reca
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { MessagesService } from '../../messages/messages.service';
+import { InputComponent } from '../../shared/input/input.component';
+import { SelectComponent } from '../../shared/select/select.component';
+import { RadioComponent } from '../../shared/radio/radio.component';
 
 @Component({
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   selector: 'register',
   standalone: true,
   imports: [
@@ -31,7 +35,10 @@ import { MessagesService } from '../../messages/messages.service';
     MatSelectModule,
     TitleCasePipe,
     NgxMaskDirective,
-    NgxMaskPipe
+    NgxMaskPipe,
+    InputComponent,
+    SelectComponent,
+    RadioComponent
   ],
   providers: [
     ReCaptchaV3Service,
@@ -66,25 +73,28 @@ export class RegisterComponent {
   #wcatmgrs = signal<WCatMgr[]>([]);
   wcatmgrs = this.#wcatmgrs.asReadonly();
 
-
-
   form = this.fb.group({
     usemail: [''],
     verifyEmail: [''],
     usfname: [''],
     uslname: [''],
     usabnum: [''],
-    wcatmgr: [],
+    wcatmgr: [''],
     wacctname: [''],
     wphone: [''],
     wregtype: [''],
     wrecaptchatoken: ['']
   });
 
+  wregtype = Object.values(RegistrationTypes).map((type) => ({
+    id: type,
+    name: type,
+  }));
 
   constructor() {
     this.loadCategoryManagers();
     this.form.patchValue(JSON.parse(JSON.stringify(this.fillin)));
+
   }
 
 

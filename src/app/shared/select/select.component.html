@@ -1,0 +1,10 @@
+<mat-form-field appearance="outline" class="w-100">
+  <mat-label>{{ label() }}</mat-label>
+  <mat-select formControlName="formControlName()">
+    @for (option of options(); track $index) {
+        <mat-option [value]="option.id">
+            {{ option.name | titlecase }}
+          </mat-option>      
+    }
+  </mat-select>
+</mat-form-field>

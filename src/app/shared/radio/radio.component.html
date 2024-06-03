@@ -1,0 +1,7 @@
+<mat-radio-group>
+    @for(option of options(); track $index) {
+        <mat-radio-button [value]="option.id">
+            {{ option.name | titlecase }}
+        </mat-radio-button>
+    }
+</mat-radio-group>
