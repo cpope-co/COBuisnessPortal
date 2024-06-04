@@ -1,6 +1,6 @@
 import { TitleCasePipe } from '@angular/common';
 import { Component, forwardRef, input } from '@angular/core';
-import { FormGroup, NG_VALUE_ACCESSOR, RadioControlValueAccessor } from '@angular/forms';
+import { FormGroup, NG_VALUE_ACCESSOR, RadioControlValueAccessor, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatRadioModule } from '@angular/material/radio';
 
@@ -17,7 +17,8 @@ import { MatRadioModule } from '@angular/material/radio';
   imports: [
     MatFormFieldModule,
     MatRadioModule,
-    TitleCasePipe
+    TitleCasePipe,
+    ReactiveFormsModule
   ],
   templateUrl: './radio.component.html',
   styleUrl: './radio.component.scss'

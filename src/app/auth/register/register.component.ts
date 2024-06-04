@@ -57,6 +57,9 @@ export class RegisterComponent {
   router = inject(Router);
   fb = inject(FormBuilder);
 
+  RegistrationTypes = RegistrationTypes;
+
+
   fillin: Register = {
     usemail: 'popecj29@gmail.com',
     verifyEmail: 'popecj29@gmail.com',
@@ -94,7 +97,6 @@ export class RegisterComponent {
   constructor() {
     this.loadCategoryManagers();
     this.form.patchValue(JSON.parse(JSON.stringify(this.fillin)));
-
   }
 
 

@@ -1,7 +1,9 @@
-<mat-radio-group>
+<div class="form-group" [formGroup]="formGroup()">
+  <mat-radio-group [formControlName]="formControlName">
     @for(option of options(); track $index) {
-        <mat-radio-button [value]="option.id">
-            {{ option.name | titlecase }}
-        </mat-radio-button>
+    <mat-radio-button [value]="option.id">
+      {{ option.name | titlecase }}
+    </mat-radio-button>
     }
-</mat-radio-group>
+  </mat-radio-group>
+</div>

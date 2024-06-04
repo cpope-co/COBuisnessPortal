@@ -16,6 +16,7 @@
     <form [formGroup]="form">
       <div class="row">
         <div class="col-lg col-xl col-xxl-4">
+          <h3>Choose account type</h3>
           <co-radio
             [formGroup]="form"
             [label]="'Register As'"
@@ -25,8 +26,8 @@
           />
         </div>
       </div>
-      @if(form.get('wregtype')?.value === 'Supplier' ||
-      form.get('wregtype')?.value === 'Retailer') {
+      @if(form.get('wregtype')?.value === RegistrationTypes.s ||
+      form.get('wregtype')?.value === RegistrationTypes.r) {
       <div class="row justify-content-xl-center mt-2">
         <div class="col-lg col-xl col-xxl-6">
           <co-input
@@ -67,7 +68,7 @@
             placeholder="Enter your phone number"
           />
 
-          @if(form.get('wregtype')?.value === 'Retailer'){
+          @if(form.get('wregtype')?.value === RegistrationTypes.r) {
           <co-input
             [formGroup]="form"
             [label]="'Account Number'"
@@ -75,7 +76,7 @@
             [formControlName]="'usabnum'"
             placeholder="Enter your account number"
           />
-          } @if(form.get('wregtype')?.value === 'Supplier') {
+          } @if(form.get('wregtype')?.value === RegistrationTypes.s) {
           <co-select
             [formGroup]="form"
             [label]="'Category Manager'"
@@ -107,7 +108,7 @@
             class=""
             (click)="onRegister()"
           >
-            Register
+            Submit
           </button>
           <button mat-button type="button" class="mt-2" (click)="onCancel()">
             Cancel
