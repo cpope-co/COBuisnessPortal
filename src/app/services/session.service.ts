@@ -45,4 +45,9 @@ export class SessionService {
         await this.authService.refresh();
         this.startSession();
     }
+
+    async endSesssion() {
+        clearTimeout(this.#sessionTimeoutId);
+        clearTimeout(this.#warningTimeoutId);
+    }
 }

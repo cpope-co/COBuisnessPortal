@@ -1,4 +1,5 @@
-import { Component, forwardRef, input } from '@angular/core';
+import { JsonPipe } from '@angular/common';
+import { Component, ErrorHandler, forwardRef, inject, input } from '@angular/core';
 import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { MatFormField } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -7,9 +8,10 @@ import { MatInputModule } from '@angular/material/input';
   selector: 'co-input',
   standalone: true,
   imports: [
-    MatFormField, 
-    MatInputModule, 
-    ReactiveFormsModule
+    MatFormField,
+    MatInputModule,
+    ReactiveFormsModule,
+    JsonPipe
   ],
   providers: [{
     provide: NG_VALUE_ACCESSOR,
@@ -21,7 +23,12 @@ import { MatInputModule } from '@angular/material/input';
 })
 export class InputComponent implements ControlValueAccessor {
 
+  errors: any = {};
+  errorHandler = inject(ErrorHandler)
   control = new FormControl();
+
+  constructor() {
+  }
 
   writeValue(obj: any): void {
     this.control.setValue(obj);
@@ -36,7 +43,7 @@ export class InputComponent implements ControlValueAccessor {
     isDisabled ? this.control.disable() : this.control.enable();
   }
 
- 
+
   label = input.required<string>();
   type = input.required<string>();
   placeholder = input.required<string>();
