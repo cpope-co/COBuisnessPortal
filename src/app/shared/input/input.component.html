@@ -1,13 +1,14 @@
-<div class="form-group" [formGroup]="formGroup()">
+<div class="form-group mt-1" [formGroup]="formGroup()">
   <mat-form-field appearance="outline" class="w-100">
     <mat-label>{{ label() }}</mat-label>
     <input matInput [type]="type()" [formControlName]="formControlName()" />
+
+    @if(formGroup().get(formControlName())!.invalid &&
+    (formGroup().get(formControlName())!.touched ||
+    formGroup().get(formControlName())!.dirty)) {
+    <mat-error>
+      {{ getErrorMessage(formControlName()) }}
+    </mat-error>
+    }
   </mat-form-field>
-  @if(formGroup().get(formControlName())!.invalid &&
-  formGroup().get(formControlName())!.touched ||
-  formGroup().get(formControlName())!.dirty) {
-  <mat-error>
-    {{ formGroup().get(formControlName())!.errors | json }}
-  </mat-error>
-  }
 </div>

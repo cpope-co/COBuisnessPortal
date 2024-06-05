@@ -2,6 +2,6 @@ import { ValidatorFn } from "@angular/forms"
 
 export type FormHandling = {
     Validators: ValidatorFn[];
-    ErrorMessages: string[];
+    ErrorMessages: {[key: string]: string};
     value: any;
 }

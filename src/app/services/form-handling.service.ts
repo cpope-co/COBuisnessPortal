@@ -18,4 +18,13 @@ export class FormHandlingService {
 
     return this.fb.group(group);
   }
+
+  getErrorMessages(form: FormGroup, controlName: string, model: { [key: string]: FormHandling }): string {
+  const control = form.get(controlName);
+  if(control?.errors) {
+    const errorKey = Object.keys(control.errors)[0];
+    return model[controlName].ErrorMessages[errorKey];
+  }
+  return '';
+}
 }

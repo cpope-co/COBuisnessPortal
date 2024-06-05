@@ -1,8 +1,9 @@
 import { JsonPipe } from '@angular/common';
-import { Component, ErrorHandler, forwardRef, inject, input } from '@angular/core';
+import { Component, forwardRef, inject, input } from '@angular/core';
 import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { MatFormField } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { FormHandlingService } from '../../services/form-handling.service';
 
 @Component({
   selector: 'co-input',
@@ -23,9 +24,8 @@ import { MatInputModule } from '@angular/material/input';
 })
 export class InputComponent implements ControlValueAccessor {
 
-  errors: any = {};
-  errorHandler = inject(ErrorHandler)
   control = new FormControl();
+  formHandlerService = inject(FormHandlingService);
 
   constructor() {
   }
@@ -43,11 +43,16 @@ export class InputComponent implements ControlValueAccessor {
     isDisabled ? this.control.disable() : this.control.enable();
   }
 
+  getErrorMessage(key: string): string {
+    return this.formHandlerService.getErrorMessages(this.formGroup(), this.formControlName(), this.model());
+
+  }
 
   label = input.required<string>();
   type = input.required<string>();
   placeholder = input.required<string>();
   formControlName = input.required<string>();
   formGroup = input.required<FormGroup>();
+  model = input.required<{ [key: string]: any }>();
 
 }

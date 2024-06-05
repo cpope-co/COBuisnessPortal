@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, Component, effect, inject, signal } from '@angular/core';
-import { Register, RegistrationTypes } from '../../models/register.model';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { Register, RegistrationTypes, register } from '../../models/register.model';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
@@ -19,6 +19,7 @@ import { MessagesService } from '../../messages/messages.service';
 import { InputComponent } from '../../shared/input/input.component';
 import { SelectComponent } from '../../shared/select/select.component';
 import { RadioComponent } from '../../shared/radio/radio.component';
+import { FormHandlingService } from '../../services/form-handling.service';
 
 @Component({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -54,40 +55,18 @@ export class RegisterComponent {
   registerService = inject(RegisterService);
   recaptchaV3Service = inject(ReCaptchaV3Service);
   messageService = inject(MessagesService);
+  formHandlerService = inject(FormHandlingService);
+  
   router = inject(Router);
   fb = inject(FormBuilder);
 
   RegistrationTypes = RegistrationTypes;
 
-
-  fillin: Register = {
-    usemail: 'popecj29@gmail.com',
-    verifyEmail: 'popecj29@gmail.com',
-    usfname: 'Charlie',
-    uslname: 'Pope',
-    usabnum: 12564645,
-    wcatmgr: 99928,
-    wacctname: 'Test',
-    wphone: '1234567890',
-    wregtype: RegistrationTypes.s,
-    wrecaptchatoken: ''
-  };
+  form!: FormGroup;
+  register = register;
 
   #wcatmgrs = signal<WCatMgr[]>([]);
   wcatmgrs = this.#wcatmgrs.asReadonly();
-
-  form = this.fb.group({
-    usemail: [''],
-    verifyEmail: [''],
-    usfname: [''],
-    uslname: [''],
-    usabnum: [''],
-    wcatmgr: [''],
-    wacctname: [''],
-    wphone: [''],
-    wregtype: [''],
-    wrecaptchatoken: ['']
-  });
 
   wregtype = Object.values(RegistrationTypes).map((type) => ({
     id: type,
@@ -96,7 +75,7 @@ export class RegisterComponent {
 
   constructor() {
     this.loadCategoryManagers();
-    this.form.patchValue(JSON.parse(JSON.stringify(this.fillin)));
+    this.form = this.formHandlerService.createFormGroup(this.register);
   }
 
 
@@ -104,7 +83,7 @@ export class RegisterComponent {
     try {
       this.getRecaptchaToken().then((token) => {
         this.form.patchValue({ wrecaptchatoken: token });
-        this.registerService.registerAccount(this.form.value as Register);
+        this.registerService.registerAccount(this.form.value);
       }).catch((error) => {
         this.messageService.showMessage('Error', error.messages.join('\n'));
       });

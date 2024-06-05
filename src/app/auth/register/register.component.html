@@ -12,7 +12,7 @@
       click the Submit button. All fields on the form are required. Once your
       request has been submitted and approved, you will receive an email with a
       link to activate your account. This process may take 1 to 2 business days.
-    </p> 
+    </p>
     <form [formGroup]="form">
       <div class="row">
         <div class="col-lg col-xl col-xxl-4">
@@ -23,6 +23,7 @@
             [formControlName]="'wregtype'"
             [options]="wregtype"
             [placeholder]="'Select a registration type'"
+            [model]="register"
           />
         </div>
       </div>
@@ -36,6 +37,7 @@
             [type]="'email'"
             [formControlName]="'usemail'"
             placeholder="Enter your email address"
+            [model]="register"
           />
           <co-input
             [formGroup]="form"
@@ -43,6 +45,7 @@
             [type]="'email'"
             [formControlName]="'verifyEmail'"
             placeholder="Re-enter your email address"
+            [model]="register"
           />
           <co-input
             [formGroup]="form"
@@ -50,6 +53,7 @@
             [type]="'text'"
             [formControlName]="'usfname'"
             placeholder="Enter your first name"
+            [model]="register"
           />
           <co-input
             [formGroup]="form"
@@ -57,6 +61,7 @@
             [type]="'text'"
             [formControlName]="'uslname'"
             placeholder="Enter your last name"
+            [model]="register"
           />
         </div>
         <div class="col-lg col-xl col-xxl-6">
@@ -66,6 +71,7 @@
             [type]="'tel'"
             [formControlName]="'wphone'"
             placeholder="Enter your phone number"
+            [model]="register"
           />
 
           @if(form.get('wregtype')?.value === RegistrationTypes.r) {
@@ -75,6 +81,7 @@
             [type]="'text'"
             [formControlName]="'usabnum'"
             placeholder="Enter your account number"
+            [model]="register"
           />
           } @if(form.get('wregtype')?.value === RegistrationTypes.s) {
           <co-select
@@ -83,19 +90,17 @@
             [formControlName]="'wcatmgr'"
             [options]="wcatmgrs()"
             [placeholder]="'Select a category manager'"
+            [model]="register"
           />
           }
-          <div class="form-group">
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label for="wacctname">Account Name</mat-label>
-              <input
-                matInput
-                type="text"
-                name="wacctname"
-                formControlName="wacctname"
-              />
-            </mat-form-field>
-          </div>
+          <co-input
+            [formGroup]="form"
+            [label]="'Account Name'"
+            [type]="'text'"
+            [formControlName]="'wacctname'"
+            placeholder="Enter your account name"
+            [model]="register"
+          />
         </div>
       </div>
       }

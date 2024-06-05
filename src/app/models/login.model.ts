@@ -9,12 +9,12 @@ export type Login = {
 export const login: Login = {
     email: {
         Validators: [Validators.email, Validators.required],
-        ErrorMessages: ['Please enter a valid email address.'],
+        ErrorMessages: { 'email': 'Please enter a valid email address.', 'required': 'Please enter your email address.'},
         value: ''
     },
     password: {
         Validators: [Validators.required],
-        ErrorMessages: ['Please enter a password.'],
+        ErrorMessages: { 'password': 'Please enter a password.', 'required': 'Please enter your password.'},
         value: ''
     }
 }

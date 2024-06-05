@@ -63,8 +63,5 @@ export class LoginComponent {
       console.error(error);
     }
   }
-  onRegister() {
-
-  }
 
 }

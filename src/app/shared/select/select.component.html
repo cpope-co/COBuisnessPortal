@@ -7,4 +7,11 @@
           </mat-option>      
     }
   </mat-select>
+  @if(formGroup().get(formControlName())!.invalid &&
+  (formGroup().get(formControlName())!.touched ||
+  formGroup().get(formControlName())!.dirty)) {
+  <mat-error>
+    {{ getErrorMessage(formControlName()) }}
+  </mat-error>
+  }
 </mat-form-field>
