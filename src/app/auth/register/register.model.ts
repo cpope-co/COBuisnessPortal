@@ -1,5 +1,5 @@
 import { Validators } from "@angular/forms";
-import { FormHandling } from "./form-handling.model";
+import { FormHandling } from "../../models/form-handling.model";
 
 export type Register = {
   usemail: FormHandling;
