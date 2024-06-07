@@ -1,5 +1,6 @@
 import { Validators } from "@angular/forms";
 import { FormHandling } from "../../models/form-handling.model";
+import { matchEmailsValidator } from "../../validators/verifyemail.validator";
 
 export type Register = {
   usemail: FormHandling;
@@ -28,7 +29,10 @@ export const register: Register = {
       'emailMismatch': 'Emails do not match.'
     },
     value: '',
-    formGroup: 'matchEmails'
+    formGroup: {
+      name: 'matchEmails',
+    }
+
   },
   verifyEmail: {
     Validators: [Validators.email, Validators.required],
@@ -38,7 +42,9 @@ export const register: Register = {
       'emailMismatch': 'Emails do not match.'
     },
     value: '',
-    formGroup: 'matchEmails'
+    formGroup: {
+      name: 'matchEmails',
+    }
   },
   usfname: {
     Validators: [Validators.required],

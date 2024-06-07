@@ -17,11 +17,20 @@ export class FormHandlingService {
       // Check if the field specifies a formGroup
       if (field.formGroup) {
         // If the specified formGroup does not exist, initialize it
-        if (!group[field.formGroup]) {
-          group[field.formGroup] = this.fb.group({});
+        if (!group[field.formGroup.name]) {
+          group[field.formGroup.name] = this.fb.group({});
         }
         // Add the control to the specified formGroup
-        group[field.formGroup].addControl(key, this.fb.control(field.value || '', field.Validators || []));
+        // Create the control first
+        const control = this.fb.control(field.value || '');
+
+        // Add the control to the group
+        group[field.formGroup.name].addControl(key, control);
+
+        // Set the validators
+        control.addValidators(field.Validators || []);
+        control.addValidators(field.formGroup.options?.validators || []);
+
       } else {
         // If no formGroup specified, add control to the root group
         group[key] = this.fb.control(field.value || '', field.Validators || []);
@@ -39,7 +48,7 @@ export class FormHandlingService {
     }
     return '';
   }
-  
+
   getNestedFormGroup(form: FormGroup, formGroupName: string): FormGroup {
     return form.get(formGroupName) as FormGroup;
   }

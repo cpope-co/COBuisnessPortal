@@ -1,8 +1,11 @@
-import { ValidatorFn } from "@angular/forms"
+import { AbstractControlOptions, ValidatorFn } from "@angular/forms"
 
 export type FormHandling = {
     Validators: ValidatorFn[];
     ErrorMessages: {[key: string]: string};
     value: any;
-    formGroup?: string;
+    formGroup?: {
+        name: string;
+        options?: AbstractControlOptions;
+    }
 }
