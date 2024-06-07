@@ -22,13 +22,23 @@ export enum RegistrationTypes {
 export const register: Register = {
   usemail: {
     Validators: [Validators.email, Validators.required],
-    ErrorMessages: { 'email': 'Please enter a valid email address.', 'required': 'Please enter your email address.' },
-    value: ''
+    ErrorMessages: {
+      'email': 'Please enter a valid email address.',
+      'required': 'Please enter your email address.',
+      'emailMismatch': 'Emails do not match.'
+    },
+    value: '',
+    formGroup: 'matchEmails'
   },
   verifyEmail: {
     Validators: [Validators.email, Validators.required],
-    ErrorMessages: { 'email': 'Please enter a valid email address.', 'required': 'Please enter your email address.'},
-    value: ''
+    ErrorMessages: {
+      'email': 'Please enter a valid email address.',
+      'required': 'Please enter your email address.',
+      'emailMismatch': 'Emails do not match.'
+    },
+    value: '',
+    formGroup: 'matchEmails'
   },
   usfname: {
     Validators: [Validators.required],

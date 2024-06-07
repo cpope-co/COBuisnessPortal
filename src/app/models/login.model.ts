@@ -14,7 +14,7 @@ export const login: Login = {
     },
     password: {
         Validators: [Validators.required],
-        ErrorMessages: { 'password': 'Please enter a password.', 'required': 'Please enter your password.'},
+        ErrorMessages: { 'required': 'Please enter your password.'},
         value: ''
     }
 }

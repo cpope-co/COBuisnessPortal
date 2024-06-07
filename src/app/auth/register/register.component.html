@@ -31,22 +31,24 @@
       form.get('wregtype')?.value === RegistrationTypes.r) {
       <div class="row justify-content-xl-center mt-2">
         <div class="col-lg col-xl col-xxl-6">
-          <co-input
-            [formGroup]="form"
-            [label]="'Email'"
-            [type]="'email'"
-            [formControlName]="'usemail'"
-            placeholder="Enter your email address"
-            [model]="register"
-          />
-          <co-input
-            [formGroup]="form"
-            [label]="'Verify Email'"
-            [type]="'email'"
-            [formControlName]="'verifyEmail'"
-            placeholder="Re-enter your email address"
-            [model]="register"
-          />
+          <div formGroupName="matchEmails">
+            <co-input
+              [formGroup]="nestedFormGroup"
+              [label]="'Email'"
+              [type]="'email'"
+              [formControlName]="'usemail'"
+              placeholder="Enter your email address"
+              [model]="register"
+            />
+            <co-input
+              [formGroup]="nestedFormGroup"
+              [label]="'Verify Email'"
+              [type]="'email'"
+              [formControlName]="'verifyEmail'"
+              placeholder="Re-enter your email address"
+              [model]="register"
+            />
+          </div>
           <co-input
             [formGroup]="form"
             [label]="'First Name'"
