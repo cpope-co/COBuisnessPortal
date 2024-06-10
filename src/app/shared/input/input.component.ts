@@ -4,6 +4,7 @@ import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, Reacti
 import { MatFormField } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormHandlingService } from '../../services/form-handling.service';
+import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 
 @Component({
   selector: 'co-input',
@@ -12,7 +13,9 @@ import { FormHandlingService } from '../../services/form-handling.service';
     MatFormField,
     MatInputModule,
     ReactiveFormsModule,
-    JsonPipe
+    JsonPipe,
+    NgxMaskDirective,
+    NgxMaskPipe,    
   ],
   providers: [{
     provide: NG_VALUE_ACCESSOR,
@@ -26,6 +29,14 @@ export class InputComponent implements ControlValueAccessor {
 
   control = new FormControl();
   formHandlerService = inject(FormHandlingService);
+
+  label = input.required<string>();
+  type = input.required<string>();
+  placeholder = input.required<string>();
+  formControlName = input.required<string>();
+  formGroup = input.required<FormGroup>();
+  model = input.required<{ [key: string]: any }>();
+  mask = input<string>();
 
   constructor() {
   }
@@ -47,12 +58,5 @@ export class InputComponent implements ControlValueAccessor {
     return this.formHandlerService.getErrorMessages(this.formGroup(), this.formControlName(), this.model());
 
   }
-
-  label = input.required<string>();
-  type = input.required<string>();
-  placeholder = input.required<string>();
-  formControlName = input.required<string>();
-  formGroup = input.required<FormGroup>();
-  model = input.required<{ [key: string]: any }>();
 
 }

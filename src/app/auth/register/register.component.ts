@@ -69,6 +69,7 @@ export class RegisterComponent {
 
   #wcatmgrs = signal<WCatMgr[]>([]);
   wcatmgrs = this.#wcatmgrs.asReadonly();
+  phoneMask = '(000) 000-0000';
 
   wregtype = Object.values(RegistrationTypes).map((type) => ({
     id: type,

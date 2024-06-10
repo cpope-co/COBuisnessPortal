@@ -74,6 +74,7 @@
             [formControlName]="'wphone'"
             placeholder="Enter your phone number"
             [model]="register"
+            [mask]="phoneMask"
           />
 
           @if(form.get('wregtype')?.value === RegistrationTypes.r) {
