@@ -57,13 +57,13 @@ export const register: Register = {
     value: ''
   },
   usabnum: {
-    Validators: [],
-    ErrorMessages: {},
+    Validators: [Validators.required],
+    ErrorMessages: {'required': 'Please enter your Address book number.'},
     value: ''
   },
   wcatmgr: {
-    Validators: [],
-    ErrorMessages: {},
+    Validators: [Validators.required],
+    ErrorMessages: {'required': 'Please select a category manager.'},
     value: ''
   },
   wacctname: {

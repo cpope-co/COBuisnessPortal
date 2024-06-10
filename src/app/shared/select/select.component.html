@@ -1,6 +1,7 @@
 <mat-form-field appearance="outline" class="w-100 mt-1">
-  <mat-label>{{ label() }}</mat-label>
+  <mat-label>Choose {{ label() }}</mat-label>
   <mat-select formControlName="formControlName()">
+    <mat-option>None</mat-option>
     @for (option of options(); track $index) {
         <mat-option [value]="option.id">
             {{ option.name | titlecase }}
