@@ -92,6 +92,11 @@ export class RegisterComponent {
 
   onRegister() {
     try {
+      if(this.form.get('wregtype')?.value === RegistrationTypes.r){
+        this.form.removeControl('wcatmgr');
+      } else if(this.form.get('wregtype')?.value === RegistrationTypes.s) {
+        this.form.removeControl('usabnum')
+      }
       this.getRecaptchaToken().then((token) => {
         this.form.patchValue({ wrecaptchatoken: token });
         this.registerService.registerAccount(this.form.value);

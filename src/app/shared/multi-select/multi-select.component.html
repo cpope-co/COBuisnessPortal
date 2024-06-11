@@ -1,0 +1,21 @@
+<div class="form-group mt-1" [formGroup]="formGroup()!">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Choose {{ label() }}</mat-label>
+      <mat-select multiple [value]="null" [compareWith]="compareWithFn" [formControlName]="formControlName()">
+        <mat-option>None</mat-option>
+        @for (option of options(); track $index) {
+        <mat-option [value]="option.id">
+          {{ option.name | titlecase }}
+        </mat-option>
+        }
+      </mat-select>
+      @if(formGroup().get(formControlName())!.invalid &&
+      (formGroup().get(formControlName())!.touched ||
+      formGroup().get(formControlName())!.dirty)) {
+      <mat-error>
+        {{ getErrorMessage(formControlName()) }}
+      </mat-error>
+      }
+    </mat-form-field>
+  </div>
+  
