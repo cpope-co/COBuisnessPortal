@@ -109,6 +109,7 @@ export class RegisterComponent {
         }
       }
     } else {
+      this.form.markAllAsTouched();
       this.messageService.showMessage('Please correct the errors on the form.', 'danger');
     }
   }
