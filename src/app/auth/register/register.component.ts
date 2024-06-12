@@ -90,30 +90,26 @@ export class RegisterComponent {
 
 
 
-  onRegister() {
+  async onRegister() {
     if (this.form.get('wregtype')?.value === RegistrationTypes.r) {
       this.form.removeControl('wcatmgr');
     } else if (this.form.get('wregtype')?.value === RegistrationTypes.s) {
       this.form.removeControl('usabnum')
-    } 
+    }
     if (this.form.valid) {
-
-
       try {
-        this.getRecaptchaToken().then((token) => {
-          this.form.patchValue({ wrecaptchatoken: token });
-          this.registerService.registerAccount(this.form.value);
-        }).catch((error) => {
-          this.messageService.showMessage('Error', error.messages.join('\n'));
-        });
-      }
-
-      catch (error) {
-        console.error(error);
+        const token = await this.getRecaptchaToken();
+        this.form.patchValue({ wrecaptchatoken: token });
+        await this.registerService.registerAccount(this.form.value);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          this.messageService.showMessage(error.message, 'danger');
+        } else {
+          // Handle any other types of errors here
+        }
       }
     } else {
       this.messageService.showMessage('Please correct the errors on the form.', 'danger');
-
     }
   }
 
