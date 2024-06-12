@@ -5,7 +5,6 @@ import { environment } from "../../environments/environment";
 import { jwtDecode } from "jwt-decode";
 import { MessagesService } from "../messages/messages.service";
 import { MatDialog } from "@angular/material/dialog";
-import { openRefreshSessionDialog } from "../refresh-session-dialog/refresh-session-dialog.component";
 
 const USER_STORAGE_KEY = 'user';
 const TOKEN_STORAGE_KEY = 'token';

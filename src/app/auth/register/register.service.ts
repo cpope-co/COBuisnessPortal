@@ -3,6 +3,7 @@ import { environment } from "../../../environments/environment";
 import { firstValueFrom } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { Register } from "./register.model";
+import { apiReponse } from "../../models/response.model";
 
 @Injectable({
     providedIn: 'root'
@@ -15,9 +16,15 @@ export class RegisterService {
 
     async registerAccount(register: Partial<Register>): Promise<Register> {
 
-        const register$ = this.http.post<Register>(`${this.env.apiBaseUrl}register`, register);
+        const register$ = this.http.post<apiReponse>(`${this.env.apiBaseUrl}register`, register);
 
-        return await firstValueFrom(register$);
+        const response = await firstValueFrom(register$);
+
+        if(!response.success) {
+            throw new Error(response.validationErrors!.errDesc);
+        }
+
+        return response.data as Register;
         
     }
 }

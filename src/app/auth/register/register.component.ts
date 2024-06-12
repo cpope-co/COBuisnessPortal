@@ -57,7 +57,7 @@ export class RegisterComponent {
   recaptchaV3Service = inject(ReCaptchaV3Service);
   messageService = inject(MessagesService);
   formHandlerService = inject(FormHandlingService);
-  
+
   router = inject(Router);
   fb = inject(FormBuilder);
 
@@ -76,7 +76,7 @@ export class RegisterComponent {
     name: type,
   }));
 
-  
+
 
   constructor() {
     this.loadCategoryManagers();
@@ -91,24 +91,30 @@ export class RegisterComponent {
 
 
   onRegister() {
-    try {
-      if(this.form.get('wregtype')?.value === RegistrationTypes.r){
-        this.form.removeControl('wcatmgr');
-      } else if(this.form.get('wregtype')?.value === RegistrationTypes.s) {
-        this.form.removeControl('usabnum')
+    if (this.form.get('wregtype')?.value === RegistrationTypes.r) {
+      this.form.removeControl('wcatmgr');
+    } else if (this.form.get('wregtype')?.value === RegistrationTypes.s) {
+      this.form.removeControl('usabnum')
+    } 
+    if (this.form.valid) {
+
+
+      try {
+        this.getRecaptchaToken().then((token) => {
+          this.form.patchValue({ wrecaptchatoken: token });
+          this.registerService.registerAccount(this.form.value);
+        }).catch((error) => {
+          this.messageService.showMessage('Error', error.messages.join('\n'));
+        });
       }
-      this.getRecaptchaToken().then((token) => {
-        this.form.patchValue({ wrecaptchatoken: token });
-        this.registerService.registerAccount(this.form.value);
-      }).catch((error) => {
-        this.messageService.showMessage('Error', error.messages.join('\n'));
-      });
-    }
 
-    catch (error) {
-      console.error(error);
-    }
+      catch (error) {
+        console.error(error);
+      }
+    } else {
+      this.messageService.showMessage('Please correct the errors on the form.', 'danger');
 
+    }
   }
 
   onCancel() {
@@ -133,7 +139,6 @@ export class RegisterComponent {
   async loadCategoryManagers() {
     try {
       const wcatmgrs = await this.wcatmgrService.loadAllWCatMgrs();
-      console.log(wcatmgrs);
       this.#wcatmgrs.set(wcatmgrs);
     } catch (error) {
       console.error(error);
