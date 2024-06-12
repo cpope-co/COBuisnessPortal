@@ -1,4 +1,4 @@
-export type apiReponse = {
+export type apiResponse = {
     success: boolean;
     data?: any;
     validationErrors?: {

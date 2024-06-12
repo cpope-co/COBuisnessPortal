@@ -5,6 +5,8 @@ import { environment } from "../../environments/environment";
 import { jwtDecode } from "jwt-decode";
 import { MessagesService } from "../messages/messages.service";
 import { MatDialog } from "@angular/material/dialog";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { firstValueFrom } from "rxjs";
 
 const USER_STORAGE_KEY = 'user';
 const TOKEN_STORAGE_KEY = 'token';
@@ -17,13 +19,14 @@ export class AuthService {
     router = inject(Router);
     messageService = inject(MessagesService);
     dialog = inject(MatDialog);
+    http = inject(HttpClient);
 
     #userSignal = signal<User | null>(null);
     user = this.#userSignal.asReadonly();
-    
+
     #tokenSignal = signal<string | null>(null);
     token = this.#tokenSignal.asReadonly();
-    
+
     isLoggedIn = computed(() => !!this.user());
 
     constructor() {
@@ -90,65 +93,71 @@ export class AuthService {
             }
         });
     }
+
     async login(email: string, password: string): Promise<User> {
-        const response = await fetch(`${this.env.apiBaseUrl}usraut/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Basic ${btoa(`${email}:${password}`)}`
-            },
-            body: JSON.stringify({ email, password }),
-            credentials: 'include'
+        const headers = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Authorization': `Basic ${btoa(`${email}:${password}`)}`
         });
 
+        const user$ = await this.http.post(`${this.env.apiBaseUrl}usraut/login`,
+            { email, password },
+            { headers, observe: 'response', withCredentials: true }
+        );
 
-        const token = await response.headers.get('x-id')!;
+        const response = await firstValueFrom(user$);
+
+        const token = response.headers.get('x-id')!;
         this.#tokenSignal.set(token);
 
         const user = await jwtDecode(response.headers.get('x-id')!) as User;
         this.#userSignal.set(user);
         return user;
-
     }
-
     async refresh(): Promise<User> {
-        const response = await fetch(`${this.env.apiBaseUrl}usraut/refresh`, {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${this.token()}`
-            },
-            credentials: 'include'
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${this.token()}`
         });
-        const token = await response.headers.get('x-id')!;
+
+        const response = await firstValueFrom(this.http.post(
+            `${this.env.apiBaseUrl}usraut/refresh`,
+            {},
+            { headers, observe: 'response', withCredentials: true }
+        ));
+
+        const token = response.headers.get('x-id')!;
         this.#tokenSignal.set(token);
 
         const user = await jwtDecode(response.headers.get('x-id')!) as User;
-
         this.#userSignal.set(user);
         return user;
     }
-    
+
     async verify(verifyToken: string): Promise<User> {
-        const response = await fetch(`${this.env.apiBaseUrl}usraut/verify?id=${verifyToken}`, {
-            method: 'POST',
+        const headers = new HttpHeaders({
+            'Content-Type': 'application/json'
         });
-        const token = await response.headers.get('x-id')!;
+
+        const response = await firstValueFrom(this.http.post(
+            `${this.env.apiBaseUrl}usraut/verify?id=${verifyToken}`,
+            {},
+            { headers, observe: 'response' }
+        ));
+
+        const token = response.headers.get('x-id')!;
         this.#tokenSignal.set(token);
 
         const user = await jwtDecode(response.headers.get('x-id')!) as User;
         this.#userSignal.set(user);
         return user;
-        
     }
 
     async logout(): Promise<void> {
-        await fetch(`${this.env.apiBaseUrl}/usraut/logout`, {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${this.token()}`
-            },
-            credentials: 'include'
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${this.token()}`
         });
+
+        await this.http.post(`${this.env.apiBaseUrl}/usraut/logout`, {}, { headers, withCredentials: true });
 
         sessionStorage.removeItem(TOKEN_STORAGE_KEY);
         sessionStorage.removeItem(USER_STORAGE_KEY);
