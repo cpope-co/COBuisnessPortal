@@ -5,6 +5,7 @@ import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { VerifyComponent } from './auth/verify/verify.component';
 import { ChangePasswordComponent } from './auth/change-password/change-password.component';
+import { UsersListComponent } from './admin/users-list/users-list.component';
 
 export const routes: Routes = [
     {
@@ -33,6 +34,10 @@ export const routes: Routes = [
     {
         path: 'auth/change-password',
         component: ChangePasswordComponent,
+    },
+    {
+        path: 'admin/users',
+        component: UsersListComponent,
     },
     {
         path: '**',

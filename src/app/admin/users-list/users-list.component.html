@@ -1,0 +1,41 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>
+      <h1>Users List</h1>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-table [dataSource]="userAccounts()">
+      <ng-container matColumnDef="usunbr">
+        <th mat-header-cell *matHeaderCellDef>User Number</th>
+        <td mat-cell *matCellDef="let element">{{ element.usunbr }}</td>
+      </ng-container>
+      <ng-container matColumnDef="usfname">
+        <th mat-header-cell *matHeaderCellDef>First Name</th>
+        <td mat-cell *matCellDef="let element">{{ element.usfname }}</td>
+      </ng-container>
+      <ng-container matColumnDef="uslname">
+        <th mat-header-cell *matHeaderCellDef>Last Name</th>
+        <td mat-cell *matCellDef="let element">{{ element.uslname }}</td>
+      </ng-container>
+      <ng-container matColumnDef="usabnum">
+        <th mat-header-cell *matHeaderCellDef>Account Number</th>
+        <td mat-cell *matCellDef="let element">{{ element.usabnum }}</td>
+      </ng-container>
+      <ng-container matColumnDef="usemail">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let element">{{ element.usemail }}</td>
+      </ng-container>
+      <ng-container matColumnDef="usstat">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let element">{{ element.usstat }}</td>
+      </ng-container>
+      <ng-container matColumnDef="usroleid">
+        <th mat-header-cell *matHeaderCellDef>Role</th>
+        <td mat-cell *matCellDef="let element">{{ element.usroleid }}</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </mat-table>
+  </mat-card-content>
+</mat-card>
