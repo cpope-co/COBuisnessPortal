@@ -8,18 +8,20 @@ import { AuthService } from './services/auth.service';
 import { MessagesComponent } from './messages/messages.component';
 import { MessagesService } from './messages/messages.service';
 import { MatListModule } from '@angular/material/list';
+import { LoadingIndicatorComponent } from './loading/loading.component';
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
     RouterOutlet,
     RouterLink,
+    LoadingIndicatorComponent,
+    MessagesComponent,
     MatSidenavContainer,
     MatSidenavModule,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
-    MessagesComponent,
     MatListModule,
   ],
   templateUrl: './app.component.html',

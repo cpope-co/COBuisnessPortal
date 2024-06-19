@@ -5,8 +5,9 @@ import { environment } from "../../environments/environment";
 import { jwtDecode } from "jwt-decode";
 import { MessagesService } from "../messages/messages.service";
 import { MatDialog } from "@angular/material/dialog";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpContext, HttpContextToken, HttpHeaders } from "@angular/common/http";
 import { firstValueFrom } from "rxjs";
+import { SKIP_AUTH_KEY } from "../shared/http-context-keys";
 
 const USER_STORAGE_KEY = 'user';
 const TOKEN_STORAGE_KEY = 'token';
@@ -99,10 +100,16 @@ export class AuthService {
             'Content-Type': 'application/json',
             'Authorization': `Basic ${btoa(`${email}:${password}`)}`
         });
+        // Create a new HttpContextToken
+        
 
+        // Use the token to set metadata
+        const context = new HttpContext().set(SKIP_AUTH_KEY, true);
+
+        // Use the context in your HTTP request
         const user$ = await this.http.post(`${this.env.apiBaseUrl}usraut/login`,
             { email, password },
-            { headers, observe: 'response', withCredentials: true }
+            { headers, observe: 'response', withCredentials: true, context }
         );
 
         const response = await firstValueFrom(user$);

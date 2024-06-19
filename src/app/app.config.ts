@@ -8,6 +8,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { loadingInterceptor } from './loading/loading.interceptor';
 import { provideEnvironmentNgxMask } from 'ngx-mask';
+import { tokenInterceptor } from './shared/token.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,7 +21,7 @@ export const appConfig: ApplicationConfig = {
     provideEnvironmentNgxMask(),
     provideHttpClient(
       withFetch(),
-      withInterceptors([loadingInterceptor])
+      withInterceptors([loadingInterceptor, tokenInterceptor])
     ), provideAnimationsAsync()
   ]
 };

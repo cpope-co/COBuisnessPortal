@@ -10,6 +10,7 @@ import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import { InputComponent } from '../../shared/input/input.component';
 import { RadioComponent } from '../../shared/radio/radio.component';
 import { SelectComponent } from '../../shared/select/select.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-user-detail',
@@ -29,8 +30,10 @@ import { SelectComponent } from '../../shared/select/select.component';
   styleUrl: './user-detail.component.scss'
 })
 export class UserDetailComponent {
+
   userAccountService = inject(UserAccountService);
-  formHandling = inject(FormHandlingService);
+  formHandlerService = inject(FormHandlingService);
+  activatedRoute = inject(ActivatedRoute);
 
   form!: FormGroup;
   userAccountForm = userAccount
@@ -51,19 +54,25 @@ export class UserDetailComponent {
   ];
 
   constructor() {
-    this.userAccountService.loadUserAccountById(57).then(userAccount => {
+    const id = +this.activatedRoute.snapshot.paramMap.get('id')!;
+    this.userAccountService.loadUserAccountById(id).then(userAccount => {
       if (userAccount) {
         this.#userAccountSignal.set(userAccount as UserAccount);
-        const controls = Object.keys(this.userAccountForm).reduce((acc, key) => {
-          acc[key] = new FormControl(this.userAccountForm[key]);
-          return acc;
-        }, {} as { [key: string]: AbstractControl });
+        this.form = this.formHandlerService.createFormGroup(userAccount);
 
-        this.form = new FormGroup(controls);
         this.form.patchValue(userAccount);
       }
     });
+  }
 
-
+  onDeleteUserAccount() {
+    
+  }
+  async onSaveUserAccount() {
+    try {
+      const userAccount = await this.userAccountService.saveUserAccount(this.form.value);
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
