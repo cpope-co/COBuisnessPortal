@@ -7,7 +7,7 @@ import { MessagesService } from "../messages/messages.service";
 import { MatDialog } from "@angular/material/dialog";
 import { HttpClient, HttpContext, HttpContextToken, HttpHeaders } from "@angular/common/http";
 import { firstValueFrom } from "rxjs";
-import { SKIP_AUTH_KEY } from "../shared/http-context-keys";
+import { SKIP_AUTH_KEY, SKIP_REFRESH_KEY } from "../shared/http-context-keys";
 
 const USER_STORAGE_KEY = 'user';
 const TOKEN_STORAGE_KEY = 'token';
@@ -126,10 +126,11 @@ export class AuthService {
             'Authorization': `Bearer ${this.token()}`
         });
 
+        const context = new HttpContext().set(SKIP_REFRESH_KEY, true);
         const response = await firstValueFrom(this.http.post(
             `${this.env.apiBaseUrl}usraut/refresh`,
             {},
-            { headers, observe: 'response', withCredentials: true }
+            { headers, observe: 'response', withCredentials: true, context }
         ));
 
         const token = response.headers.get('x-id')!;
@@ -166,8 +167,8 @@ export class AuthService {
 
         await this.http.post(`${this.env.apiBaseUrl}/usraut/logout`, {}, { headers, withCredentials: true });
 
-        sessionStorage.removeItem(TOKEN_STORAGE_KEY);
-        sessionStorage.removeItem(USER_STORAGE_KEY);
+        sessionStorage.clear();
+        localStorage.clear();
         this.#userSignal.set(null);
         this.#tokenSignal.set(null);
 

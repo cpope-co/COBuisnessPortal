@@ -3,12 +3,13 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideHttpClient, withFetch, withInterceptors } from "@angular/common/http";
+import { HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptors } from "@angular/common/http";
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { loadingInterceptor } from './loading/loading.interceptor';
 import { provideEnvironmentNgxMask } from 'ngx-mask';
 import { tokenInterceptor } from './shared/token.interceptor';
+import { RefreshInterceptor } from './shared/refresh.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,7 +22,9 @@ export const appConfig: ApplicationConfig = {
     provideEnvironmentNgxMask(),
     provideHttpClient(
       withFetch(),
-      withInterceptors([loadingInterceptor, tokenInterceptor])
-    ), provideAnimationsAsync()
+      withInterceptors([loadingInterceptor, tokenInterceptor]),
+    ),
+    provideAnimationsAsync(),
+    { provide: HTTP_INTERCEPTORS, useClass: RefreshInterceptor, multi: true }
   ]
 };
