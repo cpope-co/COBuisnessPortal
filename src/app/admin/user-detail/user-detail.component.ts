@@ -5,12 +5,15 @@ import { MatCardModule } from '@angular/material/card';
 import { FormHandlingService } from '../../services/form-handling.service';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
+import { MatButton, MatButtonModule } from '@angular/material/button';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import { InputComponent } from '../../shared/input/input.component';
 import { RadioComponent } from '../../shared/radio/radio.component';
 import { SelectComponent } from '../../shared/select/select.component';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MessagesService } from '../../messages/messages.service';
 
 @Component({
   selector: 'app-user-detail',
@@ -25,7 +28,9 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
     NgxMaskPipe,
     InputComponent,
     SelectComponent,
-    RadioComponent
+    RadioComponent,
+    MatIconModule,
+    MatMenuModule,
   ],
   templateUrl: './user-detail.component.html',
   styleUrl: './user-detail.component.scss'
@@ -35,6 +40,7 @@ export class UserDetailComponent {
   userAccountService = inject(UserAccountService);
   formHandlerService = inject(FormHandlingService);
   activatedRoute = inject(ActivatedRoute);
+  messagesService = inject(MessagesService);
 
   form!: FormGroup;
   userAccountForm = userAccount
@@ -67,11 +73,19 @@ export class UserDetailComponent {
   }
 
   onDeleteUserAccount() {
-    
+
   }
   async onSaveUserAccount() {
     try {
       const userAccount = await this.userAccountService.saveUserAccount(this.form.value);
+      this.messagesService.showMessage('User account saved successfully', 'success');
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  async onApproveUser() {
+    try {
+
     } catch (error) {
       console.error(error);
     }

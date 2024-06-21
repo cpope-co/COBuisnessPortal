@@ -66,19 +66,17 @@ export class UsersListComponent {
     const filterValue = (event.target as HTMLInputElement).value;
     this.userAccountDataSource.filter = filterValue.trim().toLowerCase();
   }
-  
+
   async loadUserAccounts() {
     try {
       const userAccounts = await this.userAccountsService.loadAllUserAccounts();
       this.userAccountsSignal.set(userAccounts);
 
     } catch (error) {
+      this.messageService.showMessage('Error loading user accounts, please try again.', 'danger');
     }
   }
-
-  onEdit(userAccount: UserAccount) {
-
-  }
+  
   async onDelete(userAccountId: number) {
     try {
       await this.userAccountsService.deleteUserAccount(userAccountId);
