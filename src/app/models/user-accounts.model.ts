@@ -60,3 +60,17 @@ export const userAccount: Partial<UserAccount> = {
         value: ''
     }
 }
+export const statuses = [
+    { id: 'A', name: 'Active' },
+    { id: 'I', name: 'Inactive' },
+    { id: 'P', name: 'Pending' },
+    { id: 'L', name: 'Locked out' }
+]
+export const roles = [
+    { id: 1, name: 'Admin' },
+    { id: 2, name: 'Customer' },
+    { id: 3, name: 'Vendor' },
+    { id: 4, name: 'Employee' },
+    { id: 5, name: 'API Consumer' },
+    { id: 6, name: 'Salesperson' }
+];

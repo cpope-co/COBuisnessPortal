@@ -1,6 +1,6 @@
 import { Injectable, effect, inject, signal } from "@angular/core";
 import { environment } from "../../environments/environment";
-import { firstValueFrom } from "rxjs";
+import { first, firstValueFrom } from "rxjs";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { UserAccount } from "../models/user-accounts.model";
 import { apiResponse } from "../models/response.model";
@@ -47,5 +47,10 @@ export class UserAccountService {
         const userAccount$ = this.http.patch<UserAccount>(`${this.env.apiBaseUrl}user/updusr`, userAccount);
 
         return await firstValueFrom(userAccount$);
+    }
+
+    async deleteUserAccount(userAccountId:number) {
+        const delete$ = this.http.delete<apiResponse>(`${this.env.apiBaseUrl}user/dltusr?usunbr=${userAccountId}`);
+        return firstValueFrom(delete$);
     }
 }

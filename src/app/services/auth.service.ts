@@ -104,7 +104,7 @@ export class AuthService {
         
 
         // Use the token to set metadata
-        const context = new HttpContext().set(SKIP_AUTH_KEY, true);
+        const context = new HttpContext().set(SKIP_AUTH_KEY, true).set(SKIP_REFRESH_KEY, true);
 
         // Use the context in your HTTP request
         const user$ = await this.http.post(`${this.env.apiBaseUrl}usraut/login`,
@@ -126,7 +126,7 @@ export class AuthService {
             'Authorization': `Bearer ${this.token()}`
         });
 
-        const context = new HttpContext().set(SKIP_REFRESH_KEY, true);
+        const context = new HttpContext().set(SKIP_REFRESH_KEY, true).set(SKIP_AUTH_KEY, true);
         const response = await firstValueFrom(this.http.post(
             `${this.env.apiBaseUrl}usraut/refresh`,
             {},

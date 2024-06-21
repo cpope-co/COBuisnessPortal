@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptors } from "@angular/common/http";
+import { HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi } from "@angular/common/http";
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { loadingInterceptor } from './loading/loading.interceptor';
@@ -23,6 +23,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withFetch(),
       withInterceptors([loadingInterceptor, tokenInterceptor]),
+      withInterceptorsFromDi()
     ),
     provideAnimationsAsync(),
     { provide: HTTP_INTERCEPTORS, useClass: RefreshInterceptor, multi: true }

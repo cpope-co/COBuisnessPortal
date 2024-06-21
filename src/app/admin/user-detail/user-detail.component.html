@@ -72,12 +72,13 @@
     </form>
     }
   </mat-card-content>
-  <mat-card-actions>
-    <button mat-raised-button color="primary" (click)="onSaveUserAccount()">
-      Save
-    </button>
+  <mat-card-actions align="end">
+    <a mat-button color="warn" [routerLink]="['/admin/users']">Cancel</a>
     <button mat-raised-button color="warn" (click)="onDeleteUserAccount()">
       Delete
+    </button>
+    <button mat-raised-button color="primary" (click)="onSaveUserAccount()">
+      Save
     </button>
   </mat-card-actions>
 </mat-card>

@@ -10,12 +10,13 @@ import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import { InputComponent } from '../../shared/input/input.component';
 import { RadioComponent } from '../../shared/radio/radio.component';
 import { SelectComponent } from '../../shared/select/select.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-user-detail',
   standalone: true,
   imports: [
+    RouterLink,
     MatCardModule,
     ReactiveFormsModule,
     MatInputModule,
