@@ -17,7 +17,7 @@ export class SessionService {
     dialog = inject(MatDialog);
     authService = inject(AuthService);
     messagesService = inject(MessagesService);
-
+    
 
     async startSession(): Promise<string> {
         console.log('Starting session.');
@@ -49,5 +49,17 @@ export class SessionService {
     async endSesssion() {
         clearTimeout(this.#sessionTimeoutId);
         clearTimeout(this.#warningTimeoutId);
+    }
+
+    isSessionActive(): boolean {
+        const user = this.authService.user();
+        if (!user) {
+          this.authService.logout();
+        }
+        
+        if(user?.exp && user.exp * 1000 < Date.now()) {
+            return false;
+        }
+        return true;
     }
 }
