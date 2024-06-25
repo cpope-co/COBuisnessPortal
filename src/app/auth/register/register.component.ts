@@ -121,7 +121,7 @@ export class RegisterComponent {
 
   getRecaptchaToken(): Promise<string> {
     return new Promise((resolve, reject) => {
-      this.recaptchaV3Service.execute('register').subscribe(
+      this.recaptchaV3Service.execute('SubmitRegisterForm').subscribe(
         (token) => {
           resolve(token);
         },
