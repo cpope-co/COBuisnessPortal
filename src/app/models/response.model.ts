@@ -3,5 +3,5 @@ export type apiResponse = {
     data?: any;
     validationErrors?: {
         errDesc: string;
-    };
+    }[];
 }

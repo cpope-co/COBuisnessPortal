@@ -30,7 +30,13 @@ export class UserAccountService {
 
         const response = await firstValueFrom(userAccount$);
         if (!response.success) {
-            throw new Error(response.validationErrors?.errDesc);
+            // Check if there are validation errors and throw them
+            if (response.validationErrors && response.validationErrors.length > 0) {
+                throw new Error(`Validation errors: ${response.validationErrors.map(err => err.errDesc).join(', ')}`);
+            } else {
+                // If there are no validation errors, throw a generic error
+                throw new Error('Registration failed without specific validation errors.');
+            }
         }
         return response.data as UserAccount;
 

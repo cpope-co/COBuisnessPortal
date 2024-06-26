@@ -5,6 +5,7 @@ import { HttpClient, HttpContext } from "@angular/common/http";
 import { Register } from "./register.model";
 import { apiResponse } from "../../models/response.model";
 import { SKIP_AUTH_KEY, SKIP_REFRESH_KEY } from "../../shared/http-context-keys";
+import { ApiResponseError } from "../../shared/api-response-error";
 
 @Injectable({
     providedIn: 'root'
@@ -22,7 +23,13 @@ export class RegisterService {
         const response = await firstValueFrom(register$);
 
         if (!response.success) {
-            throw new Error(response.validationErrors!.errDesc);
+            // Check if there are validation errors and throw them
+            if (response.validationErrors && response.validationErrors.length > 0) {
+                throw new ApiResponseError("Validation errors", response.validationErrors || []);
+            } else {
+                // If there are no validation errors, throw a generic error
+                throw new Error('Registration failed without specific validation errors.');
+            }
         }
 
         return response.data as Register;

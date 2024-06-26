@@ -47,33 +47,44 @@ export const register: Register = {
     }
   },
   usfname: {
-    Validators: [Validators.required],
-    ErrorMessages: { 'required': 'Please enter your first name.' },
+    Validators: [Validators.required, Validators.minLength(3)],
+    ErrorMessages: {
+      'required': 'Please enter your first name.',
+      'minLength': 'First name must be at least 3 characters long.'
+    },
     value: ''
   },
   uslname: {
-    Validators: [Validators.required],
-    ErrorMessages: { 'required': 'Please enter your last name.' },
+    Validators: [Validators.required, Validators.minLength(3)],
+    ErrorMessages: {
+      'required': 'Please enter your last name.',
+      'minLength': 'Last name must be at least 3 characters long.'
+    },
     value: ''
   },
   usabnum: {
     Validators: [Validators.required],
-    ErrorMessages: {'required': 'Please enter your Address book number.'},
+    ErrorMessages: { 'required': 'Please enter your Address book number.' },
     value: ''
   },
   wcatmgr: {
     Validators: [Validators.required],
-    ErrorMessages: {'required': 'Please select a category manager.'},
+    ErrorMessages: { 'required': 'Please select a category manager.' },
     value: ''
   },
   wacctname: {
-    Validators: [Validators.required],
-    ErrorMessages: { 'required': 'Please enter your account name.' },
+    Validators: [Validators.required, Validators.minLength(3)],
+    ErrorMessages: {
+      'required': 'Please enter your account name.',
+      'minLength': 'Account name type must be at least 3 characters'
+    },
     value: ''
   },
   wregtype: {
     Validators: [Validators.required],
-    ErrorMessages: { 'required': 'Please select a registration type.' },
+    ErrorMessages: {
+      'required': 'Please select a registration type.'
+    },
     value: ''
   },
   wphone: {

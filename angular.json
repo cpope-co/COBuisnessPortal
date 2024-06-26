@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/cobuisness-portal",
+            "outputPath": "\\\\owen400\\WEBAPPDEV",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [

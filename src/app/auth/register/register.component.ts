@@ -21,6 +21,7 @@ import { SelectComponent } from '../../shared/select/select.component';
 import { RadioComponent } from '../../shared/radio/radio.component';
 import { FormHandlingService } from '../../services/form-handling.service';
 import { matchEmailsValidator } from '../../validators/verifyemail.validator';
+import { ApiResponseError } from '../../shared/api-response-error';
 
 @Component({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -102,10 +103,8 @@ export class RegisterComponent {
         this.form.patchValue({ wrecaptchatoken: token });
         await this.registerService.registerAccount(this.form.value);
       } catch (error: unknown) {
-        if (error instanceof Error) {
-          this.messageService.showMessage(error.message, 'danger');
-        } else {
-          // Handle any other types of errors here
+        if (error instanceof ApiResponseError) {
+          this.formHandlerService.handleFormErrors(error.validationErrors, this.form)
         }
       }
     } else {

@@ -2,6 +2,11 @@ import { Injectable, inject } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { FormHandling } from '../models/form-handling.model';
 
+
+interface ValidationError {
+  field: string;
+  errDesc: string;
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -44,6 +49,11 @@ export class FormHandlingService {
   getErrorMessages(form: FormGroup, controlName: string, model: { [key: string]: FormHandling }): string {
     const control = form.get(controlName);
     if (control?.errors) {
+      // Check for customError first
+      if (control.errors['customError']) {
+        return control.errors['customError'];
+      }
+      // Fallback to existing error handling logic
       const errorKey = Object.keys(control.errors)[0];
       return model[controlName].ErrorMessages[errorKey];
     }
@@ -52,5 +62,13 @@ export class FormHandlingService {
 
   getNestedFormGroup(form: FormGroup, formGroupName: string): FormGroup {
     return form.get(formGroupName) as FormGroup;
+  }
+  handleFormErrors(errors: ValidationError[], form: FormGroup): void {
+    errors.forEach(error => {
+      const formControl = form.get(error.field);
+      if (formControl) {
+        formControl.setErrors({ customError: error.errDesc });
+      }
+    });
   }
 }
