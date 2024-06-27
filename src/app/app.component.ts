@@ -9,6 +9,7 @@ import { MessagesComponent } from './messages/messages.component';
 import { MessagesService } from './messages/messages.service';
 import { MatListModule } from '@angular/material/list';
 import { LoadingIndicatorComponent } from './loading/loading.component';
+import { MatMenuModule } from '@angular/material/menu';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -23,6 +24,7 @@ import { LoadingIndicatorComponent } from './loading/loading.component';
     MatButtonModule,
     MatIconModule,
     MatListModule,
+    MatMenuModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'

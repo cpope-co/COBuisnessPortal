@@ -1,9 +1,13 @@
 <mat-sidenav-container fullscreen>
   <mat-sidenav #start (click)="start.close()">
     <mat-list>
-      <a mat-list-item [routerLink]="['home']" routerLinkActive="active">Home</a>
-      <a mat-list-item [routerLink]="['admin/users']" routerLinkActive="active">Users</a>
-      </mat-list>
+      <a mat-list-item [routerLink]="['home']" routerLinkActive="active"
+        >Home</a
+      >
+      <a mat-list-item [routerLink]="['admin/users']" routerLinkActive="active"
+        >Users</a
+      >
+    </mat-list>
   </mat-sidenav>
   <mat-toolbar color="primary">
     @if(isLoggedIn()) {
@@ -11,9 +15,21 @@
       <mat-icon>menu</mat-icon>
     </button>
     Chambers &amp; Owen
-    <button mat-icon-button (click)="onLogout()">
-      <mat-icon>exit_to_app</mat-icon>
+    <span class="spacer"></span>
+    <button mat-button [matMenuTriggerFor]="profileMenu">
+      <mat-icon>person</mat-icon>
+      Profile
     </button>
+    <mat-menu #profileMenu="matMenu">
+      <a mat-menu-item [routerLink]="['profile']">
+        <mat-icon>person</mat-icon>
+        Profile
+      </a>
+      <a mat-menu-item (click)="onLogout()">
+        <mat-icon>exit_to_app</mat-icon>
+        Logout
+      </a>
+    </mat-menu>
     }
   </mat-toolbar>
 
