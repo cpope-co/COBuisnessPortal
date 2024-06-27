@@ -22,6 +22,7 @@ import { RadioComponent } from '../../shared/radio/radio.component';
 import { FormHandlingService } from '../../services/form-handling.service';
 import { matchEmailsValidator } from '../../validators/verifyemail.validator';
 import { ApiResponseError } from '../../shared/api-response-error';
+import { matchControlsValidator } from '../../validators/verifypassword.validator';
 
 @Component({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -83,7 +84,7 @@ export class RegisterComponent {
     this.loadCategoryManagers();
     this.form = this.formHandlerService.createFormGroup(this.register);
     this.nestedFormGroup = this.formHandlerService.getNestedFormGroup(this.form, 'matchEmails');
-    const verifyMatchedEmails = matchEmailsValidator(this.nestedFormGroup);
+    const verifyMatchedEmails = matchControlsValidator('usemail', 'verifyEmail');
     this.nestedFormGroup.addValidators(verifyMatchedEmails);
     this.nestedFormGroup.updateValueAndValidity(); // Update validity status after adding the validator
   }

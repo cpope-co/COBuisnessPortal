@@ -53,8 +53,9 @@ export class UserAccountService {
         const delete$ = this.http.delete<apiResponse>(`${this.env.apiBaseUrl}user/dltusr?usunbr=${userAccountId}`);
         return firstValueFrom(delete$);
     }
-    async approveUserAccount(userAccountId: number) {
-        const approve$ = this.http.post<apiResponse>(`${this.env.apiBaseUrl}user/apvusr`, { userAccountId });
+
+    async approveUserAccount(usunbr: number) {
+        const approve$ = this.http.post<apiResponse>(`${this.env.apiBaseUrl}user/apvusr`, { usunbr });
         return firstValueFrom(approve$);
     }
 }

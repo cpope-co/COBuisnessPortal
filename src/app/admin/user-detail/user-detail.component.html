@@ -7,7 +7,7 @@
       <mat-icon>more_vert</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
-      @if(userAccount() && userAccount()?.usstat === 'PENDING') {
+      @if(userAccount() && userAccount()?.usstat === 'P') {
       <button mat-menu-item (click)="onApproveUser()">Approve</button>
       }
     </mat-menu>

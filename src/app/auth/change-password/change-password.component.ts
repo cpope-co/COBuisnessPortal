@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,6 +7,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ChangePasswordService } from './change-password.service';
+import { MessagesService } from '../../messages/messages.service';
+import { FormHandlingService } from '../../services/form-handling.service';
+import { setPassword } from '../../models/password.model';
+import { InputComponent } from '../../shared/input/input.component';
+import { matchEmailsValidator } from '../../validators/verifyemail.validator';
+import { matchControlsValidator } from '../../validators/verifypassword.validator';
 
 @Component({
   selector: 'app-change-password',
@@ -17,7 +23,8 @@ import { ChangePasswordService } from './change-password.service';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    InputComponent
   ],
   templateUrl: './change-password.component.html',
   styleUrl: './change-password.component.scss'
@@ -25,27 +32,24 @@ import { ChangePasswordService } from './change-password.service';
 export class ChangePasswordComponent {
 
   changePasswordService = inject(ChangePasswordService);
+  formHandlerService = inject(FormHandlingService);
+  messageService = inject(MessagesService);
 
+  form!: FormGroup;
 
-  fb = inject(FormBuilder);
+  setPassword = setPassword;
 
-  changePasswordForm = this.fb.group({
-    oldPassword: [''],
-    newPassword: [''],
-    confirmPassword: ['']
-  });
 
   constructor() {
+    this.form = this.formHandlerService.createFormGroup(this.setPassword);
+    this.form.addValidators(matchControlsValidator('password', 'confirmPassword'));
+    this.form.updateValueAndValidity();
   }
 
   onChangePassword() {
     try {
-      const { oldPassword, newPassword, confirmPassword } = this.changePasswordForm.value;
-
-      if(!oldPassword || !newPassword || !confirmPassword) {
-        return;
-      }
-      this.changePasswordService.changePassword(oldPassword, newPassword, confirmPassword);
+     
+     
     }
     catch (error) {
       console.error('Error changing password', error);

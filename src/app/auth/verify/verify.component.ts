@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MatCardModule } from '@angular/material/card';
 import { MessagesService } from '../../messages/messages.service';
@@ -13,6 +13,7 @@ import { MessagesService } from '../../messages/messages.service';
 })
 export class VerifyComponent {
   route = inject(ActivatedRoute);
+  router = inject(Router);
   authService = inject(AuthService);
   messageService = inject(MessagesService);
   
@@ -36,7 +37,8 @@ export class VerifyComponent {
     try {
       await this.authService.verify(this.token());
       console.log('Token verified.');
-
+      this.#isVerified.set(true);
+      this.router.navigate(['/auth/change-password']);
     }
     catch (error: any) {
       this.#isVerifying.set(false);

@@ -26,7 +26,7 @@ export const register: Register = {
     ErrorMessages: {
       'email': 'Please enter a valid email address.',
       'required': 'Please enter your email address.',
-      'emailMismatch': 'Emails do not match.'
+      'mismatch': 'Emails do not match.'
     },
     value: '',
     formGroup: {
@@ -39,7 +39,7 @@ export const register: Register = {
     ErrorMessages: {
       'email': 'Please enter a valid email address.',
       'required': 'Please enter your email address.',
-      'emailMismatch': 'Emails do not match.'
+      'mismatch': 'Emails do not match.'
     },
     value: '',
     formGroup: {
