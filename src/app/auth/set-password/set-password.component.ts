@@ -6,16 +6,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { ChangePasswordService } from './change-password.service';
+import { PasswordService } from '../../services/password.service';
 import { MessagesService } from '../../messages/messages.service';
 import { FormHandlingService } from '../../services/form-handling.service';
 import { setPassword } from '../../models/password.model';
 import { InputComponent } from '../../shared/input/input.component';
-import { matchEmailsValidator } from '../../validators/verifyemail.validator';
 import { matchControlsValidator } from '../../validators/verifypassword.validator';
 
 @Component({
-  selector: 'app-change-password',
+  selector: 'app-set-password',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -26,12 +25,12 @@ import { matchControlsValidator } from '../../validators/verifypassword.validato
     MatButtonModule,
     InputComponent
   ],
-  templateUrl: './change-password.component.html',
-  styleUrl: './change-password.component.scss'
+  templateUrl: './set-password.component.html',
+  styleUrl: './set-password.component.scss'
 })
-export class ChangePasswordComponent {
+export class SetPasswordComponent {
 
-  changePasswordService = inject(ChangePasswordService);
+  passwordService = inject(PasswordService);
   formHandlerService = inject(FormHandlingService);
   messageService = inject(MessagesService);
 

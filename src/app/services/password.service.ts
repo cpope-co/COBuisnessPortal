@@ -1,13 +1,13 @@
 import { Injectable, inject } from "@angular/core";
-import { environment } from "../../../environments/environment";
+import { environment } from "../../environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { firstValueFrom } from "rxjs";
-import { SetPassword } from "../../models/password.model";
+import { SetPassword } from "../models/password.model";
 
 @Injectable({
     providedIn: 'root'
 })
-export class ChangePasswordService {
+export class PasswordService {
     env = environment;
     http = inject(HttpClient);
 

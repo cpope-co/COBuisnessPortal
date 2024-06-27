@@ -4,7 +4,7 @@ import { isUserAuthenticated } from './guards/auth.guard';
 import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { VerifyComponent } from './auth/verify/verify.component';
-import { ChangePasswordComponent } from './auth/change-password/change-password.component';
+import { SetPasswordComponent } from './auth/set-password/set-password.component';
 import { UsersListComponent } from './admin/users-list/users-list.component';
 import { UserDetailComponent } from './admin/user-detail/user-detail.component';
 
@@ -33,8 +33,8 @@ export const routes: Routes = [
         component: VerifyComponent,
     },
     {
-        path: 'auth/change-password',
-        component: ChangePasswordComponent,
+        path: 'auth/set-password',
+        component: SetPasswordComponent,
     },
     {
         path: 'admin/users',
