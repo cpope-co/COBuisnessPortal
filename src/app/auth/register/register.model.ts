@@ -50,7 +50,7 @@ export const register: Register = {
     Validators: [Validators.required, Validators.minLength(3)],
     ErrorMessages: {
       'required': 'Please enter your first name.',
-      'minLength': 'First name must be at least 3 characters long.'
+      'minlength': 'First name must be at least 3 characters long.'
     },
     value: ''
   },
@@ -58,7 +58,7 @@ export const register: Register = {
     Validators: [Validators.required, Validators.minLength(3)],
     ErrorMessages: {
       'required': 'Please enter your last name.',
-      'minLength': 'Last name must be at least 3 characters long.'
+      'minlength': 'Last name must be at least 3 characters long.'
     },
     value: ''
   },
@@ -76,7 +76,7 @@ export const register: Register = {
     Validators: [Validators.required, Validators.minLength(3)],
     ErrorMessages: {
       'required': 'Please enter your account name.',
-      'minLength': 'Account name type must be at least 3 characters'
+      'minlength': 'Account name type must be at least 3 characters'
     },
     value: ''
   },
