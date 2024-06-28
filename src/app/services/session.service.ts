@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { AuthService } from './auth.service';
-import { openRefreshSessionDialog } from '../refresh-session-dialog/refresh-session-dialog.component';
+import { openRefreshSessionDialog } from '../shared/refresh-session-dialog/refresh-session-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MessagesService } from '../messages/messages.service';
 

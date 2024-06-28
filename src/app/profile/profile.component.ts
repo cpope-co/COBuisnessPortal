@@ -8,6 +8,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { UserAccountService } from '../services/user-accounts.service';
 import { AuthService } from '../services/auth.service';
 import { User } from '../models/user.model';
+import { MessagesService } from '../messages/messages.service';
+import { Router } from '@angular/router';
+import { openLoseChangesDialog } from '../shared/lose-changes-dialog/lose-changes-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-profile',
@@ -26,6 +30,9 @@ export class ProfileComponent {
   formHandlerService = inject(FormHandlingService);
   userAccountService = inject(UserAccountService);
   authService = inject(AuthService);
+  messageService = inject(MessagesService);
+  router = inject(Router);
+  dialog = inject(MatDialog)
 
   profileAccount = profileAccount;
   form!: FormGroup;
@@ -38,6 +45,7 @@ export class ProfileComponent {
     this.#userSignal.set(this.authService.user());
     this.onLoadProfile();
   }
+
   async onLoadProfile() {
     try {
       const userId = this.user()?.sub;
@@ -53,16 +61,30 @@ export class ProfileComponent {
       // Handle the error
     }
   }
+
   async onSaveProfile() {
     try {
       if (this.form.invalid) {
         this.form.markAllAsTouched();
+        this.messageService.showMessage('Please correct the errors on the form.', 'danger');
         return
       }
-      // Save the profile
+      await this.userAccountService.saveUserAccount(this.form.value, this.user()?.sub);
+      this.messageService.showMessage('Profile saved!', 'success');
     }
     catch (error) {
       // Handle the error
+    }
+  }
+
+
+  onCancel() {
+    if(this.form.dirty) {
+      openLoseChangesDialog(this.dialog, {
+        mode: 'save',
+        title: 'Unsaved changes',
+        message: 'Leaving this page will discard your changes. Do you want to continue?'
+    });
     }
   }
 }

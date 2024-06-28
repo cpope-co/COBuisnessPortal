@@ -42,8 +42,8 @@ export class UserAccountService {
 
     }
 
-    async saveUserAccount(userAccount: Partial<UserAccount>): Promise<UserAccount> {
-
+    async saveUserAccount(userAccount: Partial<UserAccount>, usunbr?: number): Promise<UserAccount> {
+        userAccount.usunbr = usunbr;
         const userAccount$ = this.http.patch<UserAccount>(`${this.env.apiBaseUrl}user/updusr`, userAccount);
 
         return await firstValueFrom(userAccount$);

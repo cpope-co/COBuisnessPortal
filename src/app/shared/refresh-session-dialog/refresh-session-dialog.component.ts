@@ -2,8 +2,8 @@ import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { RefreshSessionDialogData } from './refresh-session-dialog.data.model';
-import { AuthService } from '../services/auth.service';
-import { SessionService } from '../services/session.service';
+import { AuthService } from '../../services/auth.service';
+import { SessionService } from '../../services/session.service';
 
 @Component({
   selector: 'app-refresh-session-dialog',
