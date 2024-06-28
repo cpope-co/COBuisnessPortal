@@ -38,7 +38,7 @@ export class VerifyComponent {
       await this.authService.verify(this.token());
       console.log('Token verified.');
       this.#isVerified.set(true);
-      this.router.navigate(['/auth/change-password']);
+      this.router.navigate(['/auth/set-password']);
     }
     catch (error: any) {
       this.#isVerifying.set(false);

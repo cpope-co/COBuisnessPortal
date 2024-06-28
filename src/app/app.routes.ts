@@ -7,6 +7,7 @@ import { VerifyComponent } from './auth/verify/verify.component';
 import { SetPasswordComponent } from './auth/set-password/set-password.component';
 import { UsersListComponent } from './admin/users-list/users-list.component';
 import { UserDetailComponent } from './admin/user-detail/user-detail.component';
+import { ProfileComponent } from './profile/profile.component';
 
 export const routes: Routes = [
     {
@@ -43,6 +44,10 @@ export const routes: Routes = [
     {
         path: 'admin/user/:id',
         component: UserDetailComponent,
+    },
+    {
+        path: 'profile',
+        component: ProfileComponent,
     },
     {
         path: '**',

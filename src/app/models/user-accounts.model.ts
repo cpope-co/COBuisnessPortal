@@ -20,13 +20,32 @@ export type UserAccount = {
     [key: string]: any;
 }
 
+const emailErrorMessages = {
+    'email': 'Please enter a valid email address.',
+    'required': 'Please enter your email address.'
+}
+
+export const profileAccount: Partial<UserAccount> = {
+    usemail: {
+        Validators: [Validators.email, Validators.required],
+        ErrorMessages: emailErrorMessages,
+        value: ''
+    },
+    usfname: {
+        Validators: [Validators.required],
+        ErrorMessages: { 'required': 'Please enter your first name.' },
+        value: ''
+    },
+    uslname: {
+        Validators: [Validators.required],
+        ErrorMessages: { 'required': 'Please enter your last name.' },
+        value: ''
+    },
+}
 export const userAccount: Partial<UserAccount> = {
     usemail: {
         Validators: [Validators.email, Validators.required],
-        ErrorMessages: {
-            'email': 'Please enter a valid email address.',
-            'required': 'Please enter your email address.'
-        },
+        ErrorMessages: emailErrorMessages,
         value: ''
     },
     usfname: {
