@@ -57,8 +57,9 @@ export class LoginComponent {
       await this.router.navigate(["home"]);
     }
     catch (error) {
+      this.messageService.showMessage('Invalid email or password.', 'danger');
+      this.form.markAllAsTouched();
       this.sessionService.endSesssion();
-      console.error(error);
     }
   }
 

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "COBuisnessPortal": {
+    "COBusinessPortal": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -72,10 +72,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "COBuisnessPortal:build:production"
+              "buildTarget": "COBusinessPortal:build:production"
             },
             "development": {
-              "buildTarget": "COBuisnessPortal:build:development",
+              "buildTarget": "COBusinessPortal:build:development",
               "proxyConfig": "src/proxy.conf.json"
             }
           },
@@ -84,7 +84,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "COBuisnessPortal:build"
+            "buildTarget": "COBusinessPortal:build"
           }
         },
         "test": {

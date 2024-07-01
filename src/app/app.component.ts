@@ -32,10 +32,16 @@ import { MatMenuModule } from '@angular/material/menu';
 export class AppComponent {
   authService = inject(AuthService);
   messageService = inject(MessagesService);
+  router = inject(Router);
+
   isLoggedIn = this.authService.isLoggedIn;
 
   constructor() {
-
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.messageService.clear();
+      }
+    });
   }
 
   onLogout() {

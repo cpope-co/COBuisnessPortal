@@ -12,6 +12,7 @@ export class MessagesService {
   message = this.#messageSignal.asReadonly();
 
   showMessage(text: string, severity: MessageSeverity, duration?: number) {
+    this.clear();
     this.#messageSignal.set({text, severity});
     if (duration) {
       setTimeout(() => this.clear(), duration);
