@@ -1,8 +1,12 @@
-@if(userAccount()) {<mat-card>
+@if(userAccount()) {
+<mat-card>
   <mat-card-header>
     <mat-card-title>
       <h1>{{ userAccount()?.usfname + " " + userAccount()?.uslname }}</h1>
+
     </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
     <button mat-icon-button [matMenuTriggerFor]="menu">
       <mat-icon>more_vert</mat-icon>
     </button>
@@ -11,8 +15,6 @@
       <button mat-menu-item (click)="onApproveUser()">Approve</button>
       }
     </mat-menu>
-  </mat-card-header>
-  <mat-card-content>
     <form [formGroup]="form">
       <div class="row justify-content-xl-start justify-content-xxl-center">
         <div class="col-12 col-xl-6 col-xxl-4">
@@ -80,7 +82,12 @@
   </mat-card-content>
   <mat-card-actions align="end">
     <a mat-button color="warn" [routerLink]="['/admin/users']">Cancel</a>
-    <button mat-raised-button color="warn" (click)="onDeleteUserAccount()">
+    <button
+      mat-raised-button
+      color="warn"
+      class="mx-1"
+      (click)="onDeleteUserAccount()"
+    >
       Delete
     </button>
     <button mat-raised-button color="primary" (click)="onSaveUserAccount()">
