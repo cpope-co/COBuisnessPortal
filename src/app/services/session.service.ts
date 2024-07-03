@@ -6,7 +6,7 @@ import { MessagesService } from '../messages/messages.service';
 
 
 const WARNING_TIMEOUT = 480000;
-const SESSION_TIMEOUT = 600000;
+const SESSION_TIMEOUT = 594000;
 
 @Injectable({
     providedIn: 'root'
@@ -61,5 +61,15 @@ export class SessionService {
             return false;
         }
         return true;
+    }
+    canRefresh(): boolean {
+        const user = this.authService.user();
+        if (!user) {
+          this.authService.logout();
+        }
+        if(user?.refexp && user.refexp * 1000 < Date.now()) {
+            return true;
+        }
+        return false;
     }
 }

@@ -51,8 +51,9 @@ export class ProfileComponent {
       const userId = this.user()?.sub;
       if (typeof userId === 'number') {
         const user = await this.userAccountService.loadUserAccountById(userId);
-        console.log(user);
         this.form.patchValue(user);
+        this.form.markAsPristine();
+        this.form.markAsUntouched();
       } else {
         // Handle the case where userId is undefined
         console.error('User ID is undefined');
@@ -78,13 +79,17 @@ export class ProfileComponent {
   }
 
 
-  onCancel() {
-    if(this.form.dirty) {
+  onCancel(event: MouseEvent) {
+    event.stopPropagation();
+    if (this.form.touched || this.form.dirty) {
       openLoseChangesDialog(this.dialog, {
         mode: 'save',
         title: 'Unsaved changes',
-        message: 'Leaving this page will discard your changes. Do you want to continue?'
-    });
+        message: 'Leaving this page will discard your changes. Do you want to continue?',
+      });
+      this.form.markAllAsTouched();
+    } else {
+      this.router.navigate(['/home']);
     }
   }
 }
