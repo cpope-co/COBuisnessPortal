@@ -5,35 +5,41 @@
     >
   </mat-card-header>
   <mat-card-content>
-    <form [formGroup]="form">
-      <co-input
-        [formGroup]="form"
-        [label]="'First Name'"
-        [type]="'text'"
-        [formControlName]="'usfname'"
-        placeholder="Enter your first name"
-        [model]="profileAccount"
-      />
-      <co-input
-        [formGroup]="form"
-        [label]="'Last Name'"
-        [type]="'text'"
-        [formControlName]="'uslname'"
-        placeholder="Enter your last name"
-        [model]="profileAccount"
-      />
-      <co-input
-        [formGroup]="form"
-        [label]="'Email'"
-        [type]="'email'"
-        [formControlName]="'usemail'"
-        placeholder="Enter your email address"
-        [model]="profileAccount"
-      />
-    </form>
+    <div class="row">
+      <div class="col-lg col-xl col-xxl-4">
+        <form [formGroup]="form">
+          <co-input
+            [formGroup]="form"
+            [label]="'First Name'"
+            [type]="'text'"
+            [formControlName]="'usfname'"
+            placeholder="Enter your first name"
+            [model]="profileAccount"
+          />
+          <co-input
+            [formGroup]="form"
+            [label]="'Last Name'"
+            [type]="'text'"
+            [formControlName]="'uslname'"
+            placeholder="Enter your last name"
+            [model]="profileAccount"
+          />
+          <co-input
+            [formGroup]="form"
+            [label]="'Email'"
+            [type]="'email'"
+            [formControlName]="'usemail'"
+            placeholder="Enter your email address"
+            [model]="profileAccount"
+          />
+        </form>
+      </div>
+    </div>
   </mat-card-content>
   <mat-card-actions align="end">
-    <button mat-raised-button type="button" (click)="onCancel($event)">Cancel</button>
+    <button mat-raised-button type="button" (click)="onCancel($event)">
+      Cancel
+    </button>
     <button
       mat-raised-button
       type="submit"
