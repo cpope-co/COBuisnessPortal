@@ -10,10 +10,12 @@ import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 import { InputComponent } from '../../shared/input/input.component';
 import { RadioComponent } from '../../shared/radio/radio.component';
 import { SelectComponent } from '../../shared/select/select.component';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MessagesService } from '../../messages/messages.service';
+import { openLoseChangesDialog } from '../../shared/lose-changes-dialog/lose-changes-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-user-detail',
@@ -41,7 +43,9 @@ export class UserDetailComponent {
   formHandlerService = inject(FormHandlingService);
   activatedRoute = inject(ActivatedRoute);
   messagesService = inject(MessagesService);
-
+  router = inject(Router);
+  dialog = inject(MatDialog);
+  
   form!: FormGroup;
   userAccountForm = userAccount
 
@@ -88,6 +92,20 @@ export class UserDetailComponent {
       this.userAccountService.approveUserAccount(this.userAccount()!.usunbr);
     } catch (error) {
       console.error(error);
+    }
+  }
+  onCancel(event: MouseEvent) {
+    event.stopPropagation();
+    if (this.form.touched || this.form.dirty) {
+      openLoseChangesDialog(this.dialog, {
+        mode: 'save',
+        title: 'Unsaved changes',
+        message: 'Leaving this page will discard your changes. Do you want to continue?',
+        destination: '/admin/users'
+      });
+      this.form.markAllAsTouched();
+    } else {
+      this.router.navigate(['/admin/users']);
     }
   }
 }

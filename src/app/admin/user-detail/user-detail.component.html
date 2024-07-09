@@ -72,7 +72,7 @@
     </form>
   </mat-card-content>
   <mat-card-actions align="end">
-    <a mat-button color="warn" [routerLink]="['/admin/users']">Cancel</a>
+    <button mat-button color="warn" (click)="onCancel($event)">Cancel</button>
     <button
       mat-raised-button
       color="warn"

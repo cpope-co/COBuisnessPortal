@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    apiBaseUrl: 'https://portal.chambers-owen.com/api/',
+    apiBaseUrl: 'https://portal2.chambers-owen.com/api/',
   };
   

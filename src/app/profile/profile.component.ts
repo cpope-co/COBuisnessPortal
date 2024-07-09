@@ -86,6 +86,7 @@ export class ProfileComponent {
         mode: 'save',
         title: 'Unsaved changes',
         message: 'Leaving this page will discard your changes. Do you want to continue?',
+        destination: '/home'
       });
       this.form.markAllAsTouched();
     } else {

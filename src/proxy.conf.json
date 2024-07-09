@@ -1,6 +1,6 @@
 {
     "/api": {
-        "target": "https://portal.chambers-owen.com:4438/service",
+        "target": "https://portal2.chambers-owen.com:4438/service",
         "secure": false,
         "changeOrigin": true
     }

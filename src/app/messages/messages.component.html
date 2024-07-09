@@ -7,12 +7,17 @@
       [ngClass]="'alert-' + message()?.severity"
       role="alert"
     >
-      {{ message()?.text }}
-      <button
-        type="button"
-        class="btn-close"
-        (click)="onClose()"
-      ></button>
+        @switch (message()?.severity) { @case('success') {
+        <mat-icon>check_circle</mat-icon>
+        } @case('warning') {
+        <mat-icon>warning</mat-icon>
+        } @case('danger') {
+        <mat-icon>error</mat-icon>
+        } @case ('info') {
+        <mat-icon>info</mat-icon>
+        } }
+        <span>{{ message()?.text }}</span>
+      <button type="button" class="btn-close" (click)="onClose()"></button>
     </div>
   </div>
 </div>

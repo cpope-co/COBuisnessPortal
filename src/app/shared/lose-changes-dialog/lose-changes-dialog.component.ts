@@ -3,8 +3,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { AuthService } from '../../services/auth.service';
 import { SessionService } from '../../services/session.service';
-import { RefreshSessionDialogComponent } from '../refresh-session-dialog/refresh-session-dialog.component';
 import { LoseChangesDialogData } from './lose-changes-dialog.data.model';
+import { Router } from '@angular/router';
+import { MessagesService } from '../../messages/messages.service';
 
 @Component({
   selector: 'app-lose-changes-dialog',
@@ -16,19 +17,25 @@ import { LoseChangesDialogData } from './lose-changes-dialog.data.model';
   styleUrl: './lose-changes-dialog.component.scss'
 })
 export class LoseChangesDialogComponent {
-  dialogRef = inject(MatDialogRef<RefreshSessionDialogComponent>);
+  dialogRef = inject(MatDialogRef<LoseChangesDialogComponent>);
   authService = inject(AuthService);
   sessionService = inject(SessionService);
+  messageService = inject(MessagesService);
+  router = inject(Router);
 
   data: LoseChangesDialogData = inject(MAT_DIALOG_DATA);
 
   async onCancel() {
-    
     this.dialogRef.close();
+    this.dialogRef.afterClosed().subscribe( async () => {
+        this.router.navigate([this.data.destination]);
+        this.messageService.showMessage('Changes were not saved', 'warning');
+    });
+    
   }
 
   async onStay() {
-    
+    this.messageService.showMessage('Complete your changes before leaving', 'info');
     this.dialogRef.close();
   }
 }
