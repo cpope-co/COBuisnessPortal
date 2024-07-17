@@ -1,14 +1,9 @@
-<mat-sidenav-container fullscreen>
-  <mat-sidenav #start (click)="start.close()">
+<mat-drawer-container fullscreen>
+  <mat-drawer mode="over" #start (click)="start.close()">
     <mat-list>
-      <a mat-list-item [routerLink]="['home']" routerLinkActive="active"
-        >Home</a
-      >
-      <a mat-list-item [routerLink]="['admin/users']" routerLinkActive="active"
-        >Users</a
-      >
+      <co-menu [menuItems]="menuItems()" />
     </mat-list>
-  </mat-sidenav>
+  </mat-drawer>
   <mat-toolbar color="primary">
     @if(isLoggedIn()) {
     <button mat-icon-button (click)="start.open('mouse')">
@@ -32,14 +27,13 @@
     </mat-menu>
     }
   </mat-toolbar>
-
-  <div class="container">
-    <loading />
-    <messages />
-    <div class="row mt-5">
-      <div class="col-xs-12 offset-xs-0 col-lg-10 offset-lg-1">
-        <router-outlet />
+    <div class="container">
+      <loading />
+      <messages />
+      <div class="row mt-5">
+        <div class="col-xs-12 offset-xs-0 col-lg-10 offset-lg-1">
+          <router-outlet />
+        </div>
       </div>
     </div>
-  </div>
-</mat-sidenav-container>
+</mat-drawer-container>

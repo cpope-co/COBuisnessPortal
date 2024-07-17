@@ -30,9 +30,22 @@ export class AuthService {
 
     isLoggedIn = computed(() => !!this.user());
 
+    #isAdminSignal = signal<boolean>(false);
+    isAdmin = this.#isAdminSignal.asReadonly();
+
+    #isCustomerSignal = signal<boolean>(false);
+    isCustomer = this.#isCustomerSignal.asReadonly();
+
+    isVendorSignal = signal<boolean>(false);
+    isVendor = this.isVendorSignal.asReadonly();
+
+    isEmployeeSignal = signal<boolean>(false);
+    isEmployee = this.isEmployeeSignal.asReadonly();
+    
     constructor() {
         this.loadUserFromStorage();
         this.loadTokenFromStorage();
+        this.setRoles();
         effect(() => {
             const user = this.user();
             if (user) {
@@ -45,9 +58,29 @@ export class AuthService {
                 sessionStorage.setItem(TOKEN_STORAGE_KEY, token);
             }
         });
-
     }
-
+    setRoles() {
+        const user = this.user();
+        if (user) {
+            switch (user.role) {
+                case 1:
+                    this.#isAdminSignal.set(true);
+                    break;
+                case 2:
+                    this.#isCustomerSignal.set(true);
+                    break;
+                case 3:
+                    this.isVendorSignal.set(true);
+                    break;
+                case 4:
+                    this.isEmployeeSignal.set(true);
+                    break;
+                default:
+                    this.#isAdminSignal.set(false);
+                    break;
+            }
+        }
+    }
     loadUserFromStorage() {
         const json = sessionStorage.getItem(USER_STORAGE_KEY);
         if (json) {
@@ -171,7 +204,7 @@ export class AuthService {
         localStorage.clear();
         this.#userSignal.set(null);
         this.#tokenSignal.set(null);
-
+        
         this.messageService.showMessage('You have been logged out.', 'info', 30000);
         this.router.navigate(['auth/login']);
     }

@@ -55,6 +55,7 @@ export class LoginComponent {
       await this.authService.login(email, password);
       this.sessionService.startSession(); 
       await this.router.navigate(["home"]);
+      
     }
     catch (error) {
       this.messageService.showMessage('Invalid email or password.', 'danger');

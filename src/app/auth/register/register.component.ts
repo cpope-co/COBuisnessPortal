@@ -5,14 +5,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
-import { MatButtonModule } from '@angular/material/button';
+import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { WCatMgrService } from '../../services/wcatmgr.service';
 import { WCatMgr } from '../../models/wcatmgr.model';
 import { TitleCasePipe } from '@angular/common';
 import { RegisterService } from './register.service';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
-import { RECAPTCHA_V3_SITE_KEY, ReCaptchaV3Service, RecaptchaLoaderService, RecaptchaModule } from 'ng-recaptcha';
+import { RECAPTCHA_V3_SITE_KEY, ReCaptchaV3Service, RecaptchaLoaderService, RecaptchaV3Module } from 'ng-recaptcha-2';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { MessagesService } from '../../messages/messages.service';
@@ -20,29 +20,23 @@ import { InputComponent } from '../../shared/input/input.component';
 import { SelectComponent } from '../../shared/select/select.component';
 import { RadioComponent } from '../../shared/radio/radio.component';
 import { FormHandlingService } from '../../services/form-handling.service';
-import { matchEmailsValidator } from '../../validators/verifyemail.validator';
 import { ApiResponseError } from '../../shared/api-response-error';
 import { matchControlsValidator } from '../../validators/verifypassword.validator';
 
 @Component({
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   selector: 'register',
   standalone: true,
   imports: [
-    RecaptchaModule,
+    MatCardModule,
+    MatButtonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
-    MatInputModule,
-    MatCardModule,
-    MatRadioModule,
-    MatButtonModule,
-    MatSelectModule,
-    TitleCasePipe,
-    NgxMaskDirective,
-    NgxMaskPipe,
     InputComponent,
     SelectComponent,
-    RadioComponent
+    RadioComponent,
+    RecaptchaV3Module,
+    NgxMaskDirective,
+    NgxMaskPipe,
   ],
   providers: [
     ReCaptchaV3Service,
@@ -103,7 +97,8 @@ export class RegisterComponent {
         const token = await this.getRecaptchaToken();
         this.form.patchValue({ wrecaptchatoken: token });
         await this.registerService.registerAccount(this.form.value);
-        this.messageService.showMessage('Registration successful. Please check your email for further instructions.', 'success');
+        this.messageService.showMessage('Registration successful. Please check your email for further instructions.', 'success'); 
+        this.form.reset();
       } catch (error: unknown) {
         if (error instanceof ApiResponseError) {
           this.formHandlerService.handleFormErrors(error.validationErrors, this.form)

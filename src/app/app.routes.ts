@@ -8,50 +8,83 @@ import { SetPasswordComponent } from './auth/set-password/set-password.component
 import { UsersListComponent } from './admin/users-list/users-list.component';
 import { UserDetailComponent } from './admin/user-detail/user-detail.component';
 import { ProfileComponent } from './profile/profile.component';
+import { isUserAdmin } from './guards/admin.guard';
 
 export const routes: Routes = [
     {
         path: '',
         redirectTo: 'auth/login',
-        pathMatch: 'full'
+        pathMatch: 'full',
+        data: { display: false }
     },
 
     {
         path: 'home',
+        title: 'Home',
         component: HomeComponent,
-        canActivate: [isUserAuthenticated]
+        canActivate: [isUserAuthenticated],
+        data: { display: true, heading: false}
     },
     {
         path: 'auth/login',
+        title: 'Login',
         component: LoginComponent,
+        data: { display: false }
     },
     {
         path: 'auth/register',
+        title: 'Register',
         component: RegisterComponent,
+        data: { display: false }
     },
-    { 
+    {
         path: 'auth/verify/:token',
+        title: 'Verify',
         component: VerifyComponent,
+        data: { display: false }
+
     },
     {
         path: 'auth/set-password',
+        title: 'Set Password',
         component: SetPasswordComponent,
+        data: { display: false }
+
     },
     {
-        path: 'admin/users',
-        component: UsersListComponent,
-    },
-    {
-        path: 'admin/user/:id',
-        component: UserDetailComponent,
+        path: 'admin',
+        title: 'Admin',
+        children: [
+            {
+                path: 'users',
+                title: 'Users',
+                component: UsersListComponent,
+                data: { display: true }
+
+            },
+            {
+                path: 'user/:id',
+                title: 'User Detail',
+                component: UserDetailComponent,
+                data: { display: false, }
+
+            },
+        ],
+        data: { display: true, heading: true},
+        canActivate: [isUserAdmin]
+
     },
     {
         path: 'profile',
+        title: 'Profile',
         component: ProfileComponent,
+        data: { display: false }
+
     },
     {
         path: '**',
-        redirectTo: 'home'
+        redirectTo: 'home',
+        data: { display: false }
     }
 
 ];

@@ -1,0 +1,12 @@
+<mat-nav-list>
+  @for(menuItem of menuItems(); track $index) { @if(menuItem.options?.heading) {
+  <h2 class="nav-heading">{{ menuItem.title }}</h2>
+  @if(menuItem.children) {
+    @for(child of menuItem.children; track $index) {
+        <a mat-list-item routerLink="{{ child.route }}"> {{ child.title }}</a>
+    }
+  }
+  } @else {
+  <a mat-list-item routerLink="{{ menuItem.route }}"> {{ menuItem.title }}</a>
+  } }
+</mat-nav-list>
