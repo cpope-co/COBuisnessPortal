@@ -84,6 +84,81 @@ export const routes: Routes = [
 
     },
     {
+        path: 'customer',
+        title: 'Customer',
+        children: [
+            {
+                path: 'pricebook',
+                title: 'Pricebook',
+                component: HomeComponent,
+                data: { display: true, role: 2 }
+            },
+            {
+                path: 'accruals',
+                title: 'Accruals',
+                component: HomeComponent,
+                data: { display: true, role: 2 }
+            },
+            {
+                path: 'retail-management',
+                title: 'Retail Management',
+                component: HomeComponent,
+                data: { display: true, role: 2 }
+            },
+            {
+                path: 'accounts-receivable',
+                title: 'Accounts Receivable',
+                component: HomeComponent,
+                data: { display: true, role: 2 }
+            },
+            {
+                path: 'sales-orders',
+                title: 'Sales Orders',
+                component: HomeComponent,
+                data: { display: true, role: 2 }
+            },
+            {
+                path: 'data-archive',
+                title: 'Data Archive',
+                component: HomeComponent,
+                data: { display: true, role: 2 }
+            },
+            {
+                path: 'ct114data',
+                title: 'CT114 Data',
+                component: HomeComponent,
+                data: { display: true, role: 2 }
+            }
+        ],
+        data: { display: true, heading: true, role: 2 },
+    }, 
+    {
+        path: 'vendor',
+        title: 'Vendors',
+        children: [
+            {
+                path: 'product-catalog',
+                title: 'Product Catalog',
+                component: HomeComponent,
+                data: { display: true, role: 3 }
+            },
+
+            {
+                path: 'new-product',
+                title: 'New Product',
+                component: HomeComponent,
+                data: { display: true, role: 3 }
+            },
+            {
+                path: 'tradeshow',
+                title: 'Tradeshow',
+                component: HomeComponent,
+                data: { display: true, role: 3 }
+            }
+        ],
+        data: { display: true, heading: true, role: 3 },
+    },
+    {
         path: '**',
         redirectTo: 'home',
         data: { display: false }

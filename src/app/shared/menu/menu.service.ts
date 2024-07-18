@@ -38,12 +38,16 @@ export class MenuService {
                     };
                     return menuItem;
                 }).filter(menuItem => {
+                    if(userRole === 1) {
+                        return menuItem.options?.display !== false && (!menuItem.children || menuItem.children.length > 0);
+                    }
                     const menuItemRole = menuItem.options?.role;
                     return menuItem.options?.display !== false && (!menuItem.children || menuItem.children.length > 0) && (!menuItemRole || menuItemRole === userRole);
                 });
             };
 
             const items = processRoutes(this.routes());
+            console.log('Menu Items:', items);
             return items as MenuItem[];
 
         } else {
