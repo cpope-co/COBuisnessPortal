@@ -7,4 +7,5 @@ export type MenuItem = {
 export type MenuItemOptions = {
     display: boolean;
     heading?: boolean;
+    role: number;
 }

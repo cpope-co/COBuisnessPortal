@@ -1,4 +1,4 @@
-import { Injectable, computed, effect, inject, signal } from "@angular/core";
+import { EventEmitter, Injectable, computed, effect, inject, signal } from "@angular/core";
 import { Router } from "@angular/router";
 import { User } from "../models/user.model";
 import { environment } from "../../environments/environment";
@@ -42,6 +42,9 @@ export class AuthService {
     isEmployeeSignal = signal<boolean>(false);
     isEmployee = this.isEmployeeSignal.asReadonly();
     
+    logoutEvent = new EventEmitter<void>();
+    loginEvent = new EventEmitter<void>();
+
     constructor() {
         this.loadUserFromStorage();
         this.loadTokenFromStorage();
@@ -132,9 +135,8 @@ export class AuthService {
         const headers = new HttpHeaders({
             'Content-Type': 'application/json',
             'Authorization': `Basic ${btoa(`${email}:${password}`)}`
-        });
-        // Create a new HttpContextToken
-        
+        });        
+
 
         // Use the token to set metadata
         const context = new HttpContext().set(SKIP_AUTH_KEY, true).set(SKIP_REFRESH_KEY, true);
@@ -152,6 +154,7 @@ export class AuthService {
 
         const user = await jwtDecode(response.headers.get('x-id')!) as User;
         this.#userSignal.set(user);
+        this.loginEvent.emit();
         return user;
     }
     async refresh(): Promise<User> {
@@ -204,7 +207,7 @@ export class AuthService {
         localStorage.clear();
         this.#userSignal.set(null);
         this.#tokenSignal.set(null);
-        
+        this.logoutEvent.emit();
         this.messageService.showMessage('You have been logged out.', 'info', 30000);
         this.router.navigate(['auth/login']);
     }

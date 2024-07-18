@@ -23,7 +23,7 @@ export const routes: Routes = [
         title: 'Home',
         component: HomeComponent,
         canActivate: [isUserAuthenticated],
-        data: { display: true, heading: false}
+        data: { display: true, heading: false }
     },
     {
         path: 'auth/login',
@@ -59,18 +59,20 @@ export const routes: Routes = [
                 path: 'users',
                 title: 'Users',
                 component: UsersListComponent,
-                data: { display: true }
+                canActivate: [isUserAdmin],
+                data: { display: true, role: 1 }
 
             },
             {
                 path: 'user/:id',
                 title: 'User Detail',
                 component: UserDetailComponent,
-                data: { display: false, }
+                canActivate: [isUserAdmin],
+                data: { display: false, role: 1 }
 
             },
         ],
-        data: { display: true, heading: true},
+        data: { display: true, heading: true, role: 1 },
         canActivate: [isUserAdmin]
 
     },

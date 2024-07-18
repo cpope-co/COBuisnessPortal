@@ -56,10 +56,10 @@ export class AppComponent {
         this.messageService.clear();
       }
     });
-    this.loadMenuItems();
   }
 
   onLogout() {
+    
     this.authService.logout();
   }
 
