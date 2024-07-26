@@ -4,10 +4,6 @@ import { openRefreshSessionDialog } from '../shared/refresh-session-dialog/refre
 import { MatDialog } from '@angular/material/dialog';
 import { MessagesService } from '../messages/messages.service';
 
-
-const WARNING_TIMEOUT = 480000;
-const SESSION_TIMEOUT = 594000;
-
 @Injectable({
     providedIn: 'root'
 })
@@ -34,7 +30,6 @@ export class SessionService {
     }
 
     private checkWarningTimeout() {
-        console.log('Checking warning timeout.');
         const warningTimeoutEpoch = parseInt(sessionStorage.getItem('warningTimeout') || "0", 10);
         const currentTimeEpoch = Math.floor(Date.now() / 1000); // Current time in seconds since epoch
 
@@ -49,7 +44,6 @@ export class SessionService {
     }
 
     private checkSessionTimeout() {
-        console.log('Checking session timeout.');
         const sessionTimeoutEpoch = parseInt(sessionStorage.getItem('sessionTimeout') || "0", 10);
         const currentTimeEpoch = Math.floor(Date.now() / 1000); // Current time in seconds since epoch
 
@@ -64,7 +58,6 @@ export class SessionService {
     }
 
     private handleWarningTimeout() {
-        console.log('Session will expire in 2 minutes.');
         openRefreshSessionDialog(this.dialog, {
             mode: 'refresh',
             title: 'Session Expiring',
@@ -78,7 +71,6 @@ export class SessionService {
     }
 
     stopSessionCheck() {
-        console.log('Stopping intervals.');
         if (this.#warningIntervalId !== null) {
             clearInterval(this.#warningIntervalId);
         }
@@ -101,48 +93,6 @@ export class SessionService {
         }
     }
 
-    // async startSession(): Promise<string> {
-    //     console.log('Starting session.');
-    //     // Retrieve session and warning timeouts from sessionStorage
-    //     const sessionTimeoutEpoch = parseInt(sessionStorage.getItem('sessionTimeout') || "0", 10);
-    //     const warningTimeoutEpoch = parseInt(sessionStorage.getItem('warningTimeout') || "0", 10);
-    //     const currentTimeEpoch = Math.floor(Date.now() /  1000); // Current time in seconds since epoch
-
-    //     // Calculate remaining times for the timeouts in milliseconds
-    //     const remainingSessionTimeMs = Math.max(0, (sessionTimeoutEpoch - currentTimeEpoch) * 1000);
-    //     const remainingWarningTimeMs = Math.max(0, (warningTimeoutEpoch - currentTimeEpoch) * 1000);
-    //     this.saveSessionState();
-    //     return new Promise((resolve) => {
-    //         this.#warningTimeoutId = setTimeout(() => {
-    //             console.log('Session will expire in 2 minutes.');
-    //             openRefreshSessionDialog(this.dialog, {
-    //                 mode: 'refresh',
-    //                 title: 'Session Expiring',
-    //                 message: 'Your session will expire in 2 minutes. Do you want to refresh it?'
-    //             });
-    //             resolve('Your session will expire in 2 minutes.');
-    //         }, remainingWarningTimeMs);
-    //         this.#sessionTimeoutId = setTimeout(async () => {
-    //             this.dialog.closeAll();
-    //             await this.authService.logout();
-    //             resolve('Your session has expired.');
-    //         }, remainingSessionTimeMs);
-    //     });
-    // }
-
-    // async resetSession() {
-    //     clearTimeout(this.#sessionTimeoutId);
-    //     clearTimeout(this.#warningTimeoutId);
-    //     await this.authService.refresh();
-    //     this.startSession();
-    // }
-
-    // async endSession() {
-    //     console.log('Ending session.');
-    //     clearTimeout(this.#sessionTimeoutId);
-    //     clearTimeout(this.#warningTimeoutId);
-    // }
-
     isSessionActive(): boolean {
         const user = this.authService.user();
         if (!user) {
@@ -154,6 +104,7 @@ export class SessionService {
         }
         return true;
     }
+    
     canRefresh(): boolean {
         const user = this.authService.user();
         if (!user) {
