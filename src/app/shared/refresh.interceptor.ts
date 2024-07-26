@@ -22,7 +22,8 @@ export class RefreshInterceptor implements HttpInterceptor {
           // Handle 401 error, e.g., by refreshing the session or redirecting to login
           if (!this.sessionService.isSessionActive() && this.sessionService.canRefresh()) {
             // Attempt to refresh the session or token
-            this.sessionService.resetSession();
+            this.sessionService.stopSessionCheck();
+            this.sessionService.startSessionCheck();
             // Optionally, reattempt the request here
           } else {
             // Redirect to login or handle session inactive state

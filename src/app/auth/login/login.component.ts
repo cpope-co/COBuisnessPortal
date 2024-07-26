@@ -53,14 +53,14 @@ export class LoginComponent {
       const { email, password } = this.form.value;
 
       await this.authService.login(email, password);
-      this.sessionService.startSession(); 
+      this.sessionService.startSessionCheck();
       await this.router.navigate(["home"]);
       
     }
     catch (error) {
       this.messageService.showMessage('Invalid email or password.', 'danger');
       this.form.markAllAsTouched();
-      this.sessionService.endSesssion();
+      this.sessionService.stopSessionCheck();
     }
   }
 

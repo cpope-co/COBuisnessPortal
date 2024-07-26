@@ -13,6 +13,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MenuComponent } from './shared/menu/menu.component';
 import { MenuService } from './shared/menu/menu.service';
 import { MenuItem } from './shared/menu/menu.model';
+import { SessionService } from './services/session.service';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -37,29 +38,25 @@ export class AppComponent {
   authService = inject(AuthService);
   messageService = inject(MessagesService);
   menuService = inject(MenuService);
+  sessionService = inject(SessionService);
   router = inject(Router);
 
   isLoggedIn = this.authService.isLoggedIn;
   
-  #menuItemsSignal = signal<MenuItem[]>([]);
-  menuItems = this.#menuItemsSignal.asReadonly();
-  
-  loadMenuItems() {
-    const menuItems = this.menuService.loadMenuItems();
-
-    this.#menuItemsSignal.set(menuItems);
-  }
-
   constructor() {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         this.messageService.clear();
       }
     });
+    if(this.isLoggedIn()) {
+      this.sessionService.stopSessionCheck();
+      this.sessionService.startSessionCheck();
+    };
   }
 
   onLogout() {
-    
+    this.sessionService.stopSessionCheck();
     this.authService.logout();
   }
 
