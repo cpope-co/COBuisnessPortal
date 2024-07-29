@@ -9,6 +9,10 @@ import { UsersListComponent } from './admin/users-list/users-list.component';
 import { UserDetailComponent } from './admin/user-detail/user-detail.component';
 import { ProfileComponent } from './profile/profile.component';
 import { isUserAdmin } from './guards/admin.guard';
+import { ProductCatalogComponent } from './vendors/product-catalog/product-catalog.component';
+import { TradeShowComponent } from './vendors/trade-show/trade-show.component';
+import { CreateProductComponent } from './vendors/create-product/create-product.component';
+import { isUserVendor } from './guards/vendor.guard';
 
 export const routes: Routes = [
     {
@@ -139,24 +143,25 @@ export const routes: Routes = [
             {
                 path: 'product-catalog',
                 title: 'Product Catalog',
-                component: HomeComponent,
+                component: ProductCatalogComponent,
                 data: { display: true, role: 3 }
             },
 
             {
-                path: 'new-product',
-                title: 'New Product',
-                component: HomeComponent,
+                path: 'create-product',
+                title: 'Create Product',
+                component: CreateProductComponent,
                 data: { display: true, role: 3 }
             },
             {
                 path: 'tradeshow',
                 title: 'Tradeshow',
-                component: HomeComponent,
+                component: TradeShowComponent,
                 data: { display: true, role: 3 }
             }
         ],
         data: { display: true, heading: true, role: 3 },
+        canActivate: [isUserVendor]
     },
     {
         path: '**',
