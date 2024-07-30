@@ -7,7 +7,7 @@
     "build": "ng build",
     "build-dev": "ng build --configuration=development",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test --karma-config karma.conf.js"
   },
   "private": true,
   "dependencies": {
