@@ -20,4 +20,8 @@ describe('HomeComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+  it('should contain home works', () => {
+    const homeElement: HTMLElement = fixture.nativeElement;
+    expect(homeElement.textContent).toContain('home works!');
+  });
 });

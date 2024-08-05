@@ -1,14 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing'; // Import HttpClientTestingModule
 
 import { SetPasswordComponent } from './set-password.component';
 
-describe('ChangePasswordComponent', () => {
+describe('SetPasswordComponent', () => {
   let component: SetPasswordComponent;
   let fixture: ComponentFixture<SetPasswordComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SetPasswordComponent]
+      imports: [
+        SetPasswordComponent
+      ],
+      providers: [ provideHttpClientTesting() ] // Add provideHttpClientTesting to providers
     })
     .compileComponents();
     

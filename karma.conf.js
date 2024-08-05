@@ -10,10 +10,12 @@ module.exports = function (config) {
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
-      require('@angular-devkit/build-angular/plugins/karma')
+      require('@angular-devkit/build-angular/plugins/karma'),
+      require('karma-spec-reporter')
     ],
     client: {
       jasmine: {
+        random: false // disable random execution of tests
         // you can add configuration options for Jasmine here
         // the possible options are listed at https://jasmine.github.io/api/edge/Configuration.html
         // for example, you can disable the random execution with `random: false`
@@ -32,7 +34,16 @@ module.exports = function (config) {
         { type: 'text-summary' }
       ]
     },
-    reporters: ['progress', 'kjhtml'],
+    reporters: ['progress', 'kjhtml', 'spec'],
+    specReporter: {
+      maxLogLines: 5,         // limit number of lines logged per test
+      suppressErrorSummary: true,  // do not print error summary
+      suppressFailed: false,  // do not print information about failed tests
+      suppressPassed: true,  // do not print information about passed tests
+      suppressSkipped: true,  // do not print information about skipped tests
+      showSpecTiming: false,  // print the time elapsed for each spec
+      failFast: false          // test would finish with error when a first fail occurs. 
+    },
     browsers: ['Chrome'],
     restartOnFileChange: true
   });
