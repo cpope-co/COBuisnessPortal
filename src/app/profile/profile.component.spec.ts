@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProfileComponent } from './profile.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgxMaskDirective } from 'ngx-mask';
 
 describe('ProfileComponent', () => {
   let component: ProfileComponent;
@@ -8,10 +11,16 @@ describe('ProfileComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProfileComponent]
+      imports: [
+        ProfileComponent,
+        HttpClientTestingModule,
+        BrowserAnimationsModule,
+        NgxMaskDirective
+      ],
+      providers: []
     })
-    .compileComponents();
-    
+      .compileComponents();
+
     fixture = TestBed.createComponent(ProfileComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

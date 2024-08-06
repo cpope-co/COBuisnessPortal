@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UsersListComponent } from './users-list.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('UsersListComponent', () => {
   let component: UsersListComponent;
@@ -8,7 +10,10 @@ describe('UsersListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UsersListComponent]
+      imports: [
+        UsersListComponent, 
+        HttpClientTestingModule, 
+        BrowserAnimationsModule]
     })
     .compileComponents();
     
