@@ -4,6 +4,8 @@ import { LoginComponent } from './login.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -11,7 +13,12 @@ describe('LoginComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LoginComponent, HttpClientTestingModule],
+      imports: [
+        LoginComponent,
+        HttpClientTestingModule,
+        NgxMaskDirective,
+        BrowserAnimationsModule
+      ],
       providers: [
         {
           provide: ActivatedRoute,
@@ -23,11 +30,12 @@ describe('LoginComponent', () => {
               }
             }
           }
-        }
+        },
+        provideNgxMask()
       ]
     })
-    .compileComponents();
-    
+      .compileComponents();
+
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

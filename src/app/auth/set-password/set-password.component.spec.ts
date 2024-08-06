@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, provideHttpClientTesting } from '@angular/common/http/testing'; // Import HttpClientTestingModule
 
 import { SetPasswordComponent } from './set-password.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 describe('SetPasswordComponent', () => {
   let component: SetPasswordComponent;
@@ -11,9 +13,13 @@ describe('SetPasswordComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         SetPasswordComponent,
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        BrowserAnimationsModule,
+        NgxMaskDirective
       ],
-      providers: []
+      providers: [
+        provideNgxMask()
+      ]
     })
     .compileComponents();
     
