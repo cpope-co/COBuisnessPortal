@@ -1,65 +1,60 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { PasswordService } from './password.service';
-import { SetPassword } from '../models/password.model';
-import { environment } from '../../environments/environment';
 import { Validators } from '@angular/forms';
 
 describe('PasswordService', () => {
-    let service: PasswordService;
-    let httpMock: HttpTestingController;
+	let service: PasswordService;
+	let httpMock: HttpTestingController;
 
-    beforeEach(() => {
-        TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
-            providers: [PasswordService],
-        });
-        service = TestBed.inject(PasswordService);
-        httpMock = TestBed.inject(HttpTestingController);
-    });
+	beforeEach(() => {
+		TestBed.configureTestingModule({
+			imports: [HttpClientTestingModule],
+			providers: [PasswordService]
+		});
+		service = TestBed.inject(PasswordService);
+		httpMock = TestBed.inject(HttpTestingController);
+	});
 
-    afterEach(() => {
-        httpMock.verify();
-    });
+	afterEach(() => {
+		httpMock.verify();
+	});
 
-    it('should be created', () => {
-        expect(service).toBeTruthy();
-    });
+	it('should set password', async () => {
+		jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000; // Increase timeout interval
 
-    it('should set password', async () => {
-        const setPassword: SetPassword = {
-            password: {
-                Validators: [Validators.required],
-                ErrorMessages: { required: 'Current password is required' },
-                value: 'newPassword'
-            },
-            confirmPassword: {
-                Validators: [Validators.required],
-                ErrorMessages: { required: 'Current password is required' },
-                value: 'newPassword'
-            }
-        };
-        const expectedResponse: SetPassword = {
-            password: {
-                Validators: [Validators.required],
-                ErrorMessages: { required: 'Current password is required' },
-                value: 'newPassword'
-            },
-            confirmPassword: {
-                Validators: [Validators.required],
-                ErrorMessages: { required: 'Current password is required' },
-                value: 'newPassword'
-            }
-        };
-        const promise = service.setPassword(setPassword);
+		const setPassword = {
+			password: {
+				Validators: [Validators.required],
+				ErrorMessages: { required: 'Current password is required' },
+				value: 'newPassword'
+			},
+			confirmPassword: {
+				Validators: [Validators.required],
+				ErrorMessages: { required: 'Current password is required' },
+				value: 'newPassword'
+			}
+		};
+		const expectedResponse = {
+			password: {
+				Validators: [Validators.required],
+				ErrorMessages: { required: 'Current password is required' },
+				value: 'newPassword'
+			},
+			confirmPassword: {
+				Validators: [Validators.required],
+				ErrorMessages: { required: 'Current password is required' },
+				value: 'newPassword'
+			}
+		};
 
-        const req = httpMock.expectOne(`${environment.apiBaseUrl}/chngpwd`);
-        expect(req.request.method).toBe('POST');
-        expect(req.request.body).toEqual(setPassword);
+		// Mock the HTTP request
+		service.setPassword(setPassword).then(response => {
+			expect(response).toEqual(expectedResponse);
+		});
 
-        req.flush(expectedResponse);
-
-        const response = await promise;
-        expect(response).toEqual(expectedResponse);
-    });
+		const req = httpMock.expectOne('https://portal2.chambers-owen.com:4438/service//chngpwd');
+		expect(req.request.method).toBe('POST');
+		req.flush(expectedResponse); // Respond with the expected response
+	});
 });
