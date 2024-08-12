@@ -4,7 +4,6 @@ import { UserAccount, statuses, roles } from '../../models/user-accounts.model';
 import { JsonPipe, TitleCasePipe } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
-import { DataSource } from '@angular/cdk/collections';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
