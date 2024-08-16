@@ -1,0 +1,78 @@
+[
+    {
+        "id": 1,
+        "name": "Cigarettes"
+    },
+    {
+        "id": 2,
+        "name": "Tobacco"
+    },
+    {
+        "id": 3,
+        "name": "Cigars"
+    },
+    {
+        "id": 4,
+        "name": "Candy"
+    },
+    {
+        "id": 5,
+        "name": "Paper"
+    },
+    {
+        "id": 6,
+        "name": "Water/Juice/Soda"
+    },
+    {
+        "id": 7,
+        "name": "Grocery"
+    },
+    {
+        "id": 8,
+        "name": "Automotive"
+    },
+    {
+        "id": 9,
+        "name": "Tobacco Non-Tax"
+    },
+    {
+        "id": 10,
+        "name": "Coffee"
+    },
+    {
+        "id": 11,
+        "name": "General Merchandise"
+    },
+    {
+        "id": 12,
+        "name": "Health & Beauty Care"
+    },
+    {
+        "id": 15,
+        "name": "Service Fees"
+    },
+    {
+        "id": 20,
+        "name": "Institutional Foods"
+    },
+    {
+        "id": 30,
+        "name": "Janitorial Supplies"
+    },
+    {
+        "id": 32,
+        "name": "Parts/Repairs"
+    },
+    {
+        "id": 35,
+        "name": "Prepared Food Equipment"
+    },
+    {
+        "id": 95,
+        "name": "Restocking Fees"
+    },
+    {
+        "id": 99,
+        "name": "Supply Item"
+    }
+]

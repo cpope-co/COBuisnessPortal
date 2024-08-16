@@ -1,7 +1,7 @@
 import { inject, Injectable, signal } from "@angular/core";
 import { MenuItem } from "./menu.model";
 import { routes } from '../../app.routes';
-import { AuthService } from "../../services/auth.service";
+import { AuthService } from "../../auth/auth.service";
 import { Route } from "@angular/router";
 
 @Injectable({

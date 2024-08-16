@@ -11,6 +11,12 @@ import { RouterModule } from '@angular/router';
 import { Product } from '../../models/product.model';
 import { ProductCatalogService } from './product-catalog.service';
 import { MessagesService } from '../../messages/messages.service';
+import { ProductCategoryService } from './product-category.service';
+import { ProductCategory } from '../../models/product-category.model';
+import { SelectComponent } from '../../shared/select/select.component';
+import { FormGroup } from '@angular/forms';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { MatSelectionListChange } from '@angular/material/list';
 
 @Component({
   selector: 'app-product-catalog',
@@ -25,7 +31,9 @@ import { MessagesService } from '../../messages/messages.service';
     MatButtonModule,
     MatPaginatorModule,
     MatSortModule,
-    MatInputModule
+    MatInputModule,
+    MatSelectModule,
+    SelectComponent
   ], 
   templateUrl: './product-catalog.component.html',
   styleUrl: './product-catalog.component.scss'
@@ -33,13 +41,20 @@ import { MessagesService } from '../../messages/messages.service';
 
 export class ProductCatalogComponent {
 
+
   productCatalogService = inject(ProductCatalogService);
+  productCategoryService = inject(ProductCategoryService);
   messagesService = inject(MessagesService);
 
   productsSignal = signal<Product[]>([]);
   products = this.productsSignal.asReadonly();
   productsDataSource = new MatTableDataSource<Product>(this.products());
 
+  productCategoriesSignal = signal<ProductCategory[]>([]);
+  productCategories = this.productCategoriesSignal.asReadonly();
+
+  form!: FormGroup<any>;
+ 
   displayedColumns: string[] = [
     'SKU',
     'manufacturerSKU',
@@ -54,17 +69,33 @@ export class ProductCatalogComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   constructor() {
-    // this.loadProducts();
+    this.loadProducts();
+    this.loadProductCategories();
     effect(() => {
       this.productsDataSource.data = this.products();
       this.productsDataSource.sort = this.sort;
       this.productsDataSource.paginator = this.paginator;
     });
+    this.productsDataSource.filterPredicate = (data: any, filter: string): boolean => {
+      const transformedFilter = String(filter).trim().toLowerCase();
+      // Example filter logic: check if any data property contains the filter string
+      return Object.values(data).some(value => 
+        String(value).toLowerCase().includes(transformedFilter)
+      );
+    };
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.productsDataSource.filter = filterValue.trim().toLowerCase();
+  applyFilter(event: Event | MatSelectChange): void {
+    if(event instanceof MatSelectChange){
+      const selectedCategoryId = event.value;
+      console.log(selectedCategoryId);
+      this.productsDataSource.filter = selectedCategoryId;
+    } else if (event instanceof Event) {
+      const filterValue = (event.target as HTMLInputElement).value;
+      console.log(filterValue);
+      this.productsDataSource.filter = filterValue.trim().toLowerCase();
+    }
+    
   }
 
   async loadProducts() {
@@ -73,6 +104,15 @@ export class ProductCatalogComponent {
       this.productsSignal.set(products);
     } catch (error) {
       this.messagesService.showMessage('Failed to load products', 'danger');
+    }
+  }
+
+  async loadProductCategories() {
+    try {
+      const productCategories = await this.productCategoryService.loadAllProductCategories();
+      this.productCategoriesSignal.set(productCategories);
+    } catch (error) {
+      this.messagesService.showMessage('Failed to load product categories', 'danger');
     }
   }
 }

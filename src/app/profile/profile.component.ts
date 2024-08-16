@@ -6,7 +6,7 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { InputComponent } from '../shared/input/input.component';
 import { MatButtonModule } from '@angular/material/button';
 import { UserAccountService } from '../services/user-accounts.service';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { User } from '../models/user.model';
 import { MessagesService } from '../messages/messages.service';
 import { Router } from '@angular/router';

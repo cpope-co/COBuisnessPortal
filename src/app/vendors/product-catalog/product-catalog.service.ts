@@ -18,7 +18,8 @@ export class ProductCatalogService {
     }
 
     async loadAllProducts() {
-        const products$ = this.http.get<Product[]>(`${this.env.apiBaseUrl}products`);
+        // const products$ = this.http.get<Product[]>(`${this.env.apiBaseUrl}products`);
+        const products$ = this.http.get<Product[]>('assets/product.json');
         const response = await firstValueFrom(products$);
         this.productCatalogSignal.set(response);
         return this.productCatalog();

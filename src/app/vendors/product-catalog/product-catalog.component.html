@@ -9,6 +9,16 @@
       <mat-label>Filter</mat-label>
       <input matInput (keyup)="applyFilter($event)" placeholder="Filter" />
     </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Category</mat-label>
+      <mat-select (selectionChange)="applyFilter($event)">
+        @for(cat of productCategories(); track $index) {
+        <mat-option [value]="cat.id">
+          {{ cat.name }}
+        </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
     <table mat-table matSort [dataSource]="productsDataSource">
       <ng-container matColumnDef="SKU">
         <th mat-header-cell mat-sort-header *matHeaderCellDef>SKU</th>

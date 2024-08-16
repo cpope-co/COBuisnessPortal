@@ -4,7 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { SKIP_AUTH_KEY, SKIP_REFRESH_KEY } from './http-context-keys';
 import { SessionService } from '../services/session.service';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class RefreshInterceptor implements HttpInterceptor {

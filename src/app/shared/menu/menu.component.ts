@@ -4,7 +4,7 @@ import { MatListModule } from '@angular/material/list';
 import { RouterLink } from '@angular/router';
 import { MenuItem } from './menu.model';
 import { MenuService } from './menu.service';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'co-menu',
