@@ -15,8 +15,9 @@ import { ProductCategoryService } from './product-category.service';
 import { ProductCategory } from '../../models/product-category.model';
 import { SelectComponent } from '../../shared/select/select.component';
 import { FormGroup } from '@angular/forms';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { MatSelectionListChange } from '@angular/material/list';
+import { MatSelectModule } from '@angular/material/select';
+import { FilterService } from '../../services/filter.service';
+import { FiltersComponent } from "../../shared/filters/filters.component";
 
 @Component({
   selector: 'app-product-catalog',
@@ -33,8 +34,9 @@ import { MatSelectionListChange } from '@angular/material/list';
     MatSortModule,
     MatInputModule,
     MatSelectModule,
-    SelectComponent
-  ], 
+    SelectComponent,
+    FiltersComponent
+  ],
   templateUrl: './product-catalog.component.html',
   styleUrl: './product-catalog.component.scss'
 })
@@ -45,6 +47,7 @@ export class ProductCatalogComponent {
   productCatalogService = inject(ProductCatalogService);
   productCategoryService = inject(ProductCategoryService);
   messagesService = inject(MessagesService);
+  filterService = inject(FilterService);
 
   productsSignal = signal<Product[]>([]);
   products = this.productsSignal.asReadonly();
@@ -54,7 +57,7 @@ export class ProductCatalogComponent {
   productCategories = this.productCategoriesSignal.asReadonly();
 
   form!: FormGroup<any>;
- 
+
   displayedColumns: string[] = [
     'SKU',
     'manufacturerSKU',
@@ -68,6 +71,7 @@ export class ProductCatalogComponent {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+
   constructor() {
     this.loadProducts();
     this.loadProductCategories();
@@ -76,26 +80,49 @@ export class ProductCatalogComponent {
       this.productsDataSource.sort = this.sort;
       this.productsDataSource.paginator = this.paginator;
     });
-    this.productsDataSource.filterPredicate = (data: any, filter: string): boolean => {
-      const transformedFilter = String(filter).trim().toLowerCase();
-      // Example filter logic: check if any data property contains the filter string
-      return Object.values(data).some(value => 
-        String(value).toLowerCase().includes(transformedFilter)
-      );
-    };
+    this.configFilterPredicate();
   }
 
-  applyFilter(event: Event | MatSelectChange): void {
-    if(event instanceof MatSelectChange){
-      const selectedCategoryId = event.value;
-      console.log(selectedCategoryId);
-      this.productsDataSource.filter = selectedCategoryId;
-    } else if (event instanceof Event) {
-      const filterValue = (event.target as HTMLInputElement).value;
-      console.log(filterValue);
-      this.productsDataSource.filter = filterValue.trim().toLowerCase();
-    }
-    
+  configFilterPredicate() {
+    this.productsDataSource.filterPredicate = (data: Product, filter: string) => {
+      const filters = JSON.parse(filter);
+      console.log('Filter Predicate:', filters); // Debugging log
+  
+      let matchesCategory = true;
+      let matchesManufacturerSKU = true;
+  
+      if (filters.categoryID !== undefined) {
+        matchesCategory = data.categoryID === Number(filters.categoryID);
+      }
+  
+      if (filters.manufacturerSKU !== undefined) {
+        matchesManufacturerSKU = data.manufacturerSKU === Number(filters.manufacturerSKU);
+      }
+  
+      console.log('Data:', data); // Debugging log
+      console.log('Matches Category:', matchesCategory); // Debugging log
+      console.log('Matches Manufacturer SKU:', matchesManufacturerSKU); // Debugging log
+  
+      return matchesCategory && matchesManufacturerSKU;
+    };
+  }
+  setSearch(search: string) {
+    const currentFilter = JSON.parse(this.productsDataSource.filter || '{}');
+    currentFilter.search = search;
+    this.productsDataSource.filter = JSON.stringify(currentFilter);
+  }
+
+  setCategoryFilter($event: any) {
+    const currentFilter = JSON.parse(this.productsDataSource.filter || '{}');
+    currentFilter.categoryID = Number($event.value);
+    console.log('Set Category Filter:', currentFilter); // Debugging log
+    this.productsDataSource.filter = JSON.stringify(currentFilter);
+  }
+
+  setManufacturerSKUFilter($event: any) {
+    const currentFilter = JSON.parse(this.productsDataSource.filter || '{}');
+    currentFilter.manufacturerSKU = $event.value;
+    this.productsDataSource.filter = JSON.stringify(currentFilter);
   }
 
   async loadProducts() {

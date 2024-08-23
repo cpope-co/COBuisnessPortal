@@ -1,0 +1,19 @@
+<mat-form-field appearance="outline">
+  <mat-label>Search</mat-label>
+  <input
+    matInput
+    (keyup)="updateSearch($event)"
+    placeholder="Search"
+  />
+</mat-form-field>
+<mat-form-field appearance="outline">
+  <mat-label>Filter by Category</mat-label>
+  <mat-select (selectionChange)="onFilterChange($event)">
+    <mat-option>None</mat-option>
+    @for(filter of filters(); track $index) {
+      <mat-option [value]="filter.id">
+        {{ filter.name }}
+      </mat-option>
+    }
+  </mat-select>
+</mat-form-field>
