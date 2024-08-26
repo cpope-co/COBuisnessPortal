@@ -1,3 +1,4 @@
+import { JsonPipe } from '@angular/common';
 import { Component, effect, EventEmitter, input, model, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,7 +15,8 @@ import { MatSelectModule } from '@angular/material/select';
     FormsModule,
     MatInputModule,
     MatSelectModule,
-    MatFormField
+    MatFormField,
+    JsonPipe
   ],
   templateUrl: './filters.component.html',
   styleUrl: './filters.component.scss'
@@ -31,7 +33,7 @@ export class FiltersComponent {
   filters = input<any>([]);
 
   constructor() {
-
+    
   }
 
   updateSearch($event: KeyboardEvent): void {
@@ -41,6 +43,7 @@ export class FiltersComponent {
     }
   }
   onFilterChange($event: any): void {
+    console.log($event);
     this.filter.emit($event);
   }
 

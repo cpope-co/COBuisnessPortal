@@ -6,14 +6,16 @@
     placeholder="Search"
   />
 </mat-form-field>
-<mat-form-field appearance="outline">
-  <mat-label>Filter by Category</mat-label>
-  <mat-select (selectionChange)="onFilterChange($event)">
-    <mat-option>None</mat-option>
-    @for(filter of filters(); track $index) {
-      <mat-option [value]="filter.id">
-        {{ filter.name }}
-      </mat-option>
-    }
-  </mat-select>
-</mat-form-field>
+@for(filterGroup of filters(); track $index) {
+  <mat-form-field appearance="outline">
+    <mat-label>Filter by {{filterGroup.label}}</mat-label>
+    <mat-select [aria-label]="filterGroup.name" (selectionChange)="onFilterChange($event)">
+      <mat-option [value]="-1">None</mat-option>
+      @for(option of filterGroup.options; track $index) {
+        <mat-option [value]="option.value">
+          {{ option.label }}
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+}

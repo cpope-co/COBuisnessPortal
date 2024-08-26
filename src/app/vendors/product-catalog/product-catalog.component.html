@@ -5,8 +5,7 @@
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <app-filters (filterOutput)="setCategoryFilter($event)"  (searchOutput)="setSearch($event)" [filters]="productCategories()" />
-
+    <app-filters (filterOutput)="setFilter($event)" (searchOutput)="setSearch($event)" [filters]="productCatalogFilters" />
 
     <table mat-table matSort [dataSource]="productsDataSource">
       <ng-container matColumnDef="SKU">

@@ -1,5 +1,5 @@
 import { JsonPipe, TitleCasePipe } from '@angular/common';
-import { Component, effect, inject, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, inject, signal, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -56,6 +56,15 @@ export class ProductCatalogComponent {
   productCategoriesSignal = signal<ProductCategory[]>([]);
   productCategories = this.productCategoriesSignal.asReadonly();
 
+  productCatalogFilters: any[] = [];
+
+  // productCatalogFilters = computed(() => {
+  //   return {
+  //     categories: this.productCategories(),
+  //     manufacturerSKUs: this.products().map(product => product.manufacturerSKU)
+  //   };
+  // });
+
   form!: FormGroup<any>;
 
   displayedColumns: string[] = [
@@ -80,29 +89,49 @@ export class ProductCatalogComponent {
       this.productsDataSource.sort = this.sort;
       this.productsDataSource.paginator = this.paginator;
     });
+    effect(() => {
+      this.productCatalogFilters = [
+        {
+          name: 'categoryID',
+          label: 'Category',
+          options: this.productCategories().map(category => {
+            return {
+              value: category.id,
+              label: category.name
+            };
+          })
+        },
+        {
+          name: 'manufacturerSKU',
+          label: 'Manufacturer SKU',
+          options: this.products().map(product => {
+            return {
+              value: product.manufacturerSKU,
+              label: product.manufacturerSKU
+            };
+          })
+        }
+      ];
+    });
+
     this.configFilterPredicate();
   }
 
   configFilterPredicate() {
     this.productsDataSource.filterPredicate = (data: Product, filter: string) => {
       const filters = JSON.parse(filter);
-      console.log('Filter Predicate:', filters); // Debugging log
-  
+
       let matchesCategory = true;
       let matchesManufacturerSKU = true;
-  
+
       if (filters.categoryID !== undefined) {
-        matchesCategory = data.categoryID === Number(filters.categoryID);
+        matchesCategory = data.categoryID === Number(filters.categoryID) || filters.categoryID === -1;
       }
-  
+
       if (filters.manufacturerSKU !== undefined) {
-        matchesManufacturerSKU = data.manufacturerSKU === Number(filters.manufacturerSKU);
+        matchesManufacturerSKU = data.manufacturerSKU === Number(filters.manufacturerSKU) || filters.manufacturerSKU === -1;  
       }
-  
-      console.log('Data:', data); // Debugging log
-      console.log('Matches Category:', matchesCategory); // Debugging log
-      console.log('Matches Manufacturer SKU:', matchesManufacturerSKU); // Debugging log
-  
+
       return matchesCategory && matchesManufacturerSKU;
     };
   }
@@ -112,16 +141,11 @@ export class ProductCatalogComponent {
     this.productsDataSource.filter = JSON.stringify(currentFilter);
   }
 
-  setCategoryFilter($event: any) {
+  setFilter($event: any) {
     const currentFilter = JSON.parse(this.productsDataSource.filter || '{}');
-    currentFilter.categoryID = Number($event.value);
-    console.log('Set Category Filter:', currentFilter); // Debugging log
-    this.productsDataSource.filter = JSON.stringify(currentFilter);
-  }
-
-  setManufacturerSKUFilter($event: any) {
-    const currentFilter = JSON.parse(this.productsDataSource.filter || '{}');
-    currentFilter.manufacturerSKU = $event.value;
+    const filterType = $event.source.ariaLabel
+    currentFilter[filterType] = filterType === 'categoryID' ? Number($event.value) : $event.value;
+    console.log(`Set ${filterType} Filter:`, currentFilter); // Debugging log
     this.productsDataSource.filter = JSON.stringify(currentFilter);
   }
 
