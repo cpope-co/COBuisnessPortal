@@ -1,7 +1,7 @@
 [
     {
         "SKU": 1,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 432121,
         "categoryID": 5,
         "description": "Product 1 description",
         "size": "45cm",
@@ -11,7 +11,7 @@
     },
     {
         "SKU": 2,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 534664,
         "categoryID": 2,
         "description": "Product 2 description",
         "size": "30cm",
@@ -21,7 +21,7 @@
     },
     {
         "SKU": 3,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 534664,
         "categoryID": 8,
         "description": "Product 3 description",
         "size": "60cm",
@@ -31,7 +31,7 @@
     },
     {
         "SKU": 4,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 534664,
         "categoryID": 1,
         "description": "Product 4 description",
         "size": "25cm",
@@ -41,7 +41,7 @@
     },
     {
         "SKU": 5,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 534664,
         "categoryID": 3,
         "description": "Product 5 description",
         "size": "50cm",
@@ -51,7 +51,7 @@
     },
     {
         "SKU": 6,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 534664,
         "categoryID": 7,
         "description": "Product 6 description",
         "size": "40cm",
@@ -61,7 +61,7 @@
     },
     {
         "SKU": 7,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 534664,
         "categoryID": 4,
         "description": "Product 7 description",
         "size": "35cm",
@@ -71,7 +71,7 @@
     },
     {
         "SKU": 8,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 534664,
         "categoryID": 9,
         "description": "Product 8 description",
         "size": "55cm",
@@ -81,7 +81,7 @@
     },
     {
         "SKU": 9,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 534664,
         "categoryID": 6,
         "description": "Product 9 description",
         "size": "20cm",
@@ -91,7 +91,7 @@
     },
     {
         "SKU": 10,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 534664,
         "categoryID": 10,
         "description": "Product 10 description",
         "size": "65cm",
@@ -101,7 +101,7 @@
     },
     {
         "SKU": 11,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 534664,
         "categoryID": 5,
         "description": "Product 11 description",
         "size": "70cm",
@@ -111,7 +111,7 @@
     },
     {
         "SKU": 12,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 534664,
         "categoryID": 2,
         "description": "Product 12 description",
         "size": "75cm",
@@ -121,7 +121,7 @@
     },
     {
         "SKU": 13,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 534664,
         "categoryID": 8,
         "description": "Product 13 description",
         "size": "80cm",
@@ -131,7 +131,7 @@
     },
     {
         "SKU": 14,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 432121,
         "categoryID": 1,
         "description": "Product 14 description",
         "size": "85cm",
@@ -141,7 +141,7 @@
     },
     {
         "SKU": 15,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 432121,
         "categoryID": 3,
         "description": "Product 15 description",
         "size": "90cm",
@@ -151,7 +151,7 @@
     },
     {
         "SKU": 16,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 432121,
         "categoryID": 7,
         "description": "Product 16 description",
         "size": "95cm",
@@ -161,7 +161,7 @@
     },
     {
         "SKU": 17,
-        "manufacturerSKU": 123456,
+        "manufacturerSKU": 432121,
         "categoryID": 4,
         "description": "Product 17 description",
         "size": "100cm",

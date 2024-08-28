@@ -104,12 +104,13 @@ export class ProductCatalogComponent {
         {
           name: 'manufacturerSKU',
           label: 'Manufacturer SKU',
-          options: this.products().map(product => {
-            return {
-              value: product.manufacturerSKU,
-              label: product.manufacturerSKU
-            };
-          })
+          options: Array.from(new Set(this.products().map(product => product.manufacturerSKU)))
+            .map(uniqueSKU => {
+              return {
+                value: uniqueSKU,
+                label: uniqueSKU
+              };
+            })
         }
       ];
     });
@@ -129,7 +130,7 @@ export class ProductCatalogComponent {
       }
 
       if (filters.manufacturerSKU !== undefined) {
-        matchesManufacturerSKU = data.manufacturerSKU === Number(filters.manufacturerSKU) || filters.manufacturerSKU === -1;  
+        matchesManufacturerSKU = data.manufacturerSKU === Number(filters.manufacturerSKU) || filters.manufacturerSKU === -1;
       }
 
       return matchesCategory && matchesManufacturerSKU;
