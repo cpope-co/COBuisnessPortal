@@ -18,10 +18,18 @@ import { FormGroup } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { FilterService } from '../../services/filter.service';
 import { FiltersComponent } from "../../shared/filters/filters.component";
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-product-catalog',
   standalone: true,
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed,void', style({height: '0px', minHeight: '0'})),
+      state('expanded', style({height: '*'})),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
   imports: [
     RouterModule,
     JsonPipe,
@@ -58,12 +66,7 @@ export class ProductCatalogComponent {
 
   productCatalogFilters: any[] = [];
 
-  // productCatalogFilters = computed(() => {
-  //   return {
-  //     categories: this.productCategories(),
-  //     manufacturerSKUs: this.products().map(product => product.manufacturerSKU)
-  //   };
-  // });
+  expandedElement: Product | null = null;
 
   form!: FormGroup<any>;
 
@@ -77,6 +80,8 @@ export class ProductCatalogComponent {
     'supplierID',
     'cost'
   ];
+  columnsToDisplayWithExpand = [...this.displayedColumns, 'expand'];
+  isExpandedDetailRow = (index: number, row: any) => row.hasOwnProperty('detailRow');
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;

@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
-import { isUserAuthenticated } from './guards/auth.guard';
+import { isUserAuthenticated, isUserNotAuthenticated } from './guards/auth.guard';
 import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { VerifyComponent } from './auth/verify/verify.component';
@@ -11,8 +11,9 @@ import { ProfileComponent } from './profile/profile.component';
 import { isUserAdmin } from './guards/admin.guard';
 import { ProductCatalogComponent } from './vendors/product-catalog/product-catalog.component';
 import { TradeShowComponent } from './vendors/trade-show/trade-show.component';
-import { CreateProductComponent } from './vendors/create-product/create-product.component';
+import { EditProductComponent } from './vendors/edit-product/edit-product.component';
 import { isUserVendor } from './guards/vendor.guard';
+import { isUserCustomer } from './guards/customer.guard';
 
 export const routes: Routes = [
     {
@@ -33,7 +34,8 @@ export const routes: Routes = [
         path: 'auth/login',
         title: 'Login',
         component: LoginComponent,
-        data: { display: false }
+        data: { display: false },
+        canActivate: [isUserNotAuthenticated]
     },
     {
         path: 'auth/register',
@@ -77,15 +79,15 @@ export const routes: Routes = [
             },
         ],
         data: { display: true, heading: true, role: 1 },
-        canActivate: [isUserAdmin]
+        canActivate: [isUserAuthenticated, isUserAdmin]
 
     },
     {
         path: 'profile',
         title: 'Profile',
         component: ProfileComponent,
-        data: { display: false }
-
+        data: { display: false },
+        canActivate: [isUserAuthenticated]
     },
     {
         path: 'customer',
@@ -135,7 +137,8 @@ export const routes: Routes = [
             }
         ],
         data: { display: true, heading: true, role: 2 },
-    }, 
+        canActivate: [isUserAuthenticated, isUserCustomer]
+    },
     {
         path: 'vendor',
         title: 'Vendors',
@@ -144,13 +147,13 @@ export const routes: Routes = [
                 path: 'product-catalog',
                 title: 'Product Catalog',
                 component: ProductCatalogComponent,
-                data: { display: true, role: 3 }
+                data: { display: true, role: 3 },
             },
 
             {
-                path: 'create-product',
-                title: 'Create Product',
-                component: CreateProductComponent,
+                path: 'edit-product',
+                title: 'Product',
+                component: EditProductComponent,
                 data: { display: true, role: 3 }
             },
             {
@@ -161,7 +164,7 @@ export const routes: Routes = [
             }
         ],
         data: { display: true, heading: true, role: 3 },
-        canActivate: [isUserVendor]
+        canActivate: [isUserAuthenticated, isUserVendor]
     },
     {
         path: '**',
