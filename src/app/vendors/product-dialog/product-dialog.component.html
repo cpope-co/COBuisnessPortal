@@ -11,6 +11,10 @@
   </p>
   <p><strong>Supplier ID:</strong> {{ data.product.supplierID }}</p>
   <p><strong>Cost:</strong> {{ data.product.cost | currency }}</p>
+  @for( upc of data.product.UPCCodes; track $index) {
+    <p><strong>Retail UPC:</strong> {{ upc.retailUPC }}</p>
+    <p><strong>Wholesale UPC:</strong> {{ upc.wholesaleUPC }}</p>
+  }
 
   }</mat-dialog-content
 >

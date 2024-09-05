@@ -7,4 +7,10 @@ export type Product = {
     unitOfMeasurement: number;
     supplierID: number;
     cost: number;
+    UPCCodes: UPCCode[];
+}
+
+export type UPCCode = {
+    retailUPC: string;
+    wholesaleUPC: string;
 }

@@ -7,7 +7,13 @@
         "size": "45cm",
         "unitOfMeasurement": 3,
         "supplierID": 7,
-        "cost": 23.45
+        "cost": 23.45,
+        "UPCCodes": [
+            {
+                "retailUPC": "123456789012",
+                "wholesaleUPC": "987654321098"
+            }
+        ]
     },
     {
         "SKU": 2,
@@ -17,7 +23,13 @@
         "size": "30cm",
         "unitOfMeasurement": 8,
         "supplierID": 4,
-        "cost": 12.34
+        "cost": 12.34,
+        "UPCCodes": [
+            {
+                "retailUPC": "234567890123",
+                "wholesaleUPC": "876543210987"
+            }
+        ]
     },
     {
         "SKU": 3,
@@ -27,157 +39,253 @@
         "size": "60cm",
         "unitOfMeasurement": 2,
         "supplierID": 1,
-        "cost": 45.67
+        "cost": 45.67,
+        "UPCCodes": [
+            {
+                "retailUPC": "345678901234",
+                "wholesaleUPC": "765432109876"
+            }
+        ]
     },
     {
         "SKU": 4,
         "manufacturerSKU": 534664,
         "categoryID": 1,
         "description": "Product 4 description",
-        "size": "25cm",
+        "size": "50cm",
         "unitOfMeasurement": 5,
-        "supplierID": 9,
-        "cost": 78.90
+        "supplierID": 3,
+        "cost": 34.56,
+        "UPCCodes": [
+            {
+                "retailUPC": "456789012345",
+                "wholesaleUPC": "654321098765"
+            }
+        ]
     },
     {
         "SKU": 5,
-        "manufacturerSKU": 534664,
+        "manufacturerSKU": 987654,
         "categoryID": 3,
         "description": "Product 5 description",
-        "size": "50cm",
-        "unitOfMeasurement": 7,
-        "supplierID": 6,
-        "cost": 34.56
+        "size": "55cm",
+        "unitOfMeasurement": 6,
+        "supplierID": 2,
+        "cost": 78.90,
+        "UPCCodes": [
+            {
+                "retailUPC": "567890123456",
+                "wholesaleUPC": "543210987654"
+            }
+        ]
     },
     {
         "SKU": 6,
-        "manufacturerSKU": 534664,
-        "categoryID": 7,
+        "manufacturerSKU": 987654,
+        "categoryID": 4,
         "description": "Product 6 description",
-        "size": "40cm",
-        "unitOfMeasurement": 1,
-        "supplierID": 2,
-        "cost": 56.78
+        "size": "65cm",
+        "unitOfMeasurement": 7,
+        "supplierID": 6,
+        "cost": 67.89,
+        "UPCCodes": [
+            {
+                "retailUPC": "678901234567",
+                "wholesaleUPC": "432109876543"
+            }
+        ]
     },
     {
         "SKU": 7,
-        "manufacturerSKU": 534664,
-        "categoryID": 4,
+        "manufacturerSKU": 987654,
+        "categoryID": 7,
         "description": "Product 7 description",
-        "size": "35cm",
-        "unitOfMeasurement": 6,
+        "size": "75cm",
+        "unitOfMeasurement": 8,
         "supplierID": 8,
-        "cost": 67.89
+        "cost": 56.78,
+        "UPCCodes": [
+            {
+                "retailUPC": "789012345678",
+                "wholesaleUPC": "321098765432"
+            }
+        ]
     },
     {
         "SKU": 8,
-        "manufacturerSKU": 534664,
+        "manufacturerSKU": 987654,
         "categoryID": 9,
         "description": "Product 8 description",
-        "size": "55cm",
-        "unitOfMeasurement": 4,
-        "supplierID": 3,
-        "cost": 89.01
+        "size": "85cm",
+        "unitOfMeasurement": 9,
+        "supplierID": 9,
+        "cost": 45.67,
+        "UPCCodes": [
+            {
+                "retailUPC": "890123456789",
+                "wholesaleUPC": "210987654321"
+            }
+        ]
     },
     {
         "SKU": 9,
-        "manufacturerSKU": 534664,
-        "categoryID": 6,
+        "manufacturerSKU": 987654,
+        "categoryID": 11,
         "description": "Product 9 description",
-        "size": "20cm",
-        "unitOfMeasurement": 9,
-        "supplierID": 5,
-        "cost": 90.12
+        "size": "95cm",
+        "unitOfMeasurement": 10,
+        "supplierID": 10,
+        "cost": 34.56,
+        "UPCCodes": [
+            {
+                "retailUPC": "901234567890",
+                "wholesaleUPC": "109876543210"
+            }
+        ]
     },
     {
         "SKU": 10,
-        "manufacturerSKU": 534664,
-        "categoryID": 10,
+        "manufacturerSKU": 123456,
+        "categoryID": 12,
         "description": "Product 10 description",
-        "size": "65cm",
-        "unitOfMeasurement": 10,
-        "supplierID": 10,
-        "cost": 12.34
+        "size": "100cm",
+        "unitOfMeasurement": 1,
+        "supplierID": 1,
+        "cost": 23.45,
+        "UPCCodes": [
+            {
+                "retailUPC": "012345678901",
+                "wholesaleUPC": "098765432109"
+            }
+        ]
     },
     {
         "SKU": 11,
-        "manufacturerSKU": 534664,
-        "categoryID": 5,
+        "manufacturerSKU": 123456,
+        "categoryID": 13,
         "description": "Product 11 description",
-        "size": "70cm",
-        "unitOfMeasurement": 3,
-        "supplierID": 7,
-        "cost": 23.45
+        "size": "105cm",
+        "unitOfMeasurement": 2,
+        "supplierID": 2,
+        "cost": 12.34,
+        "UPCCodes": [
+            {
+                "retailUPC": "123456789012",
+                "wholesaleUPC": "987654321098"
+            }
+        ]
     },
     {
         "SKU": 12,
-        "manufacturerSKU": 534664,
-        "categoryID": 2,
+        "manufacturerSKU": 123456,
+        "categoryID": 14,
         "description": "Product 12 description",
-        "size": "75cm",
-        "unitOfMeasurement": 8,
-        "supplierID": 4,
-        "cost": 12.34
+        "size": "110cm",
+        "unitOfMeasurement": 3,
+        "supplierID": 3,
+        "cost": 90.12,
+        "UPCCodes": [
+            {
+                "retailUPC": "234567890123",
+                "wholesaleUPC": "876543210987"
+            }
+        ]
     },
     {
         "SKU": 13,
-        "manufacturerSKU": 534664,
-        "categoryID": 8,
+        "manufacturerSKU": 123456,
+        "categoryID": 15,
         "description": "Product 13 description",
-        "size": "80cm",
-        "unitOfMeasurement": 2,
-        "supplierID": 1,
-        "cost": 45.67
+        "size": "115cm",
+        "unitOfMeasurement": 4,
+        "supplierID": 4,
+        "cost": 89.01,
+        "UPCCodes": [
+            {
+                "retailUPC": "345678901234",
+                "wholesaleUPC": "765432109876"
+            }
+        ]
     },
     {
         "SKU": 14,
-        "manufacturerSKU": 432121,
-        "categoryID": 1,
+        "manufacturerSKU": 123456,
+        "categoryID": 16,
         "description": "Product 14 description",
-        "size": "85cm",
+        "size": "120cm",
         "unitOfMeasurement": 5,
-        "supplierID": 9,
-        "cost": 78.90
+        "supplierID": 5,
+        "cost": 78.90,
+        "UPCCodes": [
+            {
+                "retailUPC": "456789012345",
+                "wholesaleUPC": "654321098765"
+            }
+        ]
     },
     {
         "SKU": 15,
-        "manufacturerSKU": 432121,
-        "categoryID": 3,
+        "manufacturerSKU": 123456,
+        "categoryID": 17,
         "description": "Product 15 description",
-        "size": "90cm",
-        "unitOfMeasurement": 7,
+        "size": "125cm",
+        "unitOfMeasurement": 6,
         "supplierID": 6,
-        "cost": 34.56
+        "cost": 67.89,
+        "UPCCodes": [
+            {
+                "retailUPC": "567890123456",
+                "wholesaleUPC": "543210987654"
+            }
+        ]
     },
     {
         "SKU": 16,
-        "manufacturerSKU": 432121,
-        "categoryID": 7,
+        "manufacturerSKU": 123456,
+        "categoryID": 18,
         "description": "Product 16 description",
-        "size": "95cm",
-        "unitOfMeasurement": 1,
-        "supplierID": 2,
-        "cost": 56.78
+        "size": "130cm",
+        "unitOfMeasurement": 7,
+        "supplierID": 7,
+        "cost": 56.78,
+        "UPCCodes": [
+            {
+                "retailUPC": "678901234567",
+                "wholesaleUPC": "432109876543"
+            }
+        ]
     },
     {
         "SKU": 17,
-        "manufacturerSKU": 432121,
-        "categoryID": 4,
+        "manufacturerSKU": 123456,
+        "categoryID": 19,
         "description": "Product 17 description",
-        "size": "100cm",
-        "unitOfMeasurement": 6,
+        "size": "135cm",
+        "unitOfMeasurement": 8,
         "supplierID": 8,
-        "cost": 67.89
+        "cost": 45.67,
+        "UPCCodes": [
+            {
+                "retailUPC": "789012345678",
+                "wholesaleUPC": "321098765432"
+            }
+        ]
     },
     {
         "SKU": 18,
         "manufacturerSKU": 123456,
-        "categoryID": 9,
+        "categoryID": 20,
         "description": "Product 18 description",
-        "size": "105cm",
-        "unitOfMeasurement": 4,
-        "supplierID": 3,
-        "cost": 89.01
+        "size": "140cm",
+        "unitOfMeasurement": 9,
+        "supplierID": 9,
+        "cost": 34.56,
+        "UPCCodes": [
+            {
+                "retailUPC": "890123456789",
+                "wholesaleUPC": "210987654321"
+            }
+        ]
     },
     {
         "SKU": 19,
@@ -187,7 +295,13 @@
         "size": "110cm",
         "unitOfMeasurement": 9,
         "supplierID": 5,
-        "cost": 90.12
+        "cost": 90.12,
+        "UPCCodes": [
+            {
+                "retailUPC": "901234567890",
+                "wholesaleUPC": "109876543210"
+            }
+        ]
     },
     {
         "SKU": 20,
@@ -197,6 +311,12 @@
         "size": "115cm",
         "unitOfMeasurement": 10,
         "supplierID": 10,
-        "cost": 12.34
+        "cost": 12.34,
+        "UPCCodes": [
+            {
+                "retailUPC": "012345678901",
+                "wholesaleUPC": "098765432109"
+            }
+        ]
     }
 ]
