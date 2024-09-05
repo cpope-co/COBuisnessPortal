@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>{{ data.product.SKU }}</h2>
+<mat-dialog-content>
+  @if(data) {
+  <p><strong>SKU:</strong> {{ data.product.SKU }}</p>
+  <p><strong>Manufacturer SKU:</strong> {{ data.product.manufacturerSKU }}</p>
+  <p><strong>Category ID:</strong> {{ data.product.categoryID }}</p>
+  <p><strong>Description:</strong> {{ data.product.description }}</p>
+  <p><strong>Size:</strong> {{ data.product.size }}</p>
+  <p>
+    <strong>Unit of Measurement:</strong> {{ data.product.unitOfMeasurement }}
+  </p>
+  <p><strong>Supplier ID:</strong> {{ data.product.supplierID }}</p>
+  <p><strong>Cost:</strong> {{ data.product.cost | currency }}</p>
+
+  }</mat-dialog-content
+>
+
+<mat-dialog-actions> </mat-dialog-actions>

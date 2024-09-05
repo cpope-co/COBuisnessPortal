@@ -19,14 +19,16 @@ import { MatSelectModule } from '@angular/material/select';
 import { FilterService } from '../../services/filter.service';
 import { FiltersComponent } from "../../shared/filters/filters.component";
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { MatDialog } from '@angular/material/dialog';
+import { openProductDialog } from '../product-dialog/product-dialog.component';
 
 @Component({
   selector: 'app-product-catalog',
   standalone: true,
   animations: [
     trigger('detailExpand', [
-      state('collapsed,void', style({height: '0px', minHeight: '0'})),
-      state('expanded', style({height: '*'})),
+      state('collapsed,void', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
       transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ]),
   ],
@@ -56,6 +58,7 @@ export class ProductCatalogComponent {
   productCategoryService = inject(ProductCategoryService);
   messagesService = inject(MessagesService);
   filterService = inject(FilterService);
+  dialog = inject(MatDialog);
 
   productsSignal = signal<Product[]>([]);
   products = this.productsSignal.asReadonly();
@@ -80,8 +83,8 @@ export class ProductCatalogComponent {
     'supplierID',
     'cost'
   ];
+
   columnsToDisplayWithExpand = [...this.displayedColumns, 'expand'];
-  isExpandedDetailRow = (index: number, row: any) => row.hasOwnProperty('detailRow');
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -170,6 +173,19 @@ export class ProductCatalogComponent {
       this.productCategoriesSignal.set(productCategories);
     } catch (error) {
       this.messagesService.showMessage('Failed to load product categories', 'danger');
+    }
+  }
+  async onViewProduct(product: Product) {
+    const dialogRef = await openProductDialog(
+      this.dialog,
+      {
+        mode: 'view',
+        title: 'View Product',
+        product: product
+      }
+    );
+    if (!dialogRef) {
+      return;
     }
   }
 }

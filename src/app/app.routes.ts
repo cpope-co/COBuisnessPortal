@@ -11,7 +11,6 @@ import { ProfileComponent } from './profile/profile.component';
 import { isUserAdmin } from './guards/admin.guard';
 import { ProductCatalogComponent } from './vendors/product-catalog/product-catalog.component';
 import { TradeShowComponent } from './vendors/trade-show/trade-show.component';
-import { EditProductComponent } from './vendors/edit-product/edit-product.component';
 import { isUserVendor } from './guards/vendor.guard';
 import { isUserCustomer } from './guards/customer.guard';
 
@@ -148,13 +147,6 @@ export const routes: Routes = [
                 title: 'Product Catalog',
                 component: ProductCatalogComponent,
                 data: { display: true, role: 3 },
-            },
-
-            {
-                path: 'edit-product',
-                title: 'Product',
-                component: EditProductComponent,
-                data: { display: true, role: 3 }
             },
             {
                 path: 'tradeshow',
