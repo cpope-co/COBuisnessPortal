@@ -41,6 +41,8 @@ export class FiltersComponent {
     if (inputElement) {
       if (inputElement.value.length > 2 || inputElement.value.length === 0) { this.search.emit(inputElement.value); }
     }
+    
+    this.search.emit(inputElement.value);
   }
   onFilterChange($event: any): void {
     console.log($event);

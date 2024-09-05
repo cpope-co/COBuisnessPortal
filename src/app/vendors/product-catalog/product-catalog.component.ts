@@ -132,6 +132,15 @@ export class ProductCatalogComponent {
 
       let matchesCategory = true;
       let matchesManufacturerSKU = true;
+      let matchesSearch = true;
+
+      if (filters.search !== undefined) {
+        const searchTerm = filters.search.toLowerCase();
+        matchesSearch = this.displayedColumns.some(column => {
+          const value = data[column as keyof Product]?.toString().toLowerCase() || '';
+          return value.includes(searchTerm);
+        });
+      }
 
       if (filters.categoryID !== undefined) {
         matchesCategory = data.categoryID === Number(filters.categoryID) || filters.categoryID === -1;
@@ -141,7 +150,7 @@ export class ProductCatalogComponent {
         matchesManufacturerSKU = data.manufacturerSKU === Number(filters.manufacturerSKU) || filters.manufacturerSKU === -1;
       }
 
-      return matchesCategory && matchesManufacturerSKU;
+      return matchesCategory && matchesManufacturerSKU && matchesSearch;
     };
   }
   setSearch(search: string) {
@@ -154,7 +163,6 @@ export class ProductCatalogComponent {
     const currentFilter = JSON.parse(this.productsDataSource.filter || '{}');
     const filterType = $event.source.ariaLabel
     currentFilter[filterType] = filterType === 'categoryID' ? Number($event.value) : $event.value;
-    console.log(`Set ${filterType} Filter:`, currentFilter); // Debugging log
     this.productsDataSource.filter = JSON.stringify(currentFilter);
   }
 
