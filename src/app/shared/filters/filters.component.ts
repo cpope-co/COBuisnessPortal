@@ -45,7 +45,6 @@ export class FiltersComponent {
     this.search.emit(inputElement.value);
   }
   onFilterChange($event: any): void {
-    console.log($event);
     this.filter.emit($event);
   }
 

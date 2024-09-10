@@ -47,7 +47,6 @@ export class MenuService {
             };
 
             const items = processRoutes(this.routes());
-            console.log('Menu items:', items);
             return items as MenuItem[];
 
         } else {

@@ -6,7 +6,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MessagesService } from '../../messages/messages.service';
@@ -33,9 +33,10 @@ import { TableComponent } from '../../shared/table/table.component';
 })
 export class UsersListComponent {
 
-
   userAccountsService = inject(UserAccountService);
   messageService = inject(MessagesService);
+  router = inject(Router);
+
   userAccountsSignal = signal<UserAccount[]>([]);
   userAccounts = this.userAccountsSignal.asReadonly();
   userAccountDataSource = new MatTableDataSource<UserAccount>(this.userAccounts());
@@ -43,7 +44,6 @@ export class UsersListComponent {
   roles = roles;
 
   displayedColumns: string[] = [
-    'actions',
     'usunbr',
     'usemail',
     'usfname',
@@ -62,7 +62,7 @@ export class UsersListComponent {
       this.userAccountDataSource.paginator = this.paginator;
     });
   }
-  
+
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.userAccountDataSource.filter = filterValue.trim().toLowerCase();
@@ -77,7 +77,7 @@ export class UsersListComponent {
       this.messageService.showMessage('Error loading user accounts, please try again.', 'danger');
     }
   }
-  
+
   async onDelete(userAccountId: number) {
     try {
       await this.userAccountsService.deleteUserAccount(userAccountId);
@@ -93,5 +93,9 @@ export class UsersListComponent {
   getNameFromId(id: string | number, array: Array<{ id: string | number, name: string }>): string {
     const item = array.find(i => i.id === id);
     return item ? item.name : '';
+  }
+
+  viewRow(row: any) {
+    this.router.navigate(['/admin/user', row.usunbr]);
   }
 }

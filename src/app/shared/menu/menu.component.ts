@@ -31,12 +31,6 @@ export class MenuComponent {
       this.menuService.clearMenuItems();
       this.#menuItemsSignal.set([]);
     });
-    // this.authService.loginEvent.subscribe(() => {
-    //   this.menuService.clearMenuItems();
-    //   const menuItems = this.menuService.buildMenu();
-    //   this.menuService.setMenuItems(menuItems);
-    //   this.#menuItemsSignal.set(this.menuService.getMenuItems());
-    // });
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         this.menuService.clearMenuItems();
