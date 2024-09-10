@@ -1,7 +1,7 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { JsonPipe } from '@angular/common';
 import { MatListModule } from '@angular/material/list';
-import { RouterLink } from '@angular/router';
+import { NavigationStart, Router, RouterLink } from '@angular/router';
 import { MenuItem } from './menu.model';
 import { MenuService } from './menu.service';
 import { AuthService } from '../../auth/auth.service';
@@ -18,9 +18,9 @@ import { AuthService } from '../../auth/auth.service';
   styleUrl: './menu.component.scss'
 })
 export class MenuComponent {
-
   menuService = inject(MenuService);
   authService = inject(AuthService);
+  router = inject(Router);
 
   #menuItemsSignal = signal<MenuItem[]>([]);
   menuItems = this.#menuItemsSignal.asReadonly();
@@ -29,12 +29,23 @@ export class MenuComponent {
   constructor() {
     this.authService.logoutEvent.subscribe(() => {
       this.menuService.clearMenuItems();
+      this.#menuItemsSignal.set([]);
     });
-    this.authService.loginEvent.subscribe(() => {
-      const menuItems = this.menuService.loadMenuItems();
-      this.#menuItemsSignal.set(menuItems);
+    // this.authService.loginEvent.subscribe(() => {
+    //   this.menuService.clearMenuItems();
+    //   const menuItems = this.menuService.buildMenu();
+    //   this.menuService.setMenuItems(menuItems);
+    //   this.#menuItemsSignal.set(this.menuService.getMenuItems());
+    // });
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.menuService.clearMenuItems();
+        const menuItems = this.menuService.buildMenu();
+        this.menuService.setMenuItems(menuItems);
+        this.#menuItemsSignal.set(this.menuService.getMenuItems());
+      }
     });
   }
 
-
+  
 }

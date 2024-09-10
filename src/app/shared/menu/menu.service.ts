@@ -23,7 +23,7 @@ export class MenuService {
         this.menuItems.set([]);
     }
 
-    loadMenuItems(): MenuItem[] {
+    buildMenu(): MenuItem[] {
         const user = this.authService.user();
         if (user) {
             const userRole = user.role;
@@ -53,6 +53,18 @@ export class MenuService {
         } else {
             return [];
         }
+    }
+
+    setMenuItems(menuItems: MenuItem[]) {
+        sessionStorage.setItem('menuItems', JSON.stringify(menuItems));
+    }
+
+    getMenuItems(): MenuItem[] {
+        if(this.menuItems().length === 0) {
+            const menuItems = JSON.parse(sessionStorage.getItem('menuItems') || '[]');
+            this.menuItems.set(menuItems);
+        }
+        return this.menuItems();
     }
 
 

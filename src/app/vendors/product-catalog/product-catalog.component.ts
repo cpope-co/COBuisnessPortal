@@ -25,13 +25,7 @@ import { openProductDialog } from '../product-dialog/product-dialog.component';
 @Component({
   selector: 'app-product-catalog',
   standalone: true,
-  animations: [
-    trigger('detailExpand', [
-      state('collapsed,void', style({ height: '0px', minHeight: '0' })),
-      state('expanded', style({ height: '*' })),
-      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-    ]),
-  ],
+  animations: [],
   imports: [
     RouterModule,
     JsonPipe,
@@ -69,8 +63,6 @@ export class ProductCatalogComponent {
 
   productCatalogFilters: any[] = [];
 
-  expandedElement: Product | null = null;
-
   form!: FormGroup<any>;
 
   displayedColumns: string[] = [
@@ -83,8 +75,6 @@ export class ProductCatalogComponent {
     'supplierID',
     'cost'
   ];
-
-  columnsToDisplayWithExpand = [...this.displayedColumns, 'expand'];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;

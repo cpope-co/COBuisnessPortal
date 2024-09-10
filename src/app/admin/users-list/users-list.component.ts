@@ -11,6 +11,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MessagesService } from '../../messages/messages.service';
 import { MatInputModule } from '@angular/material/input';
+import { TableComponent } from '../../shared/table/table.component';
 @Component({
   selector: 'app-users-list',
   standalone: true,
@@ -24,7 +25,8 @@ import { MatInputModule } from '@angular/material/input';
     MatButtonModule,
     MatPaginatorModule,
     MatSortModule,
-    MatInputModule
+    MatInputModule,
+    TableComponent
   ],
   templateUrl: './users-list.component.html',
   styleUrl: './users-list.component.scss'
