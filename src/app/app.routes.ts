@@ -13,11 +13,12 @@ import { ProductCatalogComponent } from './vendors/product-catalog/product-catal
 import { TradeShowComponent } from './vendors/trade-show/trade-show.component';
 import { isUserVendor } from './guards/vendor.guard';
 import { isUserCustomer } from './guards/customer.guard';
+import { ForgotComponent } from './auth/forgot/forgot.component';
 
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: 'auth/login',
+        redirectTo: 'login',
         pathMatch: 'full',
         data: { display: false }
     },
@@ -30,32 +31,50 @@ export const routes: Routes = [
         data: { display: true, heading: false }
     },
     {
-        path: 'auth/login',
-        title: 'Login',
-        component: LoginComponent,
-        data: { display: false },
-        canActivate: [isUserNotAuthenticated]
-    },
-    {
-        path: 'auth/register',
-        title: 'Register',
-        component: RegisterComponent,
-        data: { display: false }
-    },
-    {
-        path: 'auth/verify/:token',
-        title: 'Verify',
-        component: VerifyComponent,
-        data: { display: false }
+        path: 'auth',
+        title: 'Auth',
+        data: { display: false, heading: true },
+        children: [
+            {
+                path: 'login',
+                title: 'Login',
+                component: LoginComponent,
+                data: { display: false },
+                canActivate: [isUserNotAuthenticated]
+            }, 
+            {
+                path: 'register',
+                title: 'Register',
+                component: RegisterComponent,
+                data: { display: false }
+            },
+            {
+                path: 'verify/:token',
+                title: 'Verify',
+                component: VerifyComponent,
+                data: { display: false }
+        
+            },
+            {
+                path: 'set-password',
+                title: 'Set Password',
+                component: SetPasswordComponent,
+                data: { display: false }
+        
+            },
+            {
+                path: 'forgot',
+                title: 'Forgot Password',
+                component: ForgotComponent,
+                data: { display: false }
+            }
+        ]
 
     },
-    {
-        path: 'auth/set-password',
-        title: 'Set Password',
-        component: SetPasswordComponent,
-        data: { display: false }
 
-    },
+
+    
+    
     {
         path: 'admin',
         title: 'Admin',

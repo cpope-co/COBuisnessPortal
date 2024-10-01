@@ -14,3 +14,6 @@ export type UPCCode = {
     retailUPC: string;
     wholesaleUPC: string;
 }
+
+export const AddProduct: Partial<Product> = {
+}

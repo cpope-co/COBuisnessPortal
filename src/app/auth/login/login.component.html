@@ -3,7 +3,8 @@
     <mat-card>
       <mat-card-header>
         <mat-card-title>
-          <h1>Chambers &amp; Owen Business Portal</h1></mat-card-title>
+          <h1>Chambers &amp; Owen Business Portal</h1></mat-card-title
+        >
         <mat-card-subtitle class="mt-2"><h2>Login</h2></mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
@@ -34,14 +35,14 @@
           >
             Login
           </button>
-          <button
-            mat-button
-            type="button"
-            class="w-100 mt-2"
-            (click)="onForgotPassword()"
-          >
+          <a 
+            mat-button 
+            type="button" 
+            class="w-100 mt-4"
+            [routerLink]="['/auth/forgot']"
+            >
             Forgot credentials?
-          </button>
+          </a>
           <hr />
           <p class="text-center">Don't have an account?</p>
           <a

@@ -23,9 +23,6 @@ import { login } from '../../models/login.model';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  onForgotPassword() {
-    throw new Error('Method not implemented.');
-  }
 
   authService = inject(AuthService);
   sessionService = inject(SessionService);
