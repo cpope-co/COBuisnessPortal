@@ -1,3 +1,22 @@
+/**
+ * Service responsible for managing the application's menu items.
+ * 
+ * @class
+ * @name MenuService
+ * 
+ * @property {AuthService} authService - Injected authentication service to get user information.
+ * @property {Signal<MenuItem[]>} menuItems - Signal to hold the current menu items.
+ * @property {Signal<Route[]>} routes - Signal to hold the application's routes.
+ * 
+ * @method clearMenuItems - Clears the current menu items.
+ * @method buildMenu - Builds the menu items based on the user's role and available routes.
+ * @returns {MenuItem[]} - The built menu items.
+ * @method setMenuItems - Stores the given menu items in the session storage.
+ * @param {MenuItem[]} menuItems - The menu items to be stored.
+ * @method getMenuItems - Retrieves the menu items from the session storage or the current signal.
+ * @returns {MenuItem[]} - The retrieved menu items.
+ */
+
 import { inject, Injectable, signal } from "@angular/core";
 import { MenuItem } from "./menu.model";
 import { routes } from '../../app.routes';
@@ -7,6 +26,7 @@ import { Route } from "@angular/router";
 @Injectable({
     providedIn: 'root'
 })
+
 export class MenuService {
 
     authService = inject(AuthService);
