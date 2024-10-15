@@ -10,7 +10,7 @@ export const isUserVendor: CanActivateFn =
         if (authService.isVendor() || authService.isAdmin()) {
             return true;
         } else {
-            router.navigate(["/home"]);
+            router.navigate(["/auth/unauthorized"]);
             return false;
         }
     } 

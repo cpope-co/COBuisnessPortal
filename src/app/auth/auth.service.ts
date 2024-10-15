@@ -48,7 +48,6 @@ export class AuthService {
     constructor() {
         this.loadUserFromStorage();
         this.loadTokenFromStorage();
-        this.setRoles();
         effect(() => {
             const user = this.user();
             if (user) {
@@ -155,6 +154,7 @@ export class AuthService {
         const user = await jwtDecode(response.headers.get('x-id')!) as User;
         this.#userSignal.set(user);
         this.loginEvent.emit();
+        this.setRoles();
         return user;
     }
     async refresh(): Promise<User> {

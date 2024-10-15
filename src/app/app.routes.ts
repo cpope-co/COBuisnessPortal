@@ -14,6 +14,7 @@ import { TradeShowComponent } from './vendors/trade-show/trade-show.component';
 import { isUserVendor } from './guards/vendor.guard';
 import { isUserCustomer } from './guards/customer.guard';
 import { ForgotComponent } from './auth/forgot/forgot.component';
+import { UnauthorizedComponent } from './auth/unauthorized/unauthorized.component';
 
 export const routes: Routes = [
     {
@@ -35,6 +36,12 @@ export const routes: Routes = [
         title: 'Auth',
         data: { display: false, heading: true },
         children: [
+            {
+                path: 'unauthorized',
+                title: 'Unauthorized',
+                component: UnauthorizedComponent,
+                data: { display: false }
+            },
             {
                 path: 'login',
                 title: 'Login',
