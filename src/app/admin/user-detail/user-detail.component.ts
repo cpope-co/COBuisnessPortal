@@ -60,7 +60,8 @@ export class UserDetailComponent {
     { id: 1, name: 'Admin' },
     { id: 2, name: 'User' },
     { id: 3, name: 'Vendor' },
-    { id: 4, name: 'Customer' }
+    { id: 4, name: 'Customer' },
+    { id: 5, name: 'Api User'}
   ];
 
   constructor() {

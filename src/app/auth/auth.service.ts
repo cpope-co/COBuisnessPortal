@@ -41,7 +41,10 @@ export class AuthService {
 
     isEmployeeSignal = signal<boolean>(false);
     isEmployee = this.isEmployeeSignal.asReadonly();
-    
+
+    isApiUserSIgnal = signal<boolean>(false);
+    isApiUser = this.isApiUserSIgnal.asReadonly();
+
     logoutEvent = new EventEmitter<void>();
     loginEvent = new EventEmitter<void>();
 
@@ -76,6 +79,9 @@ export class AuthService {
                     break;
                 case 4:
                     this.isEmployeeSignal.set(true);
+                    break;
+                case 5:
+                    this.isApiUserSIgnal.set(true);
                     break;
                 default:
                     this.#isAdminSignal.set(false);
@@ -134,7 +140,7 @@ export class AuthService {
         const headers = new HttpHeaders({
             'Content-Type': 'application/json',
             'Authorization': `Basic ${btoa(`${email}:${password}`)}`
-        });        
+        });
 
 
         // Use the token to set metadata

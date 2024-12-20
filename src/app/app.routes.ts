@@ -13,8 +13,10 @@ import { ProductCatalogComponent } from './vendors/product-catalog/product-catal
 import { TradeShowComponent } from './vendors/trade-show/trade-show.component';
 import { isUserVendor } from './guards/vendor.guard';
 import { isUserCustomer } from './guards/customer.guard';
+import { isUserApiUser } from './guards/api-user.guard';
 import { ForgotComponent } from './auth/forgot/forgot.component';
 import { UnauthorizedComponent } from './auth/unauthorized/unauthorized.component';
+import { ApiTokenManagementComponent } from './apiUser/api-token-management/api-token-management.component';
 
 export const routes: Routes = [
     {
@@ -78,10 +80,6 @@ export const routes: Routes = [
         ]
 
     },
-
-
-    
-    
     {
         path: 'admin',
         title: 'Admin',
@@ -183,6 +181,20 @@ export const routes: Routes = [
         ],
         data: { display: true, heading: true, role: 3 },
         canActivate: [isUserAuthenticated, isUserVendor]
+    },
+    {
+        path: 'apiuser',
+        title: 'API User',
+        children: [
+            {
+                path: 'api-token-management',
+                title: 'Api Token Management',
+                component: ApiTokenManagementComponent,
+                data: { display: true, role: 5 }
+            }
+        ],
+        data: { display: true, heading: true, role: 5 },
+        canActivate: [isUserAuthenticated, isUserApiUser]
     },
     {
         path: '**',
