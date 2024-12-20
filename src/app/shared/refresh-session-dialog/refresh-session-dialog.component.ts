@@ -6,14 +6,13 @@ import { AuthService } from '../../auth/auth.service';
 import { SessionService } from '../../services/session.service';
 
 @Component({
-  selector: 'app-refresh-session-dialog',
-  standalone: true,
-  imports: [
-    MatDialogModule,
-    MatButtonModule
-  ],
-  templateUrl: './refresh-session-dialog.component.html',
-  styleUrl: './refresh-session-dialog.component.scss'
+    selector: 'app-refresh-session-dialog',
+    imports: [
+        MatDialogModule,
+        MatButtonModule
+    ],
+    templateUrl: './refresh-session-dialog.component.html',
+    styleUrl: './refresh-session-dialog.component.scss'
 })
 export class RefreshSessionDialogComponent {
   dialogRef = inject(MatDialogRef<RefreshSessionDialogComponent>);

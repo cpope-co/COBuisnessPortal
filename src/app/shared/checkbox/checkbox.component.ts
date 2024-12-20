@@ -5,15 +5,14 @@ import { TitleCasePipe } from '@angular/common';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @Component({
-  selector: 'app-checkbox',
-  standalone: true,
-  imports: [
-    TitleCasePipe,
-    ReactiveFormsModule,
-    MatCheckboxModule
-  ],
-  templateUrl: './checkbox.component.html',
-  styleUrl: './checkbox.component.scss'
+    selector: 'app-checkbox',
+    imports: [
+        TitleCasePipe,
+        ReactiveFormsModule,
+        MatCheckboxModule
+    ],
+    templateUrl: './checkbox.component.html',
+    styleUrl: './checkbox.component.scss'
 })
 export class CheckboxComponent extends CheckboxControlValueAccessor {
 

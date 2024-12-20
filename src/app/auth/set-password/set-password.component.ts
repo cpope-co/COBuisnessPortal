@@ -14,19 +14,18 @@ import { InputComponent } from '../../shared/input/input.component';
 import { matchControlsValidator } from '../../validators/verifypassword.validator';
 
 @Component({
-  selector: 'app-set-password',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatIconModule,
-    MatButtonModule,
-    InputComponent
-  ],
-  templateUrl: './set-password.component.html',
-  styleUrl: './set-password.component.scss'
+    selector: 'app-set-password',
+    imports: [
+        ReactiveFormsModule,
+        MatCardModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatIconModule,
+        MatButtonModule,
+        InputComponent
+    ],
+    templateUrl: './set-password.component.html',
+    styleUrl: './set-password.component.scss'
 })
 export class SetPasswordComponent {
 

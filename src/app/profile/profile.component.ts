@@ -14,16 +14,15 @@ import { openLoseChangesDialog } from '../shared/lose-changes-dialog/lose-change
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-profile',
-  standalone: true,
-  imports: [
-    MatCardModule,
-    InputComponent,
-    MatButtonModule,
-    ReactiveFormsModule
-  ],
-  templateUrl: './profile.component.html',
-  styleUrl: './profile.component.scss'
+    selector: 'app-profile',
+    imports: [
+        MatCardModule,
+        InputComponent,
+        MatButtonModule,
+        ReactiveFormsModule
+    ],
+    templateUrl: './profile.component.html',
+    styleUrl: './profile.component.scss'
 })
 export class ProfileComponent {
 

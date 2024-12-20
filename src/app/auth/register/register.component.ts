@@ -24,27 +24,26 @@ import { ApiResponseError } from '../../shared/api-response-error';
 import { matchControlsValidator } from '../../validators/verifypassword.validator';
 
 @Component({
-  selector: 'register',
-  standalone: true,
-  imports: [
-    MatCardModule,
-    MatButtonModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    InputComponent,
-    SelectComponent,
-    RadioComponent,
-    RecaptchaV3Module,
-    NgxMaskDirective,
-    NgxMaskPipe,
-  ],
-  providers: [
-    ReCaptchaV3Service,
-    RecaptchaLoaderService,
-    { provide: RECAPTCHA_V3_SITE_KEY, useValue: environment.recaptchaSiteKey }
-  ],
-  templateUrl: './register.component.html',
-  styleUrl: './register.component.scss'
+    selector: 'register',
+    imports: [
+        MatCardModule,
+        MatButtonModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        InputComponent,
+        SelectComponent,
+        RadioComponent,
+        RecaptchaV3Module,
+        NgxMaskDirective,
+        NgxMaskPipe,
+    ],
+    providers: [
+        ReCaptchaV3Service,
+        RecaptchaLoaderService,
+        { provide: RECAPTCHA_V3_SITE_KEY, useValue: environment.recaptchaSiteKey }
+    ],
+    templateUrl: './register.component.html',
+    styleUrl: './register.component.scss'
 })
 export class RegisterComponent {
 

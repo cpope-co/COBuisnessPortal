@@ -13,23 +13,22 @@ import { MessagesService } from '../../messages/messages.service';
 import { MatInputModule } from '@angular/material/input';
 import { TableComponent } from '../../shared/table/table.component';
 @Component({
-  selector: 'app-users-list',
-  standalone: true,
-  imports: [
-    RouterModule,
-    JsonPipe,
-    TitleCasePipe,
-    MatTableModule,
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatInputModule,
-    TableComponent
-  ],
-  templateUrl: './users-list.component.html',
-  styleUrl: './users-list.component.scss'
+    selector: 'app-users-list',
+    imports: [
+        RouterModule,
+        JsonPipe,
+        TitleCasePipe,
+        MatTableModule,
+        MatCardModule,
+        MatIconModule,
+        MatButtonModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatInputModule,
+        TableComponent
+    ],
+    templateUrl: './users-list.component.html',
+    styleUrl: './users-list.component.scss'
 })
 export class UsersListComponent {
 

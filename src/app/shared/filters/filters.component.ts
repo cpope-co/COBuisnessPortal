@@ -7,19 +7,18 @@ import { MatFormField, MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 
 @Component({
-  selector: 'app-filters',
-  standalone: true,
-  imports: [
-    MatButtonModule,
-    MatIconModule,
-    FormsModule,
-    MatInputModule,
-    MatSelectModule,
-    MatFormField,
-    JsonPipe
-  ],
-  templateUrl: './filters.component.html',
-  styleUrl: './filters.component.scss'
+    selector: 'app-filters',
+    imports: [
+        MatButtonModule,
+        MatIconModule,
+        FormsModule,
+        MatInputModule,
+        MatSelectModule,
+        MatFormField,
+        JsonPipe
+    ],
+    templateUrl: './filters.component.html',
+    styleUrl: './filters.component.scss'
 })
 export class FiltersComponent {
 

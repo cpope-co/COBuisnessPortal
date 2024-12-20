@@ -18,24 +18,23 @@ import { openLoseChangesDialog } from '../../shared/lose-changes-dialog/lose-cha
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-user-detail',
-  standalone: true,
-  imports: [
-    RouterLink,
-    MatCardModule,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatButtonModule,
-    NgxMaskDirective,
-    NgxMaskPipe,
-    InputComponent,
-    SelectComponent,
-    RadioComponent,
-    MatIconModule,
-    MatMenuModule,
-  ],
-  templateUrl: './user-detail.component.html',
-  styleUrl: './user-detail.component.scss'
+    selector: 'app-user-detail',
+    imports: [
+        RouterLink,
+        MatCardModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatButtonModule,
+        NgxMaskDirective,
+        NgxMaskPipe,
+        InputComponent,
+        SelectComponent,
+        RadioComponent,
+        MatIconModule,
+        MatMenuModule,
+    ],
+    templateUrl: './user-detail.component.html',
+    styleUrl: './user-detail.component.scss'
 })
 export class UserDetailComponent {
 

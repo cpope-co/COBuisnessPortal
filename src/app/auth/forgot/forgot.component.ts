@@ -12,20 +12,19 @@ import { forgot } from './forgot.model';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-forgot',
-  standalone: true,
-  imports: [
-    MatCardModule,
-    ReactiveFormsModule,
-    MatButtonModule,
-    MatInputModule,
-    MatIconModule,
-    MatFormFieldModule,
-    InputComponent,
-    RouterLink
-  ],
-  templateUrl: './forgot.component.html',
-  styleUrl: './forgot.component.scss'
+    selector: 'app-forgot',
+    imports: [
+        MatCardModule,
+        ReactiveFormsModule,
+        MatButtonModule,
+        MatInputModule,
+        MatIconModule,
+        MatFormFieldModule,
+        InputComponent,
+        RouterLink
+    ],
+    templateUrl: './forgot.component.html',
+    styleUrl: './forgot.component.scss'
 })
 export class ForgotComponent {
   formHandlerService = inject(FormHandlingService);

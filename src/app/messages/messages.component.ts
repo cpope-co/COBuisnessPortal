@@ -4,14 +4,13 @@ import { NgClass } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  selector: 'messages',
-  standalone: true,
-  imports: [
-    NgClass,
-    MatIcon
-  ],
-  templateUrl: './messages.component.html',
-  styleUrl: './messages.component.scss'
+    selector: 'messages',
+    imports: [
+        NgClass,
+        MatIcon
+    ],
+    templateUrl: './messages.component.html',
+    styleUrl: './messages.component.scss'
 })
 export class MessagesComponent {
 

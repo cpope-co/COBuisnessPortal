@@ -8,13 +8,13 @@ import { Router } from '@angular/router';
 import { MessagesService } from '../../messages/messages.service';
 
 @Component({
-  selector: 'app-lose-changes-dialog',
-  standalone: true,
-  imports: [
-    MatDialogModule,
-    MatButtonModule],
-  templateUrl: './lose-changes-dialog.component.html',
-  styleUrl: './lose-changes-dialog.component.scss'
+    selector: 'app-lose-changes-dialog',
+    imports: [
+        MatDialogModule,
+        MatButtonModule
+    ],
+    templateUrl: './lose-changes-dialog.component.html',
+    styleUrl: './lose-changes-dialog.component.scss'
 })
 export class LoseChangesDialogComponent {
   dialogRef = inject(MatDialogRef<LoseChangesDialogComponent>);

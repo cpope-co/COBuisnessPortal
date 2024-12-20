@@ -5,23 +5,22 @@ import { TitleCasePipe } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 @Component({
-  selector: 'co-multi-select',
-  standalone: true, 
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => MultiSelectComponent),
-      multi: true,
-    }
-  ],
-  imports: [
-    MatFormFieldModule,
-    MatSelectModule,
-    TitleCasePipe,
-    ReactiveFormsModule
-  ],
-  templateUrl: './multi-select.component.html',
-  styleUrl: './multi-select.component.scss'
+    selector: 'co-multi-select',
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => MultiSelectComponent),
+            multi: true,
+        }
+    ],
+    imports: [
+        MatFormFieldModule,
+        MatSelectModule,
+        TitleCasePipe,
+        ReactiveFormsModule
+    ],
+    templateUrl: './multi-select.component.html',
+    styleUrl: './multi-select.component.scss'
 })
 export class MultiSelectComponent extends SelectMultipleControlValueAccessor {
 

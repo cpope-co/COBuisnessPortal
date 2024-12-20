@@ -6,23 +6,22 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormHandlingService } from '../../services/form-handling.service';
 
 @Component({
-  selector: 'co-select',
-  standalone: true,
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => SelectComponent),
-      multi: true,
-    }
-  ],
-  imports: [
-    MatFormFieldModule,
-    MatSelectModule,
-    TitleCasePipe,
-    ReactiveFormsModule
-  ],
-  templateUrl: './select.component.html',
-  styleUrl: './select.component.scss'
+    selector: 'co-select',
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => SelectComponent),
+            multi: true,
+        }
+    ],
+    imports: [
+        MatFormFieldModule,
+        MatSelectModule,
+        TitleCasePipe,
+        ReactiveFormsModule
+    ],
+    templateUrl: './select.component.html',
+    styleUrl: './select.component.scss'
 })
 
 export class SelectComponent extends SelectControlValueAccessor {

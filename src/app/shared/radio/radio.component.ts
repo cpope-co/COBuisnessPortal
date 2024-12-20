@@ -6,23 +6,22 @@ import { MatRadioModule } from '@angular/material/radio';
 import { FormHandlingService } from '../../services/form-handling.service';
 
 @Component({
-  selector: 'co-radio',
-  standalone: true,
-  providers: [
-    { 
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => RadioComponent),
-      multi: true,
-    }
-  ],
-  imports: [
-    MatFormFieldModule,
-    MatRadioModule,
-    TitleCasePipe,
-    ReactiveFormsModule
-  ],
-  templateUrl: './radio.component.html',
-  styleUrl: './radio.component.scss'
+    selector: 'co-radio',
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => RadioComponent),
+            multi: true,
+        }
+    ],
+    imports: [
+        MatFormFieldModule,
+        MatRadioModule,
+        TitleCasePipe,
+        ReactiveFormsModule
+    ],
+    templateUrl: './radio.component.html',
+    styleUrl: './radio.component.scss'
 })
 export class RadioComponent extends RadioControlValueAccessor {
   formHandlerService = inject(FormHandlingService);

@@ -15,24 +15,23 @@ import { MenuService } from './shared/menu/menu.service';
 import { MenuItem } from './shared/menu/menu.model';
 import { SessionService } from './services/session.service';
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    RouterOutlet,
-    RouterLink,
-    LoadingIndicatorComponent,
-    MatSidenavContainer,
-    MatSidenavModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatListModule,
-    MatMenuModule,
-    MessagesComponent,
-    MenuComponent
-  ],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+    selector: 'app-root',
+    imports: [
+        RouterOutlet,
+        RouterLink,
+        LoadingIndicatorComponent,
+        MatSidenavContainer,
+        MatSidenavModule,
+        MatToolbarModule,
+        MatButtonModule,
+        MatIconModule,
+        MatListModule,
+        MatMenuModule,
+        MessagesComponent,
+        MenuComponent
+    ],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.scss'
 })
 export class AppComponent {
   authService = inject(AuthService);

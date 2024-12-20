@@ -7,15 +7,14 @@ import { MenuService } from './menu.service';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
-  selector: 'co-menu',
-  standalone: true,
-  imports: [
-    JsonPipe,
-    MatListModule,
-    RouterLink
-  ],
-  templateUrl: './menu.component.html',
-  styleUrl: './menu.component.scss'
+    selector: 'co-menu',
+    imports: [
+        JsonPipe,
+        MatListModule,
+        RouterLink
+    ],
+    templateUrl: './menu.component.html',
+    styleUrl: './menu.component.scss'
 })
 export class MenuComponent {
   menuService = inject(MenuService);

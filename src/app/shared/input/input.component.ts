@@ -7,23 +7,22 @@ import { FormHandlingService } from '../../services/form-handling.service';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 
 @Component({
-  selector: 'co-input',
-  standalone: true,
-  imports: [
-    MatFormField,
-    MatInputModule,
-    ReactiveFormsModule,
-    JsonPipe,
-    NgxMaskDirective,
-    NgxMaskPipe,    
-  ],
-  providers: [{
-    provide: NG_VALUE_ACCESSOR,
-    useExisting: forwardRef(() => InputComponent),
-    multi: true
-  }],
-  templateUrl: './input.component.html',
-  styleUrl: './input.component.scss'
+    selector: 'co-input',
+    imports: [
+        MatFormField,
+        MatInputModule,
+        ReactiveFormsModule,
+        JsonPipe,
+        NgxMaskDirective,
+        NgxMaskPipe,
+    ],
+    providers: [{
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => InputComponent),
+            multi: true
+        }],
+    templateUrl: './input.component.html',
+    styleUrl: './input.component.scss'
 })
 export class InputComponent implements ControlValueAccessor {
 

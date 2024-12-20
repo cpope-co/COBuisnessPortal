@@ -5,14 +5,13 @@ import { ProductDialogDataModel } from './product-dialog.data.model';
 import { CurrencyPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-product',
-  standalone: true,
-  imports: [
-    MatDialogModule,
-    CurrencyPipe
-  ],
-  templateUrl: './product-dialog.component.html',
-  styleUrl: './product-dialog.component.scss'
+    selector: 'app-product',
+    imports: [
+        MatDialogModule,
+        CurrencyPipe
+    ],
+    templateUrl: './product-dialog.component.html',
+    styleUrl: './product-dialog.component.scss'
 })
 export class ProductDialogComponent {
   dialogRef = inject(MatDialogRef);

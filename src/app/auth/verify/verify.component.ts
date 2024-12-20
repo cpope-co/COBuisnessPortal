@@ -5,11 +5,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MessagesService } from '../../messages/messages.service';
 
 @Component({
-  selector: 'verify',
-  standalone: true,
-  imports: [MatCardModule],
-  templateUrl: './verify.component.html',
-  styleUrl: './verify.component.scss'
+    selector: 'verify',
+    imports: [MatCardModule],
+    templateUrl: './verify.component.html',
+    styleUrl: './verify.component.scss'
 })
 export class VerifyComponent {
   route = inject(ActivatedRoute);

@@ -23,26 +23,25 @@ import { MatDialog } from '@angular/material/dialog';
 import { openProductDialog } from '../product-dialog/product-dialog.component';
 
 @Component({
-  selector: 'app-product-catalog',
-  standalone: true,
-  animations: [],
-  imports: [
-    RouterModule,
-    JsonPipe,
-    TitleCasePipe,
-    MatTableModule,
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatInputModule,
-    MatSelectModule,
-    SelectComponent,
-    FiltersComponent
-  ],
-  templateUrl: './product-catalog.component.html',
-  styleUrl: './product-catalog.component.scss'
+    selector: 'app-product-catalog',
+    animations: [],
+    imports: [
+        RouterModule,
+        JsonPipe,
+        TitleCasePipe,
+        MatTableModule,
+        MatCardModule,
+        MatIconModule,
+        MatButtonModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatInputModule,
+        MatSelectModule,
+        SelectComponent,
+        FiltersComponent
+    ],
+    templateUrl: './product-catalog.component.html',
+    styleUrl: './product-catalog.component.scss'
 })
 
 export class ProductCatalogComponent {

@@ -10,17 +10,16 @@ import { InputComponent } from '../../shared/input/input.component';
 import { FormHandlingService } from '../../services/form-handling.service';
 import { login } from '../../models/login.model';
 @Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [
-    RouterLink,
-    ReactiveFormsModule,
-    MatButtonModule,
-    MatCardModule,
-    InputComponent
-  ],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+    selector: 'app-login',
+    imports: [
+        RouterLink,
+        ReactiveFormsModule,
+        MatButtonModule,
+        MatCardModule,
+        InputComponent
+    ],
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.scss'
 })
 export class LoginComponent {
 
