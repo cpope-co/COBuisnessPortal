@@ -51,10 +51,13 @@ export class AuthService {
     constructor() {
         this.loadUserFromStorage();
         this.loadTokenFromStorage();
+        
+        this.validateTokenOnInit();
         effect(() => {
             const user = this.user();
             if (user) {
                 sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+                this.setRoles();
             }
         });
         effect(() => {
@@ -87,6 +90,26 @@ export class AuthService {
                     this.#isAdminSignal.set(false);
                     break;
             }
+        }
+    }
+
+    private async validateTokenOnInit() {
+        try {
+            const status = await this.checkExpiry();
+            if (status === 'expiring' || status === 'expired') {
+                await this.refreshToken();
+            }
+        } catch (error) {
+            console.log('Token validation failed:', error);
+            this.logout();
+        }
+    }
+    private async refreshToken() {
+        try {
+            const user = await this.refresh();
+            this.#userSignal.set(user);
+        } catch (error) {
+            this.logout();
         }
     }
     loadUserFromStorage() {
