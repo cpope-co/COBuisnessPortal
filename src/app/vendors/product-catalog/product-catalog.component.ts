@@ -27,8 +27,6 @@ import { openProductDialog } from '../product-dialog/product-dialog.component';
     animations: [],
     imports: [
         RouterModule,
-        JsonPipe,
-        TitleCasePipe,
         MatTableModule,
         MatCardModule,
         MatIconModule,
@@ -37,7 +35,6 @@ import { openProductDialog } from '../product-dialog/product-dialog.component';
         MatSortModule,
         MatInputModule,
         MatSelectModule,
-        SelectComponent,
         FiltersComponent
     ],
     templateUrl: './product-catalog.component.html',

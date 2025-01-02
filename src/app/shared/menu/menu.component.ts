@@ -9,7 +9,6 @@ import { AuthService } from '../../auth/auth.service';
 @Component({
     selector: 'co-menu',
     imports: [
-        JsonPipe,
         MatListModule,
         RouterLink
     ],

@@ -20,16 +20,12 @@ import { MatDialog } from '@angular/material/dialog';
 @Component({
     selector: 'app-user-detail',
     imports: [
-        RouterLink,
         MatCardModule,
         ReactiveFormsModule,
         MatInputModule,
         MatButtonModule,
-        NgxMaskDirective,
-        NgxMaskPipe,
         InputComponent,
         SelectComponent,
-        RadioComponent,
         MatIconModule,
         MatMenuModule,
     ],

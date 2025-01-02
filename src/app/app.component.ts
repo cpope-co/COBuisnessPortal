@@ -20,7 +20,6 @@ import { SessionService } from './services/session.service';
         RouterOutlet,
         RouterLink,
         LoadingIndicatorComponent,
-        MatSidenavContainer,
         MatSidenavModule,
         MatToolbarModule,
         MatButtonModule,

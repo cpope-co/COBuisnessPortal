@@ -16,8 +16,6 @@ import { TableComponent } from '../../shared/table/table.component';
     selector: 'app-users-list',
     imports: [
         RouterModule,
-        JsonPipe,
-        TitleCasePipe,
         MatTableModule,
         MatCardModule,
         MatIconModule,
@@ -25,7 +23,6 @@ import { TableComponent } from '../../shared/table/table.component';
         MatPaginatorModule,
         MatSortModule,
         MatInputModule,
-        TableComponent
     ],
     templateUrl: './users-list.component.html',
     styleUrl: './users-list.component.scss'

@@ -34,8 +34,6 @@ import { matchControlsValidator } from '../../validators/verifypassword.validato
         SelectComponent,
         RadioComponent,
         RecaptchaV3Module,
-        NgxMaskDirective,
-        NgxMaskPipe,
     ],
     providers: [
         ReCaptchaV3Service,

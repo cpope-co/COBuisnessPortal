@@ -12,9 +12,7 @@ import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
         MatFormField,
         MatInputModule,
         ReactiveFormsModule,
-        JsonPipe,
         NgxMaskDirective,
-        NgxMaskPipe,
     ],
     providers: [{
             provide: NG_VALUE_ACCESSOR,

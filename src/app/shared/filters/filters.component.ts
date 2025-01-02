@@ -15,7 +15,6 @@ import { MatSelectModule } from '@angular/material/select';
         MatInputModule,
         MatSelectModule,
         MatFormField,
-        JsonPipe
     ],
     templateUrl: './filters.component.html',
     styleUrl: './filters.component.scss'
