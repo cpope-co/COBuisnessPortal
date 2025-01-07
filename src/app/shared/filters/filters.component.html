@@ -10,7 +10,7 @@
   <mat-form-field appearance="outline" class="ms-3">
     <mat-label>{{filterGroup.label}}</mat-label>
     <mat-select [aria-label]="filterGroup.name" (selectionChange)="onFilterChange($event)">
-      <mat-option [value]="-1">None</mat-option>
+      <mat-option [value]="-1">All</mat-option>
       @for(option of filterGroup.options; track $index) {
         <mat-option [value]="option.value">
           {{ option.label }}

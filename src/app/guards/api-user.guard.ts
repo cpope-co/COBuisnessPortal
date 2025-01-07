@@ -7,12 +7,10 @@ export const isUserApiUser: CanActivateFn =
   const authService = inject(AuthService);
   const router = inject(Router);
   if(authService.isApiUser()) {
-    router.navigate(['/apiuser/api-token-management']);
     return true;
   } else {
     router.navigate(['/auth/unauthorized']);
     return false
   }
   
-  return true;
 };
