@@ -12,22 +12,23 @@
     />
     <table mat-table matSort [dataSource]="productsDataSource">
       @for(column of displayedColumns; track column) {
-      <ng-container matColumnDef="{{ column }}">
-        <th mat-sort-header mat-header-cell *matHeaderCellDef>{{ column }}</th>
-        <td mat-cell *matCellDef="let element">{{ element[column] }}</td>
+      <ng-container matColumnDef="{{ column.column }}">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>{{ column.label }}</th>
+        <td mat-cell *matCellDef="let element">
+          {{ getMappedValue(column.column, element[column.column]) }}
+        </td>
       </ng-container>
       }
       
       <tr 
         mat-header-row 
-        *matHeaderRowDef="displayedColumns"></tr>
+        *matHeaderRowDef="displayedColumnNames"></tr>
       <tr
       mat-row 
-      *matRowDef="let row; columns: displayedColumns" 
+      *matRowDef="let row; columns: displayedColumnNames" 
       (click)="onViewProduct(row)"
       class="hover-row"></tr>
     </table>
-
     <mat-paginator
       pageSize="10"
       [pageSizeOptions]="[10, 50, 100]"

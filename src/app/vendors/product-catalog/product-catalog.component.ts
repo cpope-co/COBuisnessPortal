@@ -21,6 +21,7 @@ import { FiltersComponent } from "../../shared/filters/filters.component";
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { openProductDialog } from '../product-dialog/product-dialog.component';
+import { TableComponent } from '../../shared/table/table.component';
 
 @Component({
     selector: 'app-product-catalog',
@@ -35,7 +36,8 @@ import { openProductDialog } from '../product-dialog/product-dialog.component';
         MatSortModule,
         MatInputModule,
         MatSelectModule,
-        FiltersComponent
+        FiltersComponent,
+        TableComponent
     ],
     templateUrl: './product-catalog.component.html',
     styleUrl: './product-catalog.component.scss'
@@ -61,16 +63,33 @@ export class ProductCatalogComponent {
 
   form!: FormGroup<any>;
 
-  displayedColumns: string[] = [
-    'SKU',
-    'manufacturerSKU',
-    'categoryID',
-    'description',
-    'size',
-    'unitOfMeasurement',
-    'supplierID',
-    'cost'
+  displayedColumns: {column: string, label: string}[] = [
+    {column: 'SKU', label: 'SKU'},
+    {column: 'manufacturerSKU' , label: 'Manufacturer SKU'},
+    {column: 'categoryID', label: 'Category'},
+    {column: 'description', label: 'Description'},
+    {column: 'size', label: 'Size'},
+    {column: 'unitOfMeasurement', label: 'Unit'},
+    {column: 'supplierID', label: 'Supplier'},
+    {column: 'cost', label: 'Cost'},
   ];
+
+  get displayedColumnNames() {
+    return this.displayedColumns.map(col => col.column);
+  }
+
+  getMappedValue(column: string, value: any): string {
+    if (column === 'categoryID') {
+      return this.getCategoryName(value);
+    }
+    // Add more mappings if needed
+    return value;
+  }
+
+  getCategoryName(categoryID: string): string {
+    const category = this.productCategories().find(cat => cat.id === categoryID);
+    return category ? category.name : 'Unknown';
+  }
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -123,7 +142,7 @@ export class ProductCatalogComponent {
       if (filters.search !== undefined) {
         const searchTerm = filters.search.toLowerCase();
         matchesSearch = this.displayedColumns.some(column => {
-          const value = data[column as keyof Product]?.toString().toLowerCase() || '';
+          const value = data[column as unknown as keyof Product]?.toString().toLowerCase() || '';
           return value.includes(searchTerm);
         });
       }
