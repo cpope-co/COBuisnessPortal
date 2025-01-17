@@ -37,7 +37,6 @@ import { TableComponent } from '../../shared/table/table.component';
         MatInputModule,
         MatSelectModule,
         FiltersComponent,
-        TableComponent
     ],
     templateUrl: './product-catalog.component.html',
     styleUrl: './product-catalog.component.scss'
