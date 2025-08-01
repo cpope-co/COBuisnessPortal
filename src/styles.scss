@@ -1,26 +1,12 @@
 @use 'bootstrap/scss/bootstrap';
-@use '@angular/material' as mat;
-@use '_theme-colors.scss' as co-theme-colors;
-@use 'sass:map';
 
-html {
-    color-scheme: light;
-    @include mat.theme((
-        color: (
-            theme-type: light,
-            primary: co-theme-colors.$primary-palette,
-            secondary: co-theme-colors.$secondary-palette,
-            tertiary: co-theme-colors.$tertiary-palette,
-            error: co-theme-colors.$error-palette,
-            ),
-        typography: (
-            font-family: 'Roboto, "Helvetica Neue", sans-serif',
-        ),
-        density: 0,
-    ));
-}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-html,
-body {
-    height: 100%;
+.mat-drawer-content {
+    background: url('/assets/bg.png') no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
