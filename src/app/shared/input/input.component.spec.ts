@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NgxMaskDirective, NGX_MASK_CONFIG } from 'ngx-mask';
 import { InputComponent } from './input.component';
-import { NgxMaskDirective, IConfig, NGX_MASK_CONFIG } from 'ngx-mask';
 
 describe('InputComponent', () => {
   let component: InputComponent;
   let fixture: ComponentFixture<InputComponent>;
 
-  const maskConfig: Partial<IConfig> = {
+  const maskConfig = {
     validation: false,
   };
 
