@@ -32,7 +32,15 @@ module.exports = function (config) {
       reporters: [
         { type: 'html' },
         { type: 'text-summary' }
-      ]
+      ],
+      check: {
+        global: {
+          statements: 80,
+          branches: 75,
+          functions: 85,
+          lines: 80,
+        },
+      },
     },
     reporters: ['progress', 'kjhtml', 'spec'],
     specReporter: {

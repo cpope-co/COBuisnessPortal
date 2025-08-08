@@ -16,6 +16,7 @@ export class FormHandlingService {
 
   createFormGroup(model: { [key: string]: FormHandling }): FormGroup {
     let group: any = {};
+    let formGroupConfigs: { [key: string]: any } = {};
 
     Object.keys(model).forEach(key => {
       const field = model[key];
@@ -24,17 +25,17 @@ export class FormHandlingService {
         // If the specified formGroup does not exist, initialize it
         if (!group[field.formGroup.name]) {
           group[field.formGroup.name] = this.fb.group({});
+          // Store the options for later application
+          if (field.formGroup.options) {
+            formGroupConfigs[field.formGroup.name] = field.formGroup.options;
+          }
         }
         // Add the control to the specified formGroup
-        // Create the control first
-        const control = this.fb.control(field.value || '');
+        // Create the control first with validators
+        const control = this.fb.control(field.value || '', field.Validators || []);
 
         // Add the control to the group
         group[field.formGroup.name].addControl(key, control);
-
-        // Set the validators
-        control.addValidators(field.Validators || []);
-        control.addValidators(field.formGroup.options?.validators || []);
 
       } else {
         // If no formGroup specified, add control to the root group
@@ -42,12 +43,38 @@ export class FormHandlingService {
       }
     });
 
-    return this.fb.group(group);
+    // Create the main form group
+    const formGroup = this.fb.group(group);
+
+    // Apply group validators after the form group is created
+    Object.keys(formGroupConfigs).forEach(groupName => {
+      const groupConfig = formGroupConfigs[groupName];
+      const nestedGroup = formGroup.get(groupName) as FormGroup;
+      if (nestedGroup && groupConfig.validators) {
+        nestedGroup.addValidators(groupConfig.validators);
+        nestedGroup.updateValueAndValidity(); // Trigger validation
+      }
+    });
+
+    return formGroup;
   }
 
 
   getErrorMessages(form: FormGroup, controlName: string, model: { [key: string]: FormHandling }): string {
-    const control = form.get(controlName);
+    // First try to get the control directly
+    let control = form.get(controlName);
+    
+    // If not found, search in nested form groups
+    if (!control) {
+      const modelField = model[controlName];
+      if (modelField?.formGroup) {
+        const nestedGroup = form.get(modelField.formGroup.name) as FormGroup;
+        if (nestedGroup) {
+          control = nestedGroup.get(controlName);
+        }
+      }
+    }
+    
     if (control?.errors) {
       // Check for customError first
       if (control.errors['customError']) {

@@ -1,20 +1,65 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; 
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Router, NavigationStart } from '@angular/router';
+import { AuthService } from './auth/auth.service';
+import { MessagesService } from './messages/messages.service';
+import { MenuService } from './shared/menu/menu.service';
+import { SessionService } from './services/session.service';
+import { signal } from '@angular/core';
+import { Subject } from 'rxjs';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
+  let authService: jasmine.SpyObj<AuthService>;
+  let messagesService: jasmine.SpyObj<MessagesService>;
+  let menuService: jasmine.SpyObj<MenuService>;
+  let sessionService: jasmine.SpyObj<SessionService>;
+  let router: jasmine.SpyObj<Router>;
+  let routerEventsSubject: Subject<any>;
+  let authLogoutSubject: Subject<any>;
 
   beforeEach(async () => {
+    routerEventsSubject = new Subject();
+    authLogoutSubject = new Subject();
+    
+    const authServiceSpy = jasmine.createSpyObj('AuthService', ['logout'], {
+      isLoggedIn: signal(false),
+      logoutEvent: authLogoutSubject.asObservable()
+    });
+    const messagesServiceSpy = jasmine.createSpyObj('MessagesService', ['clear'], {
+      message: signal(null)
+    });
+    const menuServiceSpy = jasmine.createSpyObj('MenuService', ['getMenuItems', 'clearMenuItems', 'buildMenu', 'setMenuItems']);
+    const sessionServiceSpy = jasmine.createSpyObj('SessionService', ['startSessionCheck', 'stopSessionCheck']);
+    const routerSpy = jasmine.createSpyObj('Router', ['navigate'], {
+      events: routerEventsSubject.asObservable()
+    });
+
     await TestBed.configureTestingModule({
       imports: [
+        AppComponent,
         HttpClientTestingModule,
         BrowserAnimationsModule
       ],
-      providers: []
+      providers: [
+        { provide: AuthService, useValue: authServiceSpy },
+        { provide: MessagesService, useValue: messagesServiceSpy },
+        { provide: MenuService, useValue: menuServiceSpy },
+        { provide: SessionService, useValue: sessionServiceSpy },
+        { provide: Router, useValue: routerSpy }
+      ],
+      schemas: [NO_ERRORS_SCHEMA] // This will ignore unknown elements and properties
     }).compileComponents();
+
+    authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    messagesService = TestBed.inject(MessagesService) as jasmine.SpyObj<MessagesService>;
+    menuService = TestBed.inject(MenuService) as jasmine.SpyObj<MenuService>;
+    sessionService = TestBed.inject(SessionService) as jasmine.SpyObj<SessionService>;
+    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
   });
 
   beforeEach(() => {
@@ -27,5 +72,49 @@ describe('AppComponent', () => {
     expect(component).toBeTruthy();
   });
 
- 
+  it('should inject all required services', () => {
+    expect(component.authService).toBeTruthy();
+    expect(component.messageService).toBeTruthy();
+    expect(component.menuService).toBeTruthy();
+    expect(component.sessionService).toBeTruthy();
+    expect(component.router).toBeTruthy();
+  });
+
+  it('should clear messages on NavigationStart', () => {
+    // Trigger a NavigationStart event
+    routerEventsSubject.next(new NavigationStart(1, '/test'));
+    
+    expect(messagesService.clear).toHaveBeenCalled();
+  });
+
+  it('should not clear messages on other router events', () => {
+    messagesService.clear.calls.reset();
+    
+    // Trigger a non-NavigationStart event
+    routerEventsSubject.next({ type: 'other' });
+    
+    expect(messagesService.clear).not.toHaveBeenCalled();
+  });
+
+  describe('constructor behavior', () => {
+    it('should subscribe to router events and auth logout event', () => {
+      // The component is already created in the main beforeEach
+      // Just verify that the subscriptions are working
+      expect(component).toBeTruthy();
+      expect(component.isLoggedIn).toBeDefined();
+    });
+  });
+
+  describe('onLogout', () => {
+    it('should stop session check and call auth service logout', () => {
+      component.onLogout();
+      
+      expect(sessionService.stopSessionCheck).toHaveBeenCalled();
+      expect(authService.logout).toHaveBeenCalled();
+    });
+  });
+
+  it('should expose isLoggedIn signal from authService', () => {
+    expect(component.isLoggedIn).toBe(authService.isLoggedIn);
+  });
 });

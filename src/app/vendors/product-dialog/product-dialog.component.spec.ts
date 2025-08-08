@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogRef } from '@angular/material/dialog';
 import { ProductDialogComponent } from './product-dialog.component'; // Add this import
 
 describe('ProductDialogComponent', () => { // Add the describe block
@@ -7,7 +8,10 @@ describe('ProductDialogComponent', () => { // Add the describe block
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProductDialogComponent]
+      imports: [ProductDialogComponent],
+      providers: [
+        { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } }
+      ]
     })
     .compileComponents();
 

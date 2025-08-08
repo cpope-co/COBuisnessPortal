@@ -30,7 +30,8 @@ export class SessionService {
     }
 
     private checkWarningTimeout() {
-        const warningTimeoutEpoch = parseInt(sessionStorage.getItem('warningTimeout') || "0", 10);
+        const warningTimeoutString = sessionStorage.getItem('warningTimeout') || "0";
+        const warningTimeoutEpoch = parseInt(warningTimeoutString, 10) || 0;
         const currentTimeEpoch = Math.floor(Date.now() / 1000); // Current time in seconds since epoch
 
         const remainingWarningTimeMs = Math.max(0, (warningTimeoutEpoch - currentTimeEpoch) * 1000);
@@ -44,7 +45,8 @@ export class SessionService {
     }
 
     private checkSessionTimeout() {
-        const sessionTimeoutEpoch = parseInt(sessionStorage.getItem('sessionTimeout') || "0", 10);
+        const sessionTimeoutString = sessionStorage.getItem('sessionTimeout') || "0";
+        const sessionTimeoutEpoch = parseInt(sessionTimeoutString, 10) || 0;
         const currentTimeEpoch = Math.floor(Date.now() / 1000); // Current time in seconds since epoch
 
         const remainingSessionTimeMs = Math.max(0, (sessionTimeoutEpoch - currentTimeEpoch) * 1000);
@@ -58,6 +60,13 @@ export class SessionService {
     }
 
     private handleWarningTimeout() {
+        if (this.dialog) {
+            this.openRefreshSessionDialog();
+        }
+    }
+
+    // Wrapper method to make testing easier
+    private openRefreshSessionDialog() {
         openRefreshSessionDialog(this.dialog, {
             mode: 'refresh',
             title: 'Session Expiring',
@@ -90,6 +99,10 @@ export class SessionService {
         if (user) {
             sessionStorage.setItem('sessionTimeout', `${user.exp}`);
             sessionStorage.setItem('warningTimeout', `${user.exp - 120}`);
+        } else {
+            // Clear session storage when user is null
+            sessionStorage.removeItem('sessionTimeout');
+            sessionStorage.removeItem('warningTimeout');
         }
     }
 
@@ -97,6 +110,7 @@ export class SessionService {
         const user = this.authService.user();
         if (!user) {
             this.authService.logout();
+            return false;
         }
 
         if (user?.exp && user.exp * 1000 < Date.now()) {

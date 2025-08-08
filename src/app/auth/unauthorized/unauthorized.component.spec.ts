@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 import { UnauthorizedComponent } from './unauthorized.component';
 
@@ -8,7 +10,16 @@ describe('UnauthorizedComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UnauthorizedComponent]
+      imports: [UnauthorizedComponent],
+      providers: [
+        { 
+          provide: ActivatedRoute, 
+          useValue: { 
+            params: of({}),
+            queryParams: of({}) 
+          } 
+        }
+      ]
     })
     .compileComponents();
 

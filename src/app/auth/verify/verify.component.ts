@@ -41,7 +41,7 @@ export class VerifyComponent {
     }
     catch (error: any) {
       this.#isVerifying.set(false);
-      this.messageService.showMessage('Error verifying token.', 'danger', error.messages);
+      this.messageService.showMessage('Error verifying token.', 'danger');
     }
   }
 }

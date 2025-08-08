@@ -7,6 +7,7 @@ export function passwordValidator(): ValidatorFn {
 
     if (!value) {
       errors['required'] = true;
+      return errors;
     }
 
     if (value.length < 10) {

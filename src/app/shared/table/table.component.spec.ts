@@ -14,6 +14,12 @@ describe('TableComponent', () => {
 
     fixture = TestBed.createComponent(TableComponent);
     component = fixture.componentInstance;
+    
+    // Set required inputs
+    fixture.componentRef.setInput('dataSource', []);
+    fixture.componentRef.setInput('displayedColumns', ['col1']);
+    fixture.componentRef.setInput('columnSettings', [{ key: 'col1', label: 'Column 1' }]);
+    
     fixture.detectChanges();
   });
 
