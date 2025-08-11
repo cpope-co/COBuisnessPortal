@@ -2,13 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Router, NavigationStart } from '@angular/router';
+import { Router, NavigationStart, ActivatedRoute } from '@angular/router';
 import { AuthService } from './auth/auth.service';
 import { MessagesService } from './messages/messages.service';
 import { MenuService } from './shared/menu/menu.service';
 import { SessionService } from './services/session.service';
 import { signal } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('AppComponent', () => {
@@ -35,9 +35,11 @@ describe('AppComponent', () => {
     });
     const menuServiceSpy = jasmine.createSpyObj('MenuService', ['getMenuItems', 'clearMenuItems', 'buildMenu', 'setMenuItems']);
     const sessionServiceSpy = jasmine.createSpyObj('SessionService', ['startSessionCheck', 'stopSessionCheck']);
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate'], {
+    const routerSpy = jasmine.createSpyObj('Router', ['navigate', 'createUrlTree', 'serializeUrl'], {
       events: routerEventsSubject.asObservable()
     });
+    routerSpy.createUrlTree.and.returnValue({});
+    routerSpy.serializeUrl.and.returnValue('/');
 
     await TestBed.configureTestingModule({
       imports: [
@@ -50,7 +52,8 @@ describe('AppComponent', () => {
         { provide: MessagesService, useValue: messagesServiceSpy },
         { provide: MenuService, useValue: menuServiceSpy },
         { provide: SessionService, useValue: sessionServiceSpy },
-        { provide: Router, useValue: routerSpy }
+        { provide: Router, useValue: routerSpy },
+        { provide: ActivatedRoute, useValue: { params: of({}), queryParams: of({}) } }
       ],
       schemas: [NO_ERRORS_SCHEMA] // This will ignore unknown elements and properties
     }).compileComponents();
@@ -102,6 +105,90 @@ describe('AppComponent', () => {
       // Just verify that the subscriptions are working
       expect(component).toBeTruthy();
       expect(component.isLoggedIn).toBeDefined();
+    });
+  });
+
+  describe('constructor behavior when user is logged in', () => {
+    let loggedInComponent: AppComponent;
+    let loggedInFixture: ComponentFixture<AppComponent>;
+    let loggedInSessionService: jasmine.SpyObj<SessionService>;
+
+    beforeEach(async () => {
+      TestBed.resetTestingModule();
+      
+      const loggedInAuthService = jasmine.createSpyObj('AuthService', ['logout'], {
+        isLoggedIn: signal(true),
+        logoutEvent: authLogoutSubject.asObservable()
+      });
+      loggedInSessionService = jasmine.createSpyObj('SessionService', ['startSessionCheck', 'stopSessionCheck']);
+
+      await TestBed.configureTestingModule({
+        imports: [
+          AppComponent,
+          HttpClientTestingModule,
+          BrowserAnimationsModule
+        ],
+        providers: [
+          { provide: AuthService, useValue: loggedInAuthService },
+          { provide: MessagesService, useValue: messagesService },
+          { provide: MenuService, useValue: menuService },
+          { provide: SessionService, useValue: loggedInSessionService },
+          { provide: Router, useValue: router },
+          { provide: ActivatedRoute, useValue: { params: of({}), queryParams: of({}) } }
+        ],
+        schemas: [NO_ERRORS_SCHEMA]
+      }).compileComponents();
+
+      loggedInFixture = TestBed.createComponent(AppComponent);
+      loggedInComponent = loggedInFixture.componentInstance;
+      loggedInFixture.detectChanges();
+    });
+
+    it('should start session check when user is logged in', () => {
+      expect(loggedInSessionService.stopSessionCheck).toHaveBeenCalled();
+      expect(loggedInSessionService.startSessionCheck).toHaveBeenCalled();
+    });
+  });
+
+  describe('constructor behavior when user is not logged in', () => {
+    let loggedOutComponent: AppComponent;
+    let loggedOutFixture: ComponentFixture<AppComponent>;
+    let loggedOutSessionService: jasmine.SpyObj<SessionService>;
+
+    beforeEach(async () => {
+      TestBed.resetTestingModule();
+      
+      const loggedOutAuthService = jasmine.createSpyObj('AuthService', ['logout'], {
+        isLoggedIn: signal(false),
+        logoutEvent: authLogoutSubject.asObservable()
+      });
+      loggedOutSessionService = jasmine.createSpyObj('SessionService', ['startSessionCheck', 'stopSessionCheck']);
+
+      await TestBed.configureTestingModule({
+        imports: [
+          AppComponent,
+          HttpClientTestingModule,
+          BrowserAnimationsModule
+        ],
+        providers: [
+          { provide: AuthService, useValue: loggedOutAuthService },
+          { provide: MessagesService, useValue: messagesService },
+          { provide: MenuService, useValue: menuService },
+          { provide: SessionService, useValue: loggedOutSessionService },
+          { provide: Router, useValue: router },
+          { provide: ActivatedRoute, useValue: { params: of({}), queryParams: of({}) } }
+        ],
+        schemas: [NO_ERRORS_SCHEMA]
+      }).compileComponents();
+
+      loggedOutFixture = TestBed.createComponent(AppComponent);
+      loggedOutComponent = loggedOutFixture.componentInstance;
+      loggedOutFixture.detectChanges();
+    });
+
+    it('should not start session check when user is not logged in', () => {
+      expect(loggedOutSessionService.stopSessionCheck).not.toHaveBeenCalled();
+      expect(loggedOutSessionService.startSessionCheck).not.toHaveBeenCalled();
     });
   });
 

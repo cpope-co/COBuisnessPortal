@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatTableDataSource } from '@angular/material/table';
 
 import { TableComponent } from './table.component';
 
@@ -16,9 +17,12 @@ describe('TableComponent', () => {
     component = fixture.componentInstance;
     
     // Set required inputs
-    fixture.componentRef.setInput('dataSource', []);
-    fixture.componentRef.setInput('displayedColumns', ['col1']);
-    fixture.componentRef.setInput('columnSettings', [{ key: 'col1', label: 'Column 1' }]);
+    const dataSource = new MatTableDataSource([
+      { col1: 'value1', col2: 'value2' },
+      { col1: 'value3', col2: 'value4' }
+    ]);
+    fixture.componentRef.setInput('dataSource', dataSource);
+    fixture.componentRef.setInput('displayedColumns', ['col1', 'col2']);
     
     fixture.detectChanges();
   });

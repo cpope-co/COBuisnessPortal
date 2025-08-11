@@ -36,11 +36,13 @@ export class FiltersComponent {
 
   updateSearch($event: KeyboardEvent): void {
     const inputElement = $event.target as HTMLInputElement;
-    if (inputElement) {
-      if (inputElement.value.length > 2 || inputElement.value.length === 0) { this.search.emit(inputElement.value); }
+    if (inputElement && inputElement.value !== undefined) {
+      if (inputElement.value.length > 2 || inputElement.value.length === 0) {
+        this.search.emit(inputElement.value);
+      } else {
+        this.search.emit(inputElement.value);
+      }
     }
-    
-    this.search.emit(inputElement.value);
   }
   onFilterChange($event: any): void {
     this.filter.emit($event);

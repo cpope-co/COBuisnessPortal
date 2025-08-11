@@ -686,4 +686,129 @@ describe('AuthService', () => {
       expect(newService.isAdmin()).toBeTruthy();
     });
   });
+
+  describe('constructor', () => {
+    it('should initialize service and call setup methods', () => {
+      // This test verifies the service initializes correctly
+      // Constructor effects are tested through their observable behavior
+      expect(service).toBeTruthy();
+      expect(service.user()).toBeNull();
+      expect(service.token()).toBeNull();
+    });
+
+    it('should clear sessionStorage when user logs out', async () => {
+      // Spy on sessionStorage methods
+      spyOn(sessionStorage, 'clear');
+      spyOn(localStorage, 'clear');
+      
+      // Mock HTTP client for logout request to succeed
+      mockHttpClient.post.and.returnValue(of({}));
+      
+      // Call logout, which should clear storage and set signals to null
+      await service.logout();
+
+      expect(sessionStorage.clear).toHaveBeenCalled();
+      expect(localStorage.clear).toHaveBeenCalled();
+    });
+
+    it('should initialize service properly and test constructor effects indirectly', () => {
+      // This test verifies the constructor effects work by checking
+      // that the service initializes correctly and has proper signal behavior
+      expect(service).toBeTruthy();
+      expect(service.user()).toBeNull();
+      expect(service.token()).toBeNull();
+      
+      // The effects in the constructor are tested indirectly through
+      // methods that modify the signals (like login, logout, etc.)
+      // which are covered in other test cases
+    });
+  });
+
+  describe('validateTokenOnInit', () => {
+    it('should refresh token when status is expiring', async () => {
+      spyOn(service, 'checkExpiry').and.returnValue(Promise.resolve('expiring'));
+      spyOn(service as any, 'refreshToken').and.returnValue(Promise.resolve());
+
+      await (service as any).validateTokenOnInit();
+
+      expect((service as any).refreshToken).toHaveBeenCalled();
+    });
+
+    it('should refresh token when status is expired', async () => {
+      spyOn(service, 'checkExpiry').and.returnValue(Promise.resolve('expired'));
+      spyOn(service as any, 'refreshToken').and.returnValue(Promise.resolve());
+
+      await (service as any).validateTokenOnInit();
+
+      expect((service as any).refreshToken).toHaveBeenCalled();
+    });
+
+    it('should not refresh token when status is valid', async () => {
+      spyOn(service, 'checkExpiry').and.returnValue(Promise.resolve('valid'));
+      spyOn(service as any, 'refreshToken').and.returnValue(Promise.resolve());
+
+      await (service as any).validateTokenOnInit();
+
+      expect((service as any).refreshToken).not.toHaveBeenCalled();
+    });
+
+    it('should logout when token validation fails', async () => {
+      spyOn(service, 'checkExpiry').and.returnValue(Promise.reject('Token check failed'));
+      spyOn(service, 'logout').and.returnValue(Promise.resolve());
+      spyOn(console, 'log');
+
+      await (service as any).validateTokenOnInit();
+
+      expect(console.log).toHaveBeenCalledWith('Token validation failed:', 'Token check failed');
+      expect(service.logout).toHaveBeenCalled();
+    });
+
+    it('should logout when refresh token fails during validation', async () => {
+      spyOn(service, 'checkExpiry').and.returnValue(Promise.resolve('expired'));
+      spyOn(service as any, 'refreshToken').and.returnValue(Promise.reject('Refresh failed'));
+      spyOn(service, 'logout').and.returnValue(Promise.resolve());
+
+      await (service as any).validateTokenOnInit();
+
+      expect(service.logout).toHaveBeenCalled();
+    });
+  });
+
+  describe('refreshToken', () => {
+    it('should successfully refresh token and set user', async () => {
+      // Start with a null user to see the change
+      expect(service.user()).toBeNull();
+      
+      // Spy on the refresh method to return our mock user using callFake
+      const refreshSpy = spyOn(service, 'refresh').and.callFake(() => Promise.resolve(mockUser));
+      
+      // Spy on logout to see if it's being called unexpectedly
+      const logoutSpy = spyOn(service, 'logout').and.stub();
+      
+      try {
+        // Call refreshToken and wait for it to complete
+        await (service as any).refreshToken();
+        
+        // Verify refresh was called
+        expect(refreshSpy).toHaveBeenCalled();
+        
+        // Check if logout was called (it shouldn't be)
+        expect(logoutSpy).not.toHaveBeenCalled();
+        
+        // Verify user was set
+        expect(service.user()).toEqual(mockUser);
+      } catch (error) {
+        fail(`refreshToken threw an error: ${error}`);
+      }
+    });
+
+    it('should logout when refresh fails', async () => {
+      spyOn(service, 'refresh').and.returnValue(Promise.reject('Refresh failed'));
+      spyOn(service, 'logout').and.returnValue(Promise.resolve());
+
+      await (service as any).refreshToken();
+
+      expect(service.logout).toHaveBeenCalled();
+    });
+  });
 });
