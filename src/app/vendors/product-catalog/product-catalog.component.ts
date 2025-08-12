@@ -97,7 +97,7 @@ export class ProductCatalogComponent {
     this.loadProducts();
     this.loadProductCategories();
     effect(() => {
-      this.productsDataSource.data = this.products();
+      this.productsDataSource.data = this.products() || [];
       this.productsDataSource.sort = this.sort;
       this.productsDataSource.paginator = this.paginator;
     });
@@ -106,7 +106,7 @@ export class ProductCatalogComponent {
         {
           name: 'categoryID',
           label: 'Category',
-          options: this.productCategories().map(category => {
+          options: (this.productCategories() || []).map(category => {
             return {
               value: category.id,
               label: category.name
@@ -116,7 +116,7 @@ export class ProductCatalogComponent {
         {
           name: 'manufacturerSKU',
           label: 'Manufacturer SKU',
-          options: Array.from(new Set(this.products().map(product => product.manufacturerSKU)))
+          options: Array.from(new Set((this.products() || []).map(product => product.manufacturerSKU)))
             .map(uniqueSKU => {
               return {
                 value: uniqueSKU,
@@ -132,42 +132,60 @@ export class ProductCatalogComponent {
 
   configFilterPredicate() {
     this.productsDataSource.filterPredicate = (data: Product, filter: string) => {
-      const filters = JSON.parse(filter);
+      try {
+        const filters = JSON.parse(filter);
 
-      let matchesCategory = true;
-      let matchesManufacturerSKU = true;
-      let matchesSearch = true;
+        let matchesCategory = true;
+        let matchesManufacturerSKU = true;
+        let matchesSearch = true;
 
-      if (filters.search !== undefined) {
-        const searchTerm = filters.search.toLowerCase();
-        matchesSearch = this.displayedColumns.some(column => {
-          const value = data[column as unknown as keyof Product]?.toString().toLowerCase() || '';
-          return value.includes(searchTerm);
-        });
+        if (filters.search !== undefined) {
+          const searchTerm = filters.search.toLowerCase();
+          matchesSearch = this.displayedColumns.some(column => {
+            const value = data[column.column as keyof Product]?.toString().toLowerCase() || '';
+            return value.includes(searchTerm);
+          });
+        }
+
+        if (filters.categoryID !== undefined) {
+          matchesCategory = data.categoryID === Number(filters.categoryID) || filters.categoryID === -1;
+        }
+
+        if (filters.manufacturerSKU !== undefined) {
+          matchesManufacturerSKU = data.manufacturerSKU === Number(filters.manufacturerSKU) || filters.manufacturerSKU === -1;
+        }
+
+        return matchesCategory && matchesManufacturerSKU && matchesSearch;
+      } catch (error) {
+        // If filter JSON is invalid, show all items
+        return true;
       }
-
-      if (filters.categoryID !== undefined) {
-        matchesCategory = data.categoryID === Number(filters.categoryID) || filters.categoryID === -1;
-      }
-
-      if (filters.manufacturerSKU !== undefined) {
-        matchesManufacturerSKU = data.manufacturerSKU === Number(filters.manufacturerSKU) || filters.manufacturerSKU === -1;
-      }
-
-      return matchesCategory && matchesManufacturerSKU && matchesSearch;
     };
   }
   setSearch(search: string) {
-    const currentFilter = JSON.parse(this.productsDataSource.filter || '{}');
-    currentFilter.search = search;
-    this.productsDataSource.filter = JSON.stringify(currentFilter);
+    try {
+      const currentFilter = JSON.parse(this.productsDataSource.filter || '{}');
+      currentFilter.search = search;
+      this.productsDataSource.filter = JSON.stringify(currentFilter);
+    } catch (error) {
+      // If JSON is invalid, start with a fresh filter
+      this.productsDataSource.filter = JSON.stringify({ search });
+    }
   }
 
   setFilter($event: any) {
-    const currentFilter = JSON.parse(this.productsDataSource.filter || '{}');
-    const filterType = $event.source.ariaLabel
-    currentFilter[filterType] = filterType === 'categoryID' ? Number($event.value) : $event.value;
-    this.productsDataSource.filter = JSON.stringify(currentFilter);
+    try {
+      const currentFilter = JSON.parse(this.productsDataSource.filter || '{}');
+      const filterType = $event.source.ariaLabel
+      currentFilter[filterType] = filterType === 'categoryID' ? Number($event.value) : $event.value;
+      this.productsDataSource.filter = JSON.stringify(currentFilter);
+    } catch (error) {
+      // If JSON is invalid, start with a fresh filter
+      const filterType = $event.source.ariaLabel;
+      const newFilter: any = {};
+      newFilter[filterType] = filterType === 'categoryID' ? Number($event.value) : $event.value;
+      this.productsDataSource.filter = JSON.stringify(newFilter);
+    }
   }
 
   async loadProducts() {
