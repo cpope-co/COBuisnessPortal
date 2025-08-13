@@ -109,8 +109,7 @@ export class SessionService {
     isSessionActive(): boolean {
         const user = this.authService.user();
         if (!user) {
-            this.authService.logout();
-            return false;
+            return false; // Don't call logout here, let the caller handle it
         }
 
         if (user?.exp && user.exp * 1000 < Date.now()) {
@@ -122,7 +121,7 @@ export class SessionService {
     canRefresh(): boolean {
         const user = this.authService.user();
         if (!user) {
-            this.authService.logout();
+            return false; // Don't call logout here, let the caller handle it
         }
         if (user?.refexp && user.refexp * 1000 < Date.now()) {
             return true;

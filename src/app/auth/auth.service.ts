@@ -51,8 +51,12 @@ export class AuthService {
     constructor() {
         this.loadUserFromStorage();
         this.loadTokenFromStorage();
-        
-        this.validateTokenOnInit();
+
+        // Only validate token if user exists - do this async to not block constructor
+        if (this.user()) {
+            // Use setTimeout to make this async and not block the constructor
+            setTimeout(() => this.validateTokenOnInit(), 0);
+        }
         effect(() => {
             const user = this.user();
             if (user) {
@@ -94,6 +98,11 @@ export class AuthService {
     }
 
     private async validateTokenOnInit() {
+        // Don't validate if no user is present
+        if (!this.user()) {
+            return;
+        }
+        
         try {
             const status = await this.checkExpiry();
             if (status === 'expiring' || status === 'expired') {
@@ -101,7 +110,10 @@ export class AuthService {
             }
         } catch (error) {
             console.log('Token validation failed:', error);
-            this.logout();
+            // Only logout if we were previously logged in
+            if (this.user()) {
+                this.logout();
+            }
         }
     }
     private async refreshToken() {
@@ -113,22 +125,38 @@ export class AuthService {
         }
     }
     loadUserFromStorage() {
-        const json = sessionStorage.getItem(USER_STORAGE_KEY);
-        if (json) {
-            console.log(`Loaded user from storage.`);
-            const user = JSON.parse(json) as User;
-            this.#userSignal.set(user);
-        } else {
-            console.log(`No user found in storage.`);
+        try {
+            const json = sessionStorage.getItem(USER_STORAGE_KEY);
+            if (json) {
+                console.log(`Loaded user from storage.`);
+                const user = JSON.parse(json) as User;
+                // Validate that the user object has the required properties
+                if (user && user.exp && typeof user.exp === 'number') {
+                    this.#userSignal.set(user);
+                } else {
+                    console.log('Invalid user data in storage, clearing...');
+                    sessionStorage.removeItem(USER_STORAGE_KEY);
+                }
+            } else {
+                console.log(`No user found in storage.`);
+            }
+        } catch (error) {
+            console.error('Error loading user from storage:', error);
+            sessionStorage.removeItem(USER_STORAGE_KEY);
         }
     }
     loadTokenFromStorage() {
-        const token = sessionStorage.getItem(TOKEN_STORAGE_KEY);
-        if (token) {
-            console.log(`Loaded token from storage.`);
-            this.#tokenSignal.set(token);
-        } else {
-            console.log(`No token found in storage.`);
+        try {
+            const token = sessionStorage.getItem(TOKEN_STORAGE_KEY);
+            if (token) {
+                console.log(`Loaded token from storage.`);
+                this.#tokenSignal.set(token);
+            } else {
+                console.log(`No token found in storage.`);
+            }
+        } catch (error) {
+            console.error('Error loading token from storage:', error);
+            sessionStorage.removeItem(TOKEN_STORAGE_KEY);
         }
     }
     clearTimer(timer: number | null) {
@@ -226,18 +254,31 @@ export class AuthService {
     }
 
     async logout(): Promise<void> {
-        const headers = new HttpHeaders({
-            'Authorization': `Bearer ${this.token()}`
-        });
+        try {
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${this.token()}`
+            });
 
-        await this.http.post(`${this.env.apiBaseUrl}/usraut/logout`, {}, { headers, withCredentials: true });
+            // Skip refresh interceptor for logout to prevent infinite loops
+            const context = new HttpContext().set(SKIP_REFRESH_KEY, true);
 
-        sessionStorage.clear();
-        localStorage.clear();
-        this.#userSignal.set(null);
-        this.#tokenSignal.set(null);
-        this.logoutEvent.emit();
-        this.messageService.showMessage('You have been logged out.', 'info', 30000);
-        this.router.navigate(['auth/login']);
+            const response = await firstValueFrom(this.http.post(
+                `${this.env.apiBaseUrl}/usraut/logout`, 
+                {}, 
+                { headers, withCredentials: true, context
+            }));
+        } catch (error) {
+            // Even if logout request fails, we should still clear local state
+            console.warn('Logout request failed, but clearing local state anyway:', error);
+        } finally {
+            // Always clear local state regardless of server response
+            sessionStorage.clear();
+            localStorage.clear();
+            this.#userSignal.set(null);
+            this.#tokenSignal.set(null);
+            this.logoutEvent.emit();
+            this.messageService.showMessage('You have been logged out.', 'info', 30000);
+            this.router.navigate(['auth/login']);
+        }
     }
 }

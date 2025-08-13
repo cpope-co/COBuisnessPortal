@@ -7,7 +7,7 @@
     "build": "ng build",
     "build-dev": "ng build --configuration=development",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test --karma-config karma.conf.js --watch=false",
+    "test": "ng test --karma-config karma.conf.js --watch=true",
     "test:ci": "ng test --watch=false --browsers=ChromeHeadless --code-coverage",
     "open-test": "start coverage/cobuisness-portal/index.html"
   },
