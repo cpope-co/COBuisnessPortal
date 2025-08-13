@@ -71,6 +71,20 @@ export class AuthService {
             }
         });
     }
+    
+    private safeJwtDecode(token: string | null): User | null {
+        if (!token || typeof token !== 'string' || token.trim() === '') {
+            console.error('Invalid token provided to jwtDecode:', token);
+            return null;
+        }
+        try {
+            return jwtDecode(token) as User;
+        } catch (error) {
+            console.error('Failed to decode JWT token:', error);
+            return null;
+        }
+    }
+
     setRoles() {
         const user = this.user();
         if (user) {
@@ -148,11 +162,21 @@ export class AuthService {
     loadTokenFromStorage() {
         try {
             const token = sessionStorage.getItem(TOKEN_STORAGE_KEY);
-            if (token) {
+            if (token && typeof token === 'string' && token.trim() !== '') {
                 console.log(`Loaded token from storage.`);
-                this.#tokenSignal.set(token);
+                // Validate that the token can be decoded before setting it
+                const testUser = this.safeJwtDecode(token);
+                if (testUser) {
+                    this.#tokenSignal.set(token);
+                } else {
+                    console.log('Invalid token in storage, clearing...');
+                    sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+                }
             } else {
-                console.log(`No token found in storage.`);
+                console.log(`No valid token found in storage.`);
+                if (token) {
+                    sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+                }
             }
         } catch (error) {
             console.error('Error loading token from storage:', error);
@@ -205,10 +229,16 @@ export class AuthService {
 
         const response = await firstValueFrom(user$);
 
-        const token = response.headers.get('x-id')!;
+        const token = response.headers.get('x-id');
+        if (!token) {
+            throw new Error('No authentication token received from server');
+        }
         this.#tokenSignal.set(token);
 
-        const user = await jwtDecode(response.headers.get('x-id')!) as User;
+        const user = this.safeJwtDecode(token);
+        if (!user) {
+            throw new Error('Failed to decode authentication token');
+        }
         this.#userSignal.set(user);
         this.loginEvent.emit();
         this.setRoles();
@@ -226,10 +256,16 @@ export class AuthService {
             { headers, observe: 'response', withCredentials: true, context }
         ));
 
-        const token = response.headers.get('x-id')!;
+        const token = response.headers.get('x-id');
+        if (!token) {
+            throw new Error('No refresh token received from server');
+        }
         this.#tokenSignal.set(token);
 
-        const user = await jwtDecode(response.headers.get('x-id')!) as User;
+        const user = this.safeJwtDecode(token);
+        if (!user) {
+            throw new Error('Failed to decode refresh token');
+        }
         this.#userSignal.set(user);
         return user;
     }
@@ -245,10 +281,16 @@ export class AuthService {
             { headers, observe: 'response' }
         ));
 
-        const token = response.headers.get('x-id')!;
+        const token = response.headers.get('x-id');
+        if (!token) {
+            throw new Error('No verification token received from server');
+        }
         this.#tokenSignal.set(token);
 
-        const user = await jwtDecode(response.headers.get('x-id')!) as User;
+        const user = this.safeJwtDecode(token);
+        if (!user) {
+            throw new Error('Failed to decode verification token');
+        }
         this.#userSignal.set(user);
         return user;
     }
