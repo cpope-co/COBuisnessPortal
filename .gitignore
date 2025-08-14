@@ -44,3 +44,8 @@ Thumbs.db
 .logs
 .evfevent
 .env
+
+# Cypress
+cypress/screenshots/
+cypress/videos/
+cypress/downloads/

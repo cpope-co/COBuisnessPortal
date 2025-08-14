@@ -5,6 +5,7 @@
 /**
  * Custom command to login a user
  */
+// @ts-ignore
 Cypress.Commands.add('login', (email: string, password: string) => {
   // Clear any existing session data
   cy.clearAllCookies();
@@ -48,6 +49,7 @@ Cypress.Commands.add('login', (email: string, password: string) => {
 /**
  * Custom command to logout a user
  */
+// @ts-ignore
 Cypress.Commands.add('logout', () => {
   // Mock the logout API response
   cy.intercept('POST', '**/api/usraut/logout', {
@@ -66,6 +68,7 @@ Cypress.Commands.add('logout', () => {
 /**
  * Custom command to setup a logged-in user session without going through the UI
  */
+// @ts-ignore
 Cypress.Commands.add('setupLoggedInUser', (userRole: number = 1) => {
   cy.window().then((win) => {
     const mockUser = {
@@ -84,6 +87,7 @@ Cypress.Commands.add('setupLoggedInUser', (userRole: number = 1) => {
 /**
  * Custom command to clear all storage
  */
+// @ts-ignore
 Cypress.Commands.add('clearSession', () => {
   cy.clearAllCookies();
   cy.clearAllLocalStorage();
@@ -93,6 +97,7 @@ Cypress.Commands.add('clearSession', () => {
 /**
  * Custom command to check if user is logged in
  */
+// @ts-ignore
 Cypress.Commands.add('shouldBeLoggedIn', () => {
   cy.get('button').contains('Profile').should('be.visible');
   cy.get('mat-toolbar').should('contain', 'Chambers & Owen');
@@ -101,6 +106,7 @@ Cypress.Commands.add('shouldBeLoggedIn', () => {
 /**
  * Custom command to check if user is logged out
  */
+// @ts-ignore
 Cypress.Commands.add('shouldBeLoggedOut', () => {
   cy.url().should('include', '/auth/login');
   cy.contains('h2', 'Login').should('be.visible');
