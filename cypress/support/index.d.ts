@@ -1,5 +1,13 @@
 /// <reference types="cypress" />
 
+declare global {
+  interface Window {
+    grecaptcha?: {
+      execute: (action: string) => Promise<string>;
+    };
+  }
+}
+
 declare namespace Cypress {
   interface Chainable {
     /**
@@ -34,5 +42,20 @@ declare namespace Cypress {
      * Assert that user is logged out
      */
     shouldBeLoggedOut(): Chainable<Element>;
+    
+    /**
+     * Fill supplier registration form with test data
+     */
+    fillSupplierForm(): Chainable<Element>;
+    
+    /**
+     * Fill retailer registration form with test data
+     */
+    fillRetailerForm(): Chainable<Element>;
+    
+    /**
+     * Keyboard tab navigation
+     */
+    tab(): Chainable<Element>;
   }
 }

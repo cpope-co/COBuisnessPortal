@@ -63,6 +63,10 @@
               "outputHashing": "all"
             },
             "development": {
+              "outputPath": {
+                "base": "\\\\owen400\\cnodevsrv",
+                "browser": ""
+              },
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
