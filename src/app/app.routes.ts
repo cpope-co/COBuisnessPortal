@@ -17,6 +17,7 @@ import { isUserApiUser } from './guards/api-user.guard';
 import { ForgotComponent } from './auth/forgot/forgot.component';
 import { UnauthorizedComponent } from './auth/unauthorized/unauthorized.component';
 import { ApiTokenManagementComponent } from './apiUser/api-token-management/api-token-management.component';
+import { ApiSettingsComponent } from './admin/api-settings/api-settings.component';
 
 export const routes: Routes = [
     {
@@ -100,6 +101,13 @@ export const routes: Routes = [
                 data: { display: false, role: 1 }
 
             },
+            {
+                path: 'api-settings',
+                title: 'API Settings',
+                component: ApiSettingsComponent,
+                canActivate: [isUserAdmin],
+                data: { display: true, role: 1 }
+            }
         ],
         data: { display: true, heading: true, role: 1 },
         canActivate: [isUserAuthenticated, isUserAdmin]
