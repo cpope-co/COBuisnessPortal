@@ -1,0 +1,262 @@
+<div class="container mt-4">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <h1>Component Testing</h1>
+      </mat-card-title>
+      <mat-card-subtitle>
+        Testing custom form components with Material Design tabs
+      </mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <mat-tab-group>
+        <!-- Multi-Select Component Tab -->
+        <mat-tab label="Multi-Select Component">
+          <div class="tab-content">
+            <div class="mb-3">
+              <h3>Multi-Select Component Test</h3>
+              <p class="text-muted">Testing the co-multi-select component</p>
+            </div>
+            
+            <form [formGroup]="form">
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <co-multi-select
+                    [formGroup]="form"
+                    [label]="'Test Items'"
+                    [formControlName]="'selectedItems'"
+                    [options]="sampleOptions"
+                    [placeholder]="'Select multiple items'"
+                    [model]="multiSelectTestModel"
+                  />
+                </div>
+              </div>
+              
+              <div class="row mt-3">
+                <div class="col-12">
+                  <p><strong>Current Selection:</strong></p>
+                  <pre>{{ form.get('selectedItems')?.value | json }}</pre>
+                </div>
+              </div>
+            </form>
+          </div>
+        </mat-tab>
+
+        <!-- Pick-List Component Tab -->
+        <mat-tab label="Pick-List Component">
+          <div class="tab-content">
+            <div class="mb-3">
+              <h3>Pick-List Component Test</h3>
+              <p class="text-muted">Testing the co-pick-list component with manufacturers</p>
+            </div>
+            
+            <form [formGroup]="form">
+              <co-pick-list
+                [formGroup]="form"
+                [formControlName]="'manufacturers'"
+                [sourceOptions]="sampleManufacturers"
+                [sourceLabel]="'Manufacturer List'"
+                [targetLabel]="'Access List'"
+                [model]="pickListTestModel"
+              />
+              
+              <div class="row mt-3">
+                <div class="col-12">
+                  <p><strong>Current Manufacturers Selection:</strong></p>
+                  <pre>{{ form.get('manufacturers')?.value | json }}</pre>
+                </div>
+              </div>
+            </form>
+          </div>
+        </mat-tab>
+
+        <!-- Basic Form Components Tab -->
+        <mat-tab label="Basic Form Components">
+          <div class="tab-content">
+            <div class="mb-3">
+              <h3>Basic Form Components Test</h3>
+              <p class="text-muted">Testing input, select, checkbox, and radio components</p>
+            </div>
+            
+            <form [formGroup]="form">
+              <div class="row">
+                <!-- Input Components -->
+                <div class="col-12 col-md-6">
+                  <h4 class="mb-3">Input Components</h4>
+                  
+                  <div class="mb-3">
+                    <co-input
+                      [formGroup]="form"
+                      [label]="'First Name'"
+                      [formControlName]="'firstName'"
+                      [placeholder]="'Enter your first name'"
+                      [model]="basicFormComponentsModel"
+                      [type]="'text'"
+                    />
+                  </div>
+                  
+                  <div class="mb-3">
+                    <co-input
+                      [formGroup]="form"
+                      [label]="'Last Name'"
+                      [formControlName]="'lastName'"
+                      [placeholder]="'Enter your last name'"
+                      [model]="basicFormComponentsModel"
+                      [type]="'text'"
+                    />
+                  </div>
+                  
+                  <div class="mb-3">
+                    <co-input
+                      [formGroup]="form"
+                      [label]="'Email Address'"
+                      [formControlName]="'email'"
+                      [placeholder]="'Enter your email'"
+                      [model]="basicFormComponentsModel"
+                      [type]="'email'"
+                    />
+                  </div>
+                </div>
+                
+                <!-- Select, Checkbox, and Radio Components -->
+                <div class="col-12 col-md-6">
+                  <h4 class="mb-3">Selection Components</h4>
+                  
+                  <div class="mb-3">
+                    <co-select
+                      [formGroup]="form"
+                      [label]="'Country'"
+                      [formControlName]="'country'"
+                      [options]="sampleCountries"
+                      [placeholder]="'Select your country'"
+                      [model]="basicFormComponentsModel"
+                    />
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label class="form-label">Gender</label>
+                    <co-radio
+                      [formGroup]="form"
+                      [label]="'Gender'"
+                      [formControlName]="'gender'"
+                      [options]="genderOptions"
+                      [placeholder]="'Select your gender'"
+                      [model]="basicFormComponentsModel"
+                    />
+                  </div>
+                  
+                  <div class="mb-3">
+                    <app-checkbox
+                      [formGroup]="form"
+                      [label]="'Terms and Conditions'"
+                      [formControlName]="'agreeToTerms'"
+                      [options]="[]"
+                      [placeholder]="'I agree to the terms and conditions'"
+                      [model]="basicFormComponentsModel"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row mt-4">
+                <div class="col-12">
+                  <h4>Form Values</h4>
+                  <div class="row">
+                    <div class="col-12 col-md-4">
+                      <p><strong>Name:</strong></p>
+                      <pre>{{ form.get('firstName')?.value }} {{ form.get('lastName')?.value }}</pre>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <p><strong>Email:</strong></p>
+                      <pre>{{ form.get('email')?.value }}</pre>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <p><strong>Country:</strong></p>
+                      <pre>{{ form.get('country')?.value?.name || 'None selected' }}</pre>
+                    </div>
+                  </div>
+                  <div class="row mt-2">
+                    <div class="col-12 col-md-6">
+                      <p><strong>Gender:</strong></p>
+                      <pre>{{ form.get('gender')?.value || 'Not selected' }}</pre>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <p><strong>Agreed to Terms:</strong></p>
+                      <pre>{{ form.get('agreeToTerms')?.value ? 'Yes' : 'No' }}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </mat-tab>
+
+        <!-- Form Status Tab -->
+        <mat-tab label="Form Status">
+          <div class="tab-content">
+            <div class="mb-3">
+              <h3>Form Status & Actions</h3>
+              <p class="text-muted">Complete form status and control actions</p>
+            </div>
+            
+            <form [formGroup]="form">
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <h4>Form Validation Status</h4>
+                  <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between">
+                      <span>Valid</span>
+                      <span class="badge" [class]="form.valid ? 'bg-success' : 'bg-danger'">
+                        {{ form.valid ? 'Yes' : 'No' }}
+                      </span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                      <span>Touched</span>
+                      <span class="badge" [class]="form.touched ? 'bg-info' : 'bg-secondary'">
+                        {{ form.touched ? 'Yes' : 'No' }}
+                      </span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                      <span>Dirty</span>
+                      <span class="badge" [class]="form.dirty ? 'bg-warning' : 'bg-secondary'">
+                        {{ form.dirty ? 'Yes' : 'No' }}
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <h4>Actions</h4>
+                  <div class="d-flex flex-column gap-2">
+                    <button 
+                      mat-raised-button 
+                      color="primary" 
+                      type="button"
+                      (click)="onSubmit()">
+                      Submit Form
+                    </button>
+                    
+                    <button 
+                      mat-button 
+                      type="button" 
+                      (click)="onReset()">
+                      Reset Form
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row mt-4">
+                <div class="col-12">
+                  <h4>Complete Form Value</h4>
+                  <pre class="form-json">{{ form.value | json }}</pre>
+                </div>
+              </div>
+            </form>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+  </mat-card>
+</div>

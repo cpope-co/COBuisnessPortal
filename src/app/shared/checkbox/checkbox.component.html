@@ -1,8 +1,13 @@
 <section class="form-group" [formGroup]="formGroup()">
-    <mat-checkbox [formControlName]="formControlName()">
-        {{label()}}
-    </mat-checkbox>
-<mat-checkbox>
-
-    
-</mat-checkbox>
+  <mat-checkbox [formControlName]="formControlName()">
+    {{ placeholder() }}
+  </mat-checkbox>
+  
+  @if (formGroup().get(formControlName())?.invalid && formGroup().get(formControlName())?.touched) {
+    <div class="error-message">
+      <small class="text-danger">
+        {{ getErrorMessage(formControlName()) }}
+      </small>
+    </div>
+  }
+</section>

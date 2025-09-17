@@ -1,0 +1,108 @@
+<div class="pick-list-container">
+  <div class="row">
+    <!-- Source List -->
+    <div class="col-12 col-md-5">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{ sourceLabel() }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="list-scroll-container">
+            <mat-selection-list
+              #sourceList
+              class="scrollable-list"
+              [multiple]="true"
+              (selectionChange)="onSourceSelectionChange($event)">
+              @for (item of availableItems; track item.id || item) {
+                <mat-list-option [value]="item">
+                  {{ item.name || item }}
+                </mat-list-option>
+              }
+            </mat-selection-list>
+          </div>
+          
+          @if (availableItems.length === 0) {
+            <p class="text-muted text-center mt-3">No items available</p>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="col-12 col-md-2 d-flex flex-column justify-content-center align-items-center my-3">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        class="mb-2"
+        [disabled]="selectedSourceItems.length === 0"
+        (click)="addItems()"
+        type="button">
+        Add >
+      </button>
+      
+      <button 
+        mat-button 
+        class="mb-2"
+        [disabled]="selectedTargetItems.length === 0"
+        (click)="removeItems()"
+        type="button">
+        < Remove
+      </button>
+      
+      <button 
+        mat-stroked-button 
+        [disabled]="selectedTargetItems.length !== 1"
+        [color]="getPrimaryButtonText() === 'Remove Primary' ? 'warn' : 'primary'"
+        (click)="setPrimary()"
+        type="button">
+        {{ getPrimaryButtonText() }}
+      </button>
+    </div>
+
+    <!-- Target List -->
+    <div class="col-12 col-md-5">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{ targetLabel() }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="list-scroll-container">
+            <mat-selection-list
+              #targetList
+              class="scrollable-list"
+              [multiple]="true"
+              (selectionChange)="onTargetSelectionChange($event)">
+              @for (item of selectedItems; track item.id || item) {
+                <mat-list-option 
+                  [value]="item"
+                  [class.primary-item]="isPrimary(item)">
+                  <div class="d-flex justify-content-between align-items-center w-100">
+                    <span>{{ item.name || item }}</span>
+                    @if (isPrimary(item)) {
+                      <small class="badge bg-primary">Primary</small>
+                    }
+                  </div>
+                </mat-list-option>
+              }
+            </mat-selection-list>
+          </div>
+          
+          @if (selectedItems.length === 0) {
+            <p class="text-muted text-center mt-3">No items selected</p>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Error Messages -->
+  @if (formGroup().get(formControlName())?.invalid && formGroup().get(formControlName())?.touched) {
+    <div class="row mt-2">
+      <div class="col-12">
+        <small class="text-danger">
+          {{ getErrorMessage(formControlName()) }}
+        </small>
+      </div>
+    </div>
+  }
+</div>

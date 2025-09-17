@@ -1,13 +1,18 @@
-import { Component, inject, input } from '@angular/core';
-import { CheckboxControlValueAccessor, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, forwardRef, inject, input } from '@angular/core';
+import { CheckboxControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { FormHandlingService } from '../../services/form-handling.service';
-import { TitleCasePipe } from '@angular/common';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @Component({
     selector: 'app-checkbox',
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => CheckboxComponent),
+            multi: true,
+        }
+    ],
     imports: [
-        TitleCasePipe,
         ReactiveFormsModule,
         MatCheckboxModule
     ],

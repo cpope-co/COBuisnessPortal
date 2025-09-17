@@ -18,6 +18,7 @@ import { ForgotComponent } from './auth/forgot/forgot.component';
 import { UnauthorizedComponent } from './auth/unauthorized/unauthorized.component';
 import { ApiTokenManagementComponent } from './apiUser/api-token-management/api-token-management.component';
 import { ApiSettingsComponent } from './admin/api-settings/api-settings.component';
+import { UnsecuredTestComponent } from './unsecured-test/unsecured-test.component';
 
 export const routes: Routes = [
     {
@@ -33,6 +34,11 @@ export const routes: Routes = [
         component: HomeComponent,
         canActivate: [isUserAuthenticated],
         data: { display: true, heading: false }
+    },
+    {
+        path: 'test',
+        title: 'Test',
+        component: UnsecuredTestComponent,
     },
     {
         path: 'auth',
