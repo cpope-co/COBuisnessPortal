@@ -227,7 +227,7 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
    */
   private applyFilters() {
     let filteredData = [...this.originalData];
-
+    // Apply each active filter to the data
     Object.keys(this.currentFilters).forEach(key => {
       const filterValue = this.currentFilters[key];
       

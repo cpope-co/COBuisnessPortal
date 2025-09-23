@@ -1,5 +1,6 @@
 import { Validators } from "@angular/forms";
 import { FormHandling } from "./form-handling.model";
+import { TableColumn, TableConfig } from "../shared/table/table.component";
 
 export type UserAccount = {
     usunbr: number;
@@ -93,3 +94,41 @@ export const roles = [
     { id: 5, name: 'API Consumer' },
     { id: 6, name: 'Salesperson' }
 ];
+
+// Helper function to get name from ID for formatters
+function getNameFromId(id: string | number, array: Array<{ id: string | number, name: string }>): string {
+    const item = array.find(i => i.id === id);
+    return item ? item.name : '';
+}
+
+// Table configuration - co-located with the model
+export const USER_ACCOUNTS_TABLE_COLUMNS: TableColumn[] = [
+    { column: 'usunbr', label: 'User ID', sortable: true, filterable: false },
+    { column: 'usemail', label: 'Email', sortable: true, filterable: true },
+    { column: 'usfname', label: 'First Name', sortable: true, filterable: true },
+    { column: 'uslname', label: 'Last Name', sortable: true, filterable: true },
+    { 
+        column: 'usstat', 
+        label: 'Status', 
+        sortable: true, 
+        filterable: true,
+        formatter: (value) => getNameFromId(value, statuses)
+    },
+    { 
+        column: 'usroleid', 
+        label: 'Role', 
+        sortable: true, 
+        filterable: true,
+        formatter: (value) => getNameFromId(value, roles)
+    }
+];
+
+export const USER_ACCOUNTS_TABLE_CONFIG: TableConfig = {
+    showFilter: true,
+    showAdvancedFilters: true,
+    showPagination: true,
+    pageSize: 10,
+    pageSizeOptions: [10, 25, 50, 100],
+    showFirstLastButtons: true,
+    clickableRows: true
+};

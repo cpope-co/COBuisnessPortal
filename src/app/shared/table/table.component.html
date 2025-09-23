@@ -27,7 +27,7 @@
   <!-- Filter Actions -->
   @if ((config().showFilter || config().showAdvancedFilters) && hasData()) {
     <div class="filter-actions mb-3">
-      <button mat-stroked-button (click)="clearFilters()">
+      <button mat-stroked-button (click)="clearFilters()" aria-label="Clear all filters">
         <mat-icon>clear_all</mat-icon>
         Clear Filters
       </button>

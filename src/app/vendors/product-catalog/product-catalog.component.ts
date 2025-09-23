@@ -166,6 +166,15 @@ export class ProductCatalogComponent {
   }
 
   setFilter($event: any) {
+    // Validate event structure before proceeding
+    if (
+      !$event ||
+      $event.key == null || $event.key === '' ||
+      $event.value == null || $event.value === ''
+    ) {
+      this.messagesService.showMessage('Invalid filter event structure', 'danger');
+      return;
+    }
     try {
       const currentFilter = JSON.parse(this.productsDataSource.filter || '{}');
       const filterKey = $event.key;
