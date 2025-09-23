@@ -18,6 +18,7 @@ import { FormGroup } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { FilterService } from '../../services/filter.service';
 import { FiltersComponent } from "../../shared/filters/filters.component";
+import { FilterConfig } from '../../shared/table/table.component';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { openProductDialog } from '../product-dialog/product-dialog.component';
@@ -58,7 +59,7 @@ export class ProductCatalogComponent {
   productCategoriesSignal = signal<ProductCategory[]>([]);
   productCategories = this.productCategoriesSignal.asReadonly();
 
-  productCatalogFilters: any[] = [];
+  productCatalogFilters: FilterConfig[] = [];
 
   form!: FormGroup<any>;
 
@@ -104,25 +105,16 @@ export class ProductCatalogComponent {
     effect(() => {
       this.productCatalogFilters = [
         {
-          name: 'categoryID',
+          key: 'categoryID',
           label: 'Category',
-          options: (this.productCategories() || []).map(category => {
-            return {
-              value: category.id,
-              label: category.name
-            };
-          })
+          type: 'select',
+          options: (this.productCategories() || []).map(category => category.name)
         },
         {
-          name: 'manufacturerSKU',
+          key: 'manufacturerSKU',
           label: 'Manufacturer SKU',
+          type: 'select',
           options: Array.from(new Set((this.products() || []).map(product => product.manufacturerSKU)))
-            .map(uniqueSKU => {
-              return {
-                value: uniqueSKU,
-                label: uniqueSKU
-              };
-            })
         }
       ];
     });
@@ -176,14 +168,36 @@ export class ProductCatalogComponent {
   setFilter($event: any) {
     try {
       const currentFilter = JSON.parse(this.productsDataSource.filter || '{}');
-      const filterType = $event.source.ariaLabel
-      currentFilter[filterType] = filterType === 'categoryID' ? Number($event.value) : $event.value;
+      const filterKey = $event.key;
+      const filterValue = $event.value;
+      
+      // Convert category names back to IDs for filtering
+      if (filterKey === 'categoryID' && filterValue) {
+        const category = this.productCategories().find(c => c.name === filterValue);
+        currentFilter[filterKey] = category ? category.id : null;
+      } else {
+        currentFilter[filterKey] = filterValue || null;
+      }
+      
+      // Remove null/empty filters
+      if (!currentFilter[filterKey]) {
+        delete currentFilter[filterKey];
+      }
+      
       this.productsDataSource.filter = JSON.stringify(currentFilter);
     } catch (error) {
       // If JSON is invalid, start with a fresh filter
-      const filterType = $event.source.ariaLabel;
+      const filterKey = $event.key;
+      const filterValue = $event.value;
       const newFilter: any = {};
-      newFilter[filterType] = filterType === 'categoryID' ? Number($event.value) : $event.value;
+      
+      if (filterKey === 'categoryID' && filterValue) {
+        const category = this.productCategories().find(c => c.name === filterValue);
+        newFilter[filterKey] = category ? category.id : filterValue;
+      } else {
+        newFilter[filterKey] = filterValue;
+      }
+      
       this.productsDataSource.filter = JSON.stringify(newFilter);
     }
   }

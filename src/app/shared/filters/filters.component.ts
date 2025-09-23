@@ -5,9 +5,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormField, MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { FilterConfig } from '../table/table.component';
 
 @Component({
-    selector: 'app-filters',
+    selector: 'co-filters',
     imports: [
         MatButtonModule,
         MatIconModule,
@@ -21,14 +22,19 @@ import { MatSelectModule } from '@angular/material/select';
 })
 export class FiltersComponent {
 
+  // Inputs
+  filterConfigs = input<FilterConfig[]>([]);
+
+  // Outputs
   search = output<string>({
     alias: 'searchOutput'
   });
   filter = output<string>({
     alias: 'filterOutput'
   });
+  filtersChanged = output<any>();
+  
   selected: string = '';
-  filters = input<any>([]);
 
   constructor() {
     
@@ -44,8 +50,25 @@ export class FiltersComponent {
       }
     }
   }
-  onFilterChange($event: any): void {
+  
+  onFilterChange(key: string, $event: any): void {
+    const filterValue = {
+      key: key,
+      value: $event.value
+    };
     this.filter.emit($event);
+    this.filtersChanged.emit(filterValue);
+  }
+
+  onTextFilterChange(key: string, $event: KeyboardEvent): void {
+    const inputElement = $event.target as HTMLInputElement;
+    if (inputElement && inputElement.value !== undefined) {
+      const filterValue = {
+        key: key,
+        value: inputElement.value
+      };
+      this.filtersChanged.emit(filterValue);
+    }
   }
 
 }

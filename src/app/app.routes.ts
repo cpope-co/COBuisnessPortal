@@ -19,6 +19,7 @@ import { UnauthorizedComponent } from './auth/unauthorized/unauthorized.componen
 import { ApiTokenManagementComponent } from './apiUser/api-token-management/api-token-management.component';
 import { ApiSettingsComponent } from './admin/api-settings/api-settings.component';
 import { UnsecuredTestComponent } from './unsecured-test/unsecured-test.component';
+import { PriceBookComponent } from './customers/price-book/price-book.component';
 
 export const routes: Routes = [
     {
@@ -133,7 +134,7 @@ export const routes: Routes = [
             {
                 path: 'pricebook',
                 title: 'Pricebook',
-                component: HomeComponent,
+                component: PriceBookComponent,
                 data: { display: true, role: 2 }
             },
             {

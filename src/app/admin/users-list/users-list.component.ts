@@ -13,6 +13,7 @@ import { MessagesService } from '../../messages/messages.service';
 import { MatInputModule } from '@angular/material/input';
 import { TableComponent } from '../../shared/table/table.component';
 import { FiltersComponent } from '../../shared/filters/filters.component';
+import { FilterConfig } from '../../shared/table/table.component';
 @Component({
   selector: 'app-users-list',
   imports: [
@@ -39,7 +40,7 @@ export class UsersListComponent {
   userAccounts = this.userAccountsSignal.asReadonly();
   userAccountDataSource = new MatTableDataSource<UserAccount>(this.userAccounts());
 
-  userAccountFilters: any[] = [];
+  userAccountFilters: FilterConfig[] = [];
   statuses = statuses;
   roles = roles;
 
@@ -64,21 +65,16 @@ export class UsersListComponent {
     effect(() => {
       this.userAccountFilters = [
         {
-          name: 'usroleid',
+          key: 'usroleid',
           label: 'Role',
-          options: this.roles.map((role) => ({
-            value: role.id,
-            label: role.name
-          })
-          )
+          type: 'select',
+          options: this.roles.map((role) => role.name)
         },
         {
-          name: 'usstat',
-          label: 'Status',
-          options: this.statuses.map((status) => ({
-            value: status.id,
-            label: status.name
-          }))
+          key: 'usstat',
+          label: 'Status', 
+          type: 'select',
+          options: this.statuses.map((status) => status.name)
         }
       ]
     });
@@ -150,8 +146,25 @@ export class UsersListComponent {
   }
   setFilter($event: any) {
     const currentFilter = JSON.parse(this.userAccountDataSource.filter || '{}');
-    const filterType = $event.source.ariaLabel;
-    currentFilter[filterType] = filterType === 'usroleid' ? Number($event.value) : $event.value;
+    const filterKey = $event.key;
+    const filterValue = $event.value;
+    
+    // Convert role names back to IDs for filtering
+    if (filterKey === 'usroleid' && filterValue) {
+      const role = this.roles.find(r => r.name === filterValue);
+      currentFilter[filterKey] = role ? role.id : null;
+    } else if (filterKey === 'usstat' && filterValue) {
+      const status = this.statuses.find(s => s.name === filterValue);
+      currentFilter[filterKey] = status ? status.id : null;
+    } else {
+      currentFilter[filterKey] = filterValue || null;
+    }
+    
+    // Remove null/empty filters
+    if (!currentFilter[filterKey]) {
+      delete currentFilter[filterKey];
+    }
+    
     this.userAccountDataSource.filter = JSON.stringify(currentFilter);
   }
 }

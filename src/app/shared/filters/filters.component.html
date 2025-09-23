@@ -6,16 +6,31 @@
     placeholder="Search"
   />
 </mat-form-field>
-@for(filterGroup of filters(); track $index) {
+@for(filterConfig of filterConfigs(); track $index) {
   <mat-form-field appearance="outline" class="ms-3">
-    <mat-label>{{filterGroup.label}}</mat-label>
-    <mat-select [aria-label]="filterGroup.name" (selectionChange)="onFilterChange($event)">
-      <mat-option [value]="-1">All</mat-option>
-      @for(option of filterGroup.options; track $index) {
-        <mat-option [value]="option.value">
-          {{ option.label }}
-        </mat-option>
-      }
-    </mat-select>
+    <mat-label>{{filterConfig.label}}</mat-label>
+    @if (filterConfig.type === 'select') {
+      <mat-select [aria-label]="filterConfig.label" (selectionChange)="onFilterChange(filterConfig.key, $event)">
+        <mat-option [value]="">All</mat-option>
+        @for(option of filterConfig.options; track $index) {
+          <mat-option [value]="option">
+            {{ option }}
+          </mat-option>
+        }
+      </mat-select>
+    } @else if (filterConfig.type === 'text') {
+      <input
+        matInput
+        [placeholder]="'Filter by ' + filterConfig.label"
+        (keyup)="onTextFilterChange(filterConfig.key, $event)"
+      />
+    } @else if (filterConfig.type === 'number') {
+      <input
+        matInput
+        type="number"
+        [placeholder]="'Filter by ' + filterConfig.label"
+        (keyup)="onTextFilterChange(filterConfig.key, $event)"
+      />
+    }
   </mat-form-field>
 }

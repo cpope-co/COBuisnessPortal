@@ -5,10 +5,10 @@
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <app-filters
-      (filterOutput)="setFilter($event)"
+    <co-filters
+      (filtersChanged)="setFilter($event)"
       (searchOutput)="setSearch($event)"
-      [filters]="productCatalogFilters"
+      [filterConfigs]="productCatalogFilters"
     />
     <table mat-table matSort [dataSource]="productsDataSource">
       @for(column of displayedColumns; track column) {

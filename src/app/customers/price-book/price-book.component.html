@@ -1,0 +1,19 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>
+            <h1>Price Book</h1>
+        </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+            <co-table
+                [data]="priceBookItems()"
+                [columns]="tableColumns"
+                [config]="tableConfig"
+                filterPlaceholder="Search products..."
+                emptyMessage="No price book items found"
+                (rowClick)="onRowClick($event)"
+                (rowDoubleClick)="onRowDoubleClick($event)"
+            >
+    </co-table>
+    </mat-card-content>
+</mat-card>

@@ -5,10 +5,10 @@
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <app-filters
+    <co-filters
       (searchOutput)="setSearch($event)"
-      [filters]="userAccountFilters"
-      (filterOutput)="setFilter($event)"
+      [filterConfigs]="userAccountFilters"
+      (filtersChanged)="setFilter($event)"
     />
     <table mat-table matSort [dataSource]="userAccountDataSource">
       @for(column of displayedColumns; track column) { @if(column !== 'actions')
