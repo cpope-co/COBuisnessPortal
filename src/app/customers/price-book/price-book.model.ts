@@ -26,8 +26,8 @@ export const PRICE_BOOK_COLUMN_CONFIG: ColumnConfig[] = [
     { column: 'category', label: 'Category', formatter: 'text', filterable: true },
     { column: 'item', label: 'Item Number', formatter: 'text', filterable: false },
     { column: 'description', label: 'Description', formatter: 'text', filterable: false },
-    { column: 'size', label: 'Size', formatter: 'text', filterable: false },
-    { column: 'um', label: 'UM', formatter: 'text', filterable: false },
+    { column: 'size', label: 'Size', formatter: 'text', filterable: true },
+    { column: 'um', label: 'UM', formatter: 'text', filterable: true },
     { column: 'retailUnits', label: 'Retail Units', formatter: 'text', filterable: false }, // Not typically filtered
     {
         column: 'wholesaleCost',

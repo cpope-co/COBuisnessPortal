@@ -18,7 +18,7 @@ import { FormGroup } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { FilterService } from '../../services/filter.service';
 import { FiltersComponent } from "../../shared/filters/filters.component";
-import { FilterConfig } from '../../shared/table/table.component';
+import { FilterConfig, TableColumn, TableConfig } from '../../shared/table/table.component';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { openProductDialog } from '../product-dialog/product-dialog.component';
@@ -29,15 +29,10 @@ import { TableComponent } from '../../shared/table/table.component';
     animations: [],
     imports: [
         RouterModule,
-        MatTableModule,
         MatCardModule,
         MatIconModule,
         MatButtonModule,
-        MatPaginatorModule,
-        MatSortModule,
-        MatInputModule,
-        MatSelectModule,
-        FiltersComponent,
+        TableComponent,
     ],
     templateUrl: './product-catalog.component.html',
     styleUrl: './product-catalog.component.scss'
@@ -45,170 +40,89 @@ import { TableComponent } from '../../shared/table/table.component';
 
 export class ProductCatalogComponent {
 
-
   productCatalogService = inject(ProductCatalogService);
   productCategoryService = inject(ProductCategoryService);
   messagesService = inject(MessagesService);
-  filterService = inject(FilterService);
   dialog = inject(MatDialog);
 
   productsSignal = signal<Product[]>([]);
   products = this.productsSignal.asReadonly();
-  productsDataSource = new MatTableDataSource<Product>(this.products());
 
   productCategoriesSignal = signal<ProductCategory[]>([]);
   productCategories = this.productCategoriesSignal.asReadonly();
 
-  productCatalogFilters: FilterConfig[] = [];
-
-  form!: FormGroup<any>;
-
-  displayedColumns: {column: string, label: string}[] = [
-    {column: 'SKU', label: 'SKU'},
-    {column: 'manufacturerSKU' , label: 'Manufacturer SKU'},
-    {column: 'categoryID', label: 'Category'},
-    {column: 'description', label: 'Description'},
-    {column: 'size', label: 'Size'},
-    {column: 'unitOfMeasurement', label: 'Unit'},
-    {column: 'supplierID', label: 'Supplier'},
-    {column: 'cost', label: 'Cost'},
+  // Table configuration
+  tableColumns: TableColumn[] = [
+    {
+      column: 'SKU', 
+      label: 'SKU',
+      sortable: true,
+      filterable: true
+    },
+    {
+      column: 'manufacturerSKU', 
+      label: 'Manufacturer SKU',
+      sortable: true,
+      filterable: true
+    },
+    {
+      column: 'categoryID', 
+      label: 'Category',
+      sortable: true,
+      filterable: true,
+      formatter: (value: any) => this.getCategoryName(value)
+    },
+    {
+      column: 'description', 
+      label: 'Description',
+      sortable: true,
+      filterable: true
+    },
+    {
+      column: 'size', 
+      label: 'Size',
+      sortable: true,
+      filterable: true
+    },
+    {
+      column: 'unitOfMeasurement', 
+      label: 'Unit',
+      sortable: true,
+      filterable: true
+    },
+    {
+      column: 'supplierID', 
+      label: 'Supplier',
+      sortable: true,
+      filterable: true
+    },
+    {
+      column: 'cost', 
+      label: 'Cost',
+      sortable: true,
+      filterable: true
+    },
   ];
 
-  get displayedColumnNames() {
-    return this.displayedColumns.map(col => col.column);
-  }
-
-  getMappedValue(column: string, value: any): string {
-    if (column === 'categoryID') {
-      return this.getCategoryName(value);
-    }
-    // Add more mappings if needed
-    return value;
-  }
+  tableConfig: TableConfig = {
+    showFilter: true,
+    showAdvancedFilters: true,
+    showPagination: true,
+    pageSize: 10,
+    pageSizeOptions: [10, 25, 50, 100],
+    showFirstLastButtons: true,
+    clickableRows: true
+  };
+  productCatalogFilters: any;
 
   getCategoryName(categoryID: string): string {
     const category = this.productCategories().find(cat => cat.id === categoryID);
     return category ? category.name : 'Unknown';
   }
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-
   constructor() {
     this.loadProducts();
     this.loadProductCategories();
-    effect(() => {
-      this.productsDataSource.data = this.products() || [];
-      this.productsDataSource.sort = this.sort;
-      this.productsDataSource.paginator = this.paginator;
-    });
-    effect(() => {
-      this.productCatalogFilters = [
-        {
-          key: 'categoryID',
-          label: 'Category',
-          type: 'select',
-          options: (this.productCategories() || []).map(category => category.name)
-        },
-        {
-          key: 'manufacturerSKU',
-          label: 'Manufacturer SKU',
-          type: 'select',
-          options: Array.from(new Set((this.products() || []).map(product => product.manufacturerSKU)))
-        }
-      ];
-    });
-
-    this.configFilterPredicate();
-  }
-
-  configFilterPredicate() {
-    this.productsDataSource.filterPredicate = (data: Product, filter: string) => {
-      try {
-        const filters = JSON.parse(filter);
-
-        let matchesCategory = true;
-        let matchesManufacturerSKU = true;
-        let matchesSearch = true;
-
-        if (filters.search !== undefined) {
-          const searchTerm = filters.search.toLowerCase();
-          matchesSearch = this.displayedColumns.some(column => {
-            const value = data[column.column as keyof Product]?.toString().toLowerCase() || '';
-            return value.includes(searchTerm);
-          });
-        }
-
-        if (filters.categoryID !== undefined) {
-          matchesCategory = data.categoryID === Number(filters.categoryID) || filters.categoryID === -1;
-        }
-
-        if (filters.manufacturerSKU !== undefined) {
-          matchesManufacturerSKU = data.manufacturerSKU === Number(filters.manufacturerSKU) || filters.manufacturerSKU === -1;
-        }
-
-        return matchesCategory && matchesManufacturerSKU && matchesSearch;
-      } catch (error) {
-        // If filter JSON is invalid, show all items
-        return true;
-      }
-    };
-  }
-  setSearch(search: string) {
-    try {
-      const currentFilter = JSON.parse(this.productsDataSource.filter || '{}');
-      currentFilter.search = search;
-      this.productsDataSource.filter = JSON.stringify(currentFilter);
-    } catch (error) {
-      // If JSON is invalid, start with a fresh filter
-      this.productsDataSource.filter = JSON.stringify({ search });
-    }
-  }
-
-  setFilter($event: any) {
-    // Validate event structure before proceeding
-    if (
-      !$event ||
-      $event.key == null || $event.key === '' ||
-      $event.value == null || $event.value === ''
-    ) {
-      this.messagesService.showMessage('Invalid filter event structure', 'danger');
-      return;
-    }
-    try {
-      const currentFilter = JSON.parse(this.productsDataSource.filter || '{}');
-      const filterKey = $event.key;
-      const filterValue = $event.value;
-      
-      // Convert category names back to IDs for filtering
-      if (filterKey === 'categoryID' && filterValue) {
-        const category = this.productCategories().find(c => c.name === filterValue);
-        currentFilter[filterKey] = category ? category.id : null;
-      } else {
-        currentFilter[filterKey] = filterValue || null;
-      }
-      
-      // Remove null/empty filters
-      if (!currentFilter[filterKey]) {
-        delete currentFilter[filterKey];
-      }
-      
-      this.productsDataSource.filter = JSON.stringify(currentFilter);
-    } catch (error) {
-      // If JSON is invalid, start with a fresh filter
-      const filterKey = $event.key;
-      const filterValue = $event.value;
-      const newFilter: any = {};
-      
-      if (filterKey === 'categoryID' && filterValue) {
-        const category = this.productCategories().find(c => c.name === filterValue);
-        newFilter[filterKey] = category ? category.id : filterValue;
-      } else {
-        newFilter[filterKey] = filterValue;
-      }
-      
-      this.productsDataSource.filter = JSON.stringify(newFilter);
-    }
   }
 
   async loadProducts() {
@@ -228,6 +142,7 @@ export class ProductCatalogComponent {
       this.messagesService.showMessage('Failed to load product categories', 'danger');
     }
   }
+
   async onViewProduct(product: Product) {
     const dialogRef = await openProductDialog(
       this.dialog,

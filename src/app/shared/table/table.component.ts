@@ -78,6 +78,7 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<T>([]);
   originalData: T[] = [];
   currentFilters: { [key: string]: any } = {}; // Track current filter state
+  currentSearchTerm: string = ''; // Track current search term
 
   // Computed properties
   displayedColumns = computed(() => this.columns().map(col => col.column));
@@ -88,6 +89,7 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
 
   @ViewChild('tablePaginator') paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  // Removed unused simpleFilterInput ViewChild
 
   constructor(private cdr: ChangeDetectorRef) {
     // Update data source when data changes
@@ -223,10 +225,38 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
   }
 
   /**
+   * Handle search input from filters component
+   */
+  onSearchChange(searchTerm: string) {
+    this.currentSearchTerm = searchTerm;
+    this.applyFilters();
+  }
+
+  /**
    * Apply all current filters to the data
    */
   private applyFilters() {
     let filteredData = [...this.originalData];
+    
+    // Apply search filter first if search term exists
+    if (this.currentSearchTerm && this.currentSearchTerm.trim().length > 0) {
+      const searchTerm = this.currentSearchTerm.toLowerCase().trim();
+      filteredData = filteredData.filter(item => {
+        // Search across all visible columns
+        return this.columns().some(column => {
+          const itemValue = (item as any)[column.column];
+          if (itemValue == null) return false;
+          
+          // Format the value using the column formatter if available
+          const displayValue = column.formatter 
+            ? column.formatter(itemValue, column.formatOptions)
+            : String(itemValue);
+            
+          return displayValue.toLowerCase().includes(searchTerm);
+        });
+      });
+    }
+    
     // Apply each active filter to the data
     Object.keys(this.currentFilters).forEach(key => {
       const filterValue = this.currentFilters[key];
@@ -280,11 +310,26 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
   }
 
   /**
-   * Clear all filters
+   * Handle when all filters are cleared from the filters component
    */
-  clearFilters() {
+  onFiltersCleared() {
+    this.resetFiltersAndData();
+  }
+
+  /**
+   * Clear the simple filter input and reset data
+   */
+  clearSimpleFilter() {
+    this.resetFiltersAndData();
+  }
+
+  /**
+   * Reset all filters, search term, and data to original state
+   */
+  private resetFiltersAndData() {
     this.dataSource.filter = '';
-    this.currentFilters = {}; // Clear the filters state
+    this.currentFilters = {};
+    this.currentSearchTerm = '';
     this.dataSource.data = [...this.originalData];
 
     if (this.dataSource.paginator) {

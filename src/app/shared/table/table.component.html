@@ -1,16 +1,20 @@
 <div class="table-container">
   <!-- Simple Filter Section -->
   @if (config().showFilter && hasData() && !config().showAdvancedFilters) {
-    <div class="filter-section mb-3">
+    <div class="filter-section mb-3 d-flex align-items-center gap-3">
       <mat-form-field appearance="outline" class="simple-filter">
         <mat-label>{{ filterPlaceholder() }}</mat-label>
         <input 
           matInput 
           (keyup)="applyFilter($event)" 
           [placeholder]="filterPlaceholder()"
-          #filterInput>
+          #simpleFilterInput>
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
+      <button mat-stroked-button (click)="clearSimpleFilter()" aria-label="Clear filter">
+        <mat-icon>clear_all</mat-icon>
+        Clear
+      </button>
     </div>
   }
 
@@ -19,18 +23,10 @@
     <div class="advanced-filters-section mb-3">
       <co-filters
         [filterConfigs]="filterConfigs()"
-        (filtersChanged)="onFiltersChanged($event)">
+        (filtersChanged)="onFiltersChanged($event)"
+        (filtersCleared)="onFiltersCleared()"
+        (searchOutput)="onSearchChange($event)">
       </co-filters>
-    </div>
-  }
-
-  <!-- Filter Actions -->
-  @if ((config().showFilter || config().showAdvancedFilters) && hasData()) {
-    <div class="filter-actions mb-3">
-      <button mat-stroked-button (click)="clearFilters()" aria-label="Clear all filters">
-        <mat-icon>clear_all</mat-icon>
-        Clear Filters
-      </button>
     </div>
   }
 
