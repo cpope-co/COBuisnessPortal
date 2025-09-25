@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FilterConfig } from '../table/table.component';
 import { InputComponent } from '../input/input.component';
 import { SelectComponent } from '../select/select.component';
@@ -16,6 +17,7 @@ import { SelectComponent } from '../select/select.component';
     ReactiveFormsModule,
     InputComponent,
     SelectComponent,
+    MatTooltipModule
   ],
   templateUrl: './filters-dialog.component.html',
   styleUrl: './filters-dialog.component.scss'
