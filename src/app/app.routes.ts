@@ -195,7 +195,6 @@ export const routes: Routes = [
             }
         ],
         data: { display: true, heading: true, role: 3 },
-        canActivate: [isUserAuthenticated, isUserVendor]
     },
     {
         path: 'apiuser',

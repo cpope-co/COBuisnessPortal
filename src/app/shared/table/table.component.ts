@@ -17,8 +17,16 @@ export interface TableColumn {
   formatOptions?: any;
 }
 
+export interface ColumnConfig {
+  column: string;
+  label: string;
+  formatter?: (value: any, formatOptions?: any) => string;
+  formatOptions?: any;
+  filterable?: boolean; // Add filterable flag - defaults to true if not specified
+  sortable?: boolean; // Add sortable flag - defaults to true if not specified
+}
+
 export interface TableConfig {
-  showFilter?: boolean;
   showAdvancedFilters?: boolean;
   showPagination?: boolean;
   pageSize?: number;
@@ -33,6 +41,23 @@ export interface FilterConfig {
   type: 'text' | 'number' | 'select' | 'date' | 'boolean';
   options?: any[];
 }
+
+export type FormatterType = 'text' | 'currency' | 'percentage' | 'number';
+
+// Default formatters for common use cases
+export const DEFAULT_FORMATTERS = new Map<FormatterType, (value: any, options?: Intl.NumberFormatOptions) => string>([
+  ['text', (value) => String(value || '')],
+  ['number', (value) => String(value || 0)],
+  ['currency', (value, options) => new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    ...options
+  }).format(Number(value || 0))],
+  ['percentage', (value, options) => new Intl.NumberFormat('en-US', {
+    style: 'percent',
+    ...options
+  }).format(Number(value || 0) / 100)]
+]);
 
 @Component({
   selector: 'co-table',
@@ -56,7 +81,6 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
 
   // Optional configuration
   config = input<TableConfig>({
-    showFilter: true,
     showAdvancedFilters: false,
     showPagination: true,
     pageSize: 10,
@@ -67,7 +91,7 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
 
   // Optional inputs
   filterPlaceholder = input<string>('Filter data...');
-  emptyMessage = input<string>('No data available');
+  loading = input<boolean>(false);
 
   // Outputs
   rowClick = output<T>();
@@ -83,6 +107,10 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
   // Computed properties
   displayedColumns = computed(() => this.columns().map(col => col.column));
   hasData = computed(() => this.data().length > 0);
+  hasDisplayedData = computed(() => this.dataSource.data.length > 0);
+  showEmptyState = computed(() => !this.loading() && !this.hasDisplayedData() && this.hasData());
+  showNoDataState = computed(() => !this.loading() && !this.hasData());
+  showLoadingState = computed(() => this.loading());
 
   // Filter configuration for advanced filters
   filterConfigs = computed(() => this.generateFilterConfigs());
@@ -97,6 +125,19 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
       this.originalData = [...this.data()];
       this.dataSource.data = this.data();
     });
+  }
+
+  /**
+   * Static helper method to get a formatter function by type.
+   * This is intended as a public API for consumers of TableComponent
+   * who want to use standard formatters outside of the component.
+   */
+  static getFormatter(formatterType: FormatterType, customFormatters?: Map<FormatterType, (value: any, options?: any) => string>): (value: any, options?: any) => string {
+    // First check custom formatters, then fall back to default
+    if (customFormatters?.has(formatterType)) {
+      return customFormatters.get(formatterType)!;
+    }
+    return DEFAULT_FORMATTERS.get(formatterType) || DEFAULT_FORMATTERS.get('text')!;
   }
 
   ngOnInit() {

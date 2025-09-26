@@ -1,5 +1,5 @@
 import { Component, effect, inject, signal, ViewChild } from '@angular/core';
-import { PriceBookItem, ColumnConfig, FormatterType, PRICE_BOOK_COLUMN_CONFIG } from './price-book.model';
+import { PriceBookItem, PriceBookColumnConfig, PRICE_BOOK_COLUMN_CONFIG, PRICE_BOOK_TABLE_CONFIG } from './price-book.model';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,7 +10,7 @@ import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { PriceBookService } from './price-book.service';
 import { MatCardModule } from '@angular/material/card';
-import { TableColumn, TableComponent, TableConfig } from '../../shared/table/table.component';
+import { TableColumn, TableComponent, TableConfig, FormatterType } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-price-book',
@@ -33,45 +33,12 @@ export class PriceBookComponent {
 
   priceBookItemsSignal = signal<PriceBookItem[]>([]);
   priceBookItems = this.priceBookItemsSignal.asReadonly();
-  
-  private formatters = new Map<FormatterType, (value: any, options?: Intl.NumberFormatOptions) => string>([
-    ['text', (value) => String(value || '')],
-    ['number', (value) => String(value || 0)],
-    ['currency', (value, options) => new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      ...options
-    }).format(Number(value || 0))],
-    ['percentage', (value, options) => new Intl.NumberFormat('en-US', {
-      style: 'percent',
-      ...options
-    }).format(Number(value || 0) / 100)]
-  ]);
 
-  // Add to tableConfig:
-  tableConfig: TableConfig = {
-    showFilter: true,
-    showAdvancedFilters: true, // Enable advanced filters
-    showPagination: true,
-    pageSize: 25,
-    pageSizeOptions: [10, 25, 50, 100],
-    showFirstLastButtons: true,
-    clickableRows: true
-  };
+  // Use table configuration from model
+  tableConfig: TableConfig = PRICE_BOOK_TABLE_CONFIG;
   
-  // Add to tableColumns mapping to use config from model:
-  tableColumns: TableColumn[] = PRICE_BOOK_COLUMN_CONFIG.map(config => ({
-    column: config.column as string,
-    label: config.label,
-    sortable: config.sortable ?? true, // Use config value, default to true if not specified
-    filterable: config.filterable ?? true, // Use config value, default to true if not specified
-    formatter: this.getFormatter(config.formatter),
-    formatOptions: config.formatOptions
-  }));
-
-  private getFormatter(formatterType: FormatterType) {
-    return this.formatters.get(formatterType) || this.formatters.get('text')!;
-  }
+  // Use column configuration directly from model
+  tableColumns: TableColumn[] = PRICE_BOOK_COLUMN_CONFIG;
 
   onRowClick(item: PriceBookItem) {
     this.messagesService.showMessage(`Selected item: ${item.description}`, 'info');

@@ -1,25 +1,14 @@
-import { JsonPipe, TitleCasePipe } from '@angular/common';
-import { Component, computed, effect, inject, signal, ViewChild } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { RouterModule } from '@angular/router';
-import { Product } from '../../models/product.model';
+import { Product, PRODUCT_CATALOG_COLUMN_CONFIG, PRODUCT_CATALOG_TABLE_CONFIG } from '../../models/product.model';
 import { ProductCatalogService } from './product-catalog.service';
 import { MessagesService } from '../../messages/messages.service';
 import { ProductCategoryService } from './product-category.service';
 import { ProductCategory } from '../../models/product-category.model';
-import { SelectComponent } from '../../shared/select/select.component';
-import { FormGroup } from '@angular/forms';
-import { MatSelectModule } from '@angular/material/select';
-import { FilterService } from '../../services/filter.service';
-import { FiltersComponent } from "../../shared/filters/filters.component";
-import { FilterConfig, TableColumn, TableConfig } from '../../shared/table/table.component';
-import { trigger, state, style, transition, animate } from '@angular/animations';
+import { TableColumn, TableConfig } from '../../shared/table/table.component';
 import { MatDialog } from '@angular/material/dialog';
 import { openProductDialog } from '../product-dialog/product-dialog.component';
 import { TableComponent } from '../../shared/table/table.component';
@@ -51,68 +40,17 @@ export class ProductCatalogComponent {
   productCategoriesSignal = signal<ProductCategory[]>([]);
   productCategories = this.productCategoriesSignal.asReadonly();
 
-  // Table configuration
-  tableColumns: TableColumn[] = [
-    {
-      column: 'SKU', 
-      label: 'SKU',
-      sortable: true,
-      filterable: true
-    },
-    {
-      column: 'manufacturerSKU', 
-      label: 'Manufacturer SKU',
-      sortable: true,
-      filterable: true
-    },
-    {
-      column: 'categoryID', 
-      label: 'Category',
-      sortable: true,
-      filterable: true,
-      formatter: (value: any) => this.getCategoryName(value)
-    },
-    {
-      column: 'description', 
-      label: 'Description',
-      sortable: true,
-      filterable: true
-    },
-    {
-      column: 'size', 
-      label: 'Size',
-      sortable: true,
-      filterable: true
-    },
-    {
-      column: 'unitOfMeasurement', 
-      label: 'Unit',
-      sortable: true,
-      filterable: true
-    },
-    {
-      column: 'supplierID', 
-      label: 'Supplier',
-      sortable: true,
-      filterable: true
-    },
-    {
-      column: 'cost', 
-      label: 'Cost',
-      sortable: true,
-      filterable: true
-    },
-  ];
+  // Use table configuration from model  
+  tableColumns: TableColumn[] = PRODUCT_CATALOG_COLUMN_CONFIG.map(config => ({
+    ...config,
+    // Override the categoryID formatter to show category names
+    formatter: config.column === 'categoryID' ? 
+      (value: any) => this.getCategoryName(value) : 
+      config.formatter
+  }));
 
-  tableConfig: TableConfig = {
-    showFilter: true,
-    showAdvancedFilters: true,
-    showPagination: true,
-    pageSize: 10,
-    pageSizeOptions: [10, 25, 50, 100],
-    showFirstLastButtons: true,
-    clickableRows: true
-  };
+  tableConfig: TableConfig = PRODUCT_CATALOG_TABLE_CONFIG;
+  
   productCatalogFilters: any;
 
   getCategoryName(categoryID: string): string {

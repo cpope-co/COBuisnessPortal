@@ -124,7 +124,6 @@ export const USER_ACCOUNTS_TABLE_COLUMNS: TableColumn[] = [
 ];
 
 export const USER_ACCOUNTS_TABLE_CONFIG: TableConfig = {
-    showFilter: true,
     showAdvancedFilters: true,
     showPagination: true,
     pageSize: 10,
