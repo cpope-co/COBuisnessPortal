@@ -27,6 +27,7 @@ export interface ColumnConfig {
 }
 
 export interface TableConfig {
+  showSearch?: boolean;
   showAdvancedFilters?: boolean;
   showPagination?: boolean;
   pageSize?: number;

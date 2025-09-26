@@ -55,6 +55,7 @@ export const PRICE_BOOK_COLUMN_CONFIG: PriceBookColumnConfig[] = [
 
 // Table configuration for price book
 export const PRICE_BOOK_TABLE_CONFIG: TableConfig = {
+    showSearch: true, // Enable search input
     showAdvancedFilters: true, // Enable advanced filters
     showPagination: true,
     pageSize: 10,

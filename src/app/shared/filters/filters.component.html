@@ -1,5 +1,6 @@
 <div class="filters-container d-flex align-items-center gap-3">
-  <!-- Search Input - Always Visible -->
+  <!-- Search Input - Show when showSearch is true -->
+  @if (showSearch()) {
   <mat-form-field appearance="outline" class="search-field">
     <mat-label>Search</mat-label>
     <input 
@@ -10,8 +11,10 @@
       [value]="currentSearch">
     <mat-icon matSuffix>search</mat-icon>
   </mat-form-field>
+  }
 
-  <!-- Filters Dialog Trigger -->
+  <!-- Advanced Filters Dialog Trigger - Show when showAdvancedFilters is true -->
+  @if (showAdvancedFilters()) {
   <button 
     mat-stroked-button 
     (click)="openFiltersDialog()" 
@@ -24,4 +27,5 @@
       <span class="active-filters-badge">{{ getActiveAdvancedFilterCount() }}</span>
     }
   </button>
+  }
 </div>

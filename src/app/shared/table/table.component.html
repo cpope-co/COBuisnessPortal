@@ -1,10 +1,15 @@
 <div class="table-container">
 
-  <!-- Advanced Filters Section -->
-  @if (config().showAdvancedFilters && hasData()) {
-  <div class="advanced-filters-section mb-3">
-    <co-filters [filterConfigs]="filterConfigs()" (filtersChanged)="onFiltersChanged($event)"
-      (filtersCleared)="onFiltersCleared()" (searchOutput)="onSearchChange($event)">
+  <!-- Filters Section - Show when search or advanced filters are enabled -->
+  @if ((config().showSearch || config().showAdvancedFilters) && hasData()) {
+  <div class="filters-section mb-3">
+    <co-filters 
+      [filterConfigs]="filterConfigs()" 
+      [showSearch]="config().showSearch || false"
+      [showAdvancedFilters]="config().showAdvancedFilters || false"
+      (filtersChanged)="onFiltersChanged($event)"
+      (filtersCleared)="onFiltersCleared()" 
+      (searchOutput)="onSearchChange($event)">
     </co-filters>
   </div>
   }

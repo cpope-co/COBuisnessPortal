@@ -30,6 +30,8 @@ export class FiltersComponent {
 
   // Inputs
   filterConfigs = input<FilterConfig[]>([]);
+  showSearch = input<boolean>(true);
+  showAdvancedFilters = input<boolean>(true);
 
   // Outputs
   search = output<string>({
