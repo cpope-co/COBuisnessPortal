@@ -8,6 +8,8 @@ import { MatDialog } from "@angular/material/dialog";
 import { HttpClient, HttpContext, HttpContextToken, HttpHeaders } from "@angular/common/http";
 import { firstValueFrom } from "rxjs";
 import { SKIP_AUTH_KEY, SKIP_REFRESH_KEY } from "../shared/http-context-keys";
+import { PermissionsService } from "../services/permissions.service";
+import { UserPermissions } from "../models/permissions.model";
 
 const USER_STORAGE_KEY = 'user';
 const TOKEN_STORAGE_KEY = 'token';
@@ -21,6 +23,7 @@ export class AuthService {
     messageService = inject(MessagesService);
     dialog = inject(MatDialog);
     http = inject(HttpClient);
+    permissionsService = inject(PermissionsService);
 
     #userSignal = signal<User | null>(null);
     user = this.#userSignal.asReadonly();
@@ -71,7 +74,7 @@ export class AuthService {
             }
         });
     }
-    
+
     private safeJwtDecode(token: string | null): User | null {
         if (!token || typeof token !== 'string' || token.trim() === '') {
             console.error('Invalid token provided to jwtDecode:', token);
@@ -116,7 +119,7 @@ export class AuthService {
         if (!this.user()) {
             return;
         }
-        
+
         try {
             const status = await this.checkExpiry();
             if (status === 'expiring' || status === 'expired') {
@@ -217,17 +220,15 @@ export class AuthService {
             'Authorization': `Basic ${btoa(`${email}:${password}`)}`
         });
 
-
-        // Use the token to set metadata
         const context = new HttpContext().set(SKIP_AUTH_KEY, true).set(SKIP_REFRESH_KEY, true);
 
-        // Use the context in your HTTP request
-        const user$ = await this.http.post(`${this.env.apiBaseUrl}usraut/login`,
+        const response = await firstValueFrom(this.http.post<{
+            success: boolean;
+            permissions: Array<{ resource: string; per: number }>;
+        }>(`${this.env.apiBaseUrl}usraut/login`,
             { email, password },
             { headers, observe: 'response', withCredentials: true, context }
-        );
-
-        const response = await firstValueFrom(user$);
+        ));
 
         const token = response.headers.get('x-id');
         if (!token) {
@@ -239,18 +240,34 @@ export class AuthService {
         if (!user) {
             throw new Error('Failed to decode authentication token');
         }
+
+        // Handle permissions from response body
+        if (response.body?.permissions) {
+            const userPermissions: UserPermissions = {
+                resources: response.body.permissions.map(p => ({
+                    resource: p.resource,
+                    per: p.per
+                }))
+            };
+            this.permissionsService.setUserPermissions(userPermissions);
+        }
+
         this.#userSignal.set(user);
         this.loginEvent.emit();
         this.setRoles();
         return user;
     }
+    
     async refresh(): Promise<User> {
         const headers = new HttpHeaders({
             'Authorization': `Bearer ${this.token()}`
         });
 
         const context = new HttpContext().set(SKIP_REFRESH_KEY, true).set(SKIP_AUTH_KEY, true);
-        const response = await firstValueFrom(this.http.get(
+        const response = await firstValueFrom(this.http.get<{
+            success?: boolean;
+            permissions?: Array<{ resource: string; per: number }>;
+        }>(
             `${this.env.apiBaseUrl}usraut/refresh`,
             { observe: 'response', withCredentials: true, context }
         ));
@@ -265,6 +282,18 @@ export class AuthService {
         if (!user) {
             throw new Error('Failed to decode refresh token');
         }
+
+        // Handle permissions from refresh response if provided
+        if (response.body?.permissions) {
+            const userPermissions: UserPermissions = {
+                resources: response.body.permissions.map(p => ({
+                    resource: p.resource,
+                    per: p.per
+                }))
+            };
+            this.permissionsService.setUserPermissions(userPermissions);
+        }
+
         this.#userSignal.set(user);
         return user;
     }
@@ -304,15 +333,17 @@ export class AuthService {
             const context = new HttpContext().set(SKIP_REFRESH_KEY, true);
 
             const response = await firstValueFrom(this.http.post(
-                `${this.env.apiBaseUrl}/usraut/logout`, 
-                {}, 
-                { headers, withCredentials: true, context
-            }));
+                `${this.env.apiBaseUrl}/usraut/logout`,
+                {},
+                {
+                    headers, withCredentials: true, context
+                }));
         } catch (error) {
             // Even if logout request fails, we should still clear local state
             console.warn('Logout request failed, but clearing local state anyway:', error);
         } finally {
             // Always clear local state regardless of server response
+            this.permissionsService.clearPermissions();
             sessionStorage.clear();
             localStorage.clear();
             this.#userSignal.set(null);

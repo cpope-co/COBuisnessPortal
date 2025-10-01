@@ -17,10 +17,12 @@
  * @returns {MenuItem[]} - The retrieved menu items.
  */
 
-import { inject, Injectable, signal } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import { MenuItem } from "./menu.model";
 import { routes } from '../../app.routes';
 import { AuthService } from "../../auth/auth.service";
+import { PermissionsService } from "../../services/permissions.service";
+import { Permission } from "../../models/permissions.model";
 import { Route } from "@angular/router";
 
 @Injectable({
@@ -30,17 +32,39 @@ import { Route } from "@angular/router";
 export class MenuService {
 
     authService = inject(AuthService);
+    permissionsService = inject(PermissionsService);
 
     menuItems = signal<MenuItem[]>([]);
     routes = signal<Route[]>(routes);
 
-    constructor(
-    ) {
-
+    constructor() {
+        // React to user and permission changes without causing circular dependency
+        effect(() => {
+            const user = this.authService.user();
+            const permissions = this.permissionsService.userPermissions();
+            
+            // When user or permissions change, rebuild menu
+            if (user) {
+                this.refreshMenu();
+            } else {
+                this.clearMenuItems();
+            }
+        });
     }
 
     clearMenuItems() {
         this.menuItems.set([]);
+        sessionStorage.removeItem('menuItems');
+    }
+
+    /**
+     * Rebuilds and refreshes the menu items
+     */
+    refreshMenu() {
+        this.clearMenuItems();
+        const newMenuItems = this.buildMenu();
+        this.setMenuItems(newMenuItems);
+        this.menuItems.set(newMenuItems);
     }
 
     buildMenu(): MenuItem[] {
@@ -58,11 +82,69 @@ export class MenuService {
                     };
                     return menuItem;
                 }).filter(menuItem => {
-                    if(userRole === 1) {
-                        return menuItem.options?.display !== false && (!menuItem.children || menuItem.children.length > 0);
+                    // Check if menu item should be displayed
+                    if (!menuItem.options?.display) {
+                        return false;
                     }
+
+                    // Admin users (role 1) can see everything
+                    if (userRole === 1) {
+                        return true;
+                    }
+
+                    // Check role-based access
                     const menuItemRole = menuItem.options?.role;
-                    return menuItem.options?.display !== false && (!menuItem.children || menuItem.children.length > 0) && (!menuItemRole || menuItemRole === userRole);
+                    const hasRoleAccess = !menuItemRole || menuItemRole === userRole;
+
+                    // Check permissions-based access for routes with resource
+                    let hasPermissionAccess = true;
+                    const routeData = this.findRouteData(menuItem.route);
+                    
+                    if (routeData?.resource && routeData?.requiredPermissions) {
+                        const resource = routeData.resource;
+                        const requiredPermissions = routeData.requiredPermissions as Permission[];
+                        
+                        // Check if user has at least one of the required permissions for this resource
+                        hasPermissionAccess = requiredPermissions.some(permission => 
+                            this.permissionsService.hasResourcePermission(resource, permission)
+                        );
+                    }
+
+                    // For parent routes with children, show if any child is accessible
+                    if (menuItem.children && menuItem.children.length > 0) {
+                        const hasAccessibleChildren = menuItem.children.some(child => {
+                            const childRouteData = this.findRouteData(child.route);
+                            if (childRouteData?.resource && childRouteData?.requiredPermissions) {
+                                const childRequiredPermissions = childRouteData.requiredPermissions as Permission[];
+                                return childRequiredPermissions.some(permission =>
+                                    this.permissionsService.hasResourcePermission(childRouteData.resource, permission)
+                                );
+                            }
+                            // If no specific permissions required, check role access
+                            const childRole = child.options?.role;
+                            return !childRole || childRole === userRole;
+                        });
+                        return hasRoleAccess && hasAccessibleChildren;
+                    }
+
+                    return hasRoleAccess && hasPermissionAccess;
+                }).map(menuItem => {
+                    // Filter children recursively
+                    if (menuItem.children) {
+                        menuItem.children = menuItem.children.filter(child => {
+                            const childRouteData = this.findRouteData(child.route);
+                            if (childRouteData?.resource && childRouteData?.requiredPermissions) {
+                                const childRequiredPermissions = childRouteData.requiredPermissions as Permission[];
+                                return childRequiredPermissions.some(permission =>
+                                    this.permissionsService.hasResourcePermission(childRouteData.resource, permission)
+                                );
+                            }
+                            // If no specific permissions required, check role access
+                            const childRole = child.options?.role;
+                            return !childRole || childRole === userRole;
+                        });
+                    }
+                    return menuItem;
                 });
             };
 
@@ -74,14 +156,40 @@ export class MenuService {
         }
     }
 
+    /**
+     * Helper method to find route data by path
+     */
+    private findRouteData(path: string): any {
+        const findInRoutes = (routes: Route[], targetPath: string): any => {
+            for (const route of routes) {
+                if (route.path === targetPath.split('/').pop()) {
+                    return route.data;
+                }
+                if (route.children) {
+                    const found = findInRoutes(route.children, targetPath);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+        return findInRoutes(this.routes(), path);
+    }
+
     setMenuItems(menuItems: MenuItem[]) {
         sessionStorage.setItem('menuItems', JSON.stringify(menuItems));
     }
 
     getMenuItems(): MenuItem[] {
-        if(this.menuItems().length === 0) {
-            const menuItems = JSON.parse(sessionStorage.getItem('menuItems') || '[]');
-            this.menuItems.set(menuItems);
+        if (this.menuItems().length === 0) {
+            const storedMenuItems = JSON.parse(sessionStorage.getItem('menuItems') || '[]');
+            if (storedMenuItems.length > 0) {
+                this.menuItems.set(storedMenuItems);
+            } else if (this.authService.user()) {
+                // If no stored menu items but user is logged in, rebuild the menu
+                const newMenuItems = this.buildMenu();
+                this.setMenuItems(newMenuItems);
+                this.menuItems.set(newMenuItems);
+            }
         }
         return this.menuItems();
     }

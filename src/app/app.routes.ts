@@ -20,6 +20,16 @@ import { ApiTokenManagementComponent } from './apiUser/api-token-management/api-
 import { ApiSettingsComponent } from './admin/api-settings/api-settings.component';
 import { UnsecuredTestComponent } from './unsecured-test/unsecured-test.component';
 import { PriceBookComponent } from './customers/price-book/price-book.component';
+import { Api1Component } from './api/api1/api1.component';
+import { Api2Component } from './api/api2/api2.component';
+import { Api3Component } from './api/api3/api3.component';
+import { Api4Component } from './api/api4/api4.component';
+import { Api5Component } from './api/api5/api5.component';
+import { Api6Component } from './api/api6/api6.component';
+import { Api7Component } from './api/api7/api7.component';
+import { Api8Component } from './api/api8/api8.component';
+import { hasResourcePermission } from './guards/hasPermission.guard';
+import { Permission } from './models/permissions.model';
 
 export const routes: Routes = [
     {
@@ -58,7 +68,7 @@ export const routes: Routes = [
                 component: LoginComponent,
                 data: { display: false },
                 canActivate: [isUserNotAuthenticated]
-            }, 
+            },
             {
                 path: 'register',
                 title: 'Register',
@@ -70,14 +80,14 @@ export const routes: Routes = [
                 title: 'Verify',
                 component: VerifyComponent,
                 data: { display: false }
-        
+
             },
             {
                 path: 'set-password',
                 title: 'Set Password',
                 component: SetPasswordComponent,
                 data: { display: false }
-        
+
             },
             {
                 path: 'forgot',
@@ -209,6 +219,101 @@ export const routes: Routes = [
         ],
         data: { display: true, heading: true, role: 5 },
         canActivate: [isUserAuthenticated, isUserApiUser]
+    },
+    {
+        path: 'api',
+        title: 'API',
+        children: [
+            {
+                path: 'api1',
+                title: 'API 1',
+                component: Api1Component,
+                canActivate: [isUserAuthenticated, hasResourcePermission],
+                data: {
+                    display: true,
+                    resource: 'API1',
+                    requiredPermissions: [Permission.READ]
+                }
+            },
+            {
+                path: 'api2',
+                title: 'API 2',
+                component: Api2Component,
+                canActivate: [isUserAuthenticated, hasResourcePermission],
+                data: {
+                    display: true,
+                    resource: 'API2',
+                    requiredPermissions: [Permission.READ]
+                }
+            },
+            {
+                path: 'api3',
+                title: 'API 3',
+                component: Api3Component,
+                canActivate: [isUserAuthenticated, hasResourcePermission],
+                data: {
+                    display: true,
+                    resource: 'API3',
+                    requiredPermissions: [Permission.READ]
+                }
+            },
+            {
+                path: 'api4',
+                title: 'API 4',
+                component: Api4Component,
+                canActivate: [isUserAuthenticated, hasResourcePermission],
+                data: {
+                    display: true,
+                    resource: 'API4',
+                    requiredPermissions: [Permission.READ]
+                }
+            },
+            {
+                path: 'api5',
+                title: 'API 5',
+                component: Api5Component,
+                canActivate: [isUserAuthenticated, hasResourcePermission],
+                data: {
+                    display: true,
+                    resource: 'API5',
+                    requiredPermissions: [Permission.READ]
+                }
+            },
+            {
+                path: 'api6',
+                title: 'API 6',
+                component: Api6Component,
+                canActivate: [isUserAuthenticated, hasResourcePermission],
+                data: {
+                    display: true,
+                    resource: 'API6',
+                    requiredPermissions: [Permission.READ]
+                }
+            },
+            {
+                path: 'api7',
+                title: 'API 7',
+                component: Api7Component,
+                canActivate: [isUserAuthenticated, hasResourcePermission],
+                data: {
+                    display: true,
+                    resource: 'API7',
+                    requiredPermissions: [Permission.READ]
+                }
+            },
+            {
+                path: 'api8',
+                title: 'API 8',
+                component: Api8Component,
+                canActivate: [isUserAuthenticated, hasResourcePermission],
+                data: {
+                    display: true,
+                    resource: 'API8',
+                    requiredPermissions: [Permission.READ]
+                }
+            }
+        ],
+        data: { display: true, heading: true }
     },
     {
         path: '**',
