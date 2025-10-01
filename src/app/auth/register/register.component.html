@@ -1,124 +1,139 @@
 <mat-card>
   <mat-card-header>
-    <mat-card-title
-      ><h1>Chambers &amp; Owen Business Portal</h1></mat-card-title
-    >
-    <mat-card-subtitle class="mt-2"><h2>Register</h2></mat-card-subtitle>
+    <mat-card-title>
+      <h1>Chambers &amp; Owen Business Portal</h1>
+    </mat-card-title>
+    <mat-card-subtitle class="mt-2">
+      <h2 id="registration-title">Register</h2>
+    </mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <p>
+    <p id="registration-instructions">
       You must be a current supplier or retailer of Chambers & Owen, Inc. to
       register for a portal account. To register, fill out the form below and
       click the Submit button. All fields on the form are required. Once your
       request has been submitted and approved, you will receive an email with a
       link to activate your account. This process may take 1 to 2 business days.
     </p>
-    <form [formGroup]="form">
+    <form [formGroup]="form"
+          role="form"
+          aria-labelledby="registration-title"
+          aria-describedby="registration-instructions"
+          class="mt-4">
       <div class="row">
         <div class="col-lg col-xl col-xxl-4">
-          <h3>Choose account type</h3>
-          <co-radio
-            [formGroup]="form"
-            [label]="'Register As'"
-            [formControlName]="'wregtype'"
-            [options]="wregtype"
-            [placeholder]="'Select a registration type'"
-            [model]="register"
-          />
+          <fieldset>
+            <legend>Choose account type</legend>
+            <co-radio [formGroup]="form"
+                      [label]="'Register'"
+                      [controlName]="'wregtype'"
+                      [options]="wregtype"
+                      [placeholder]="'Select a registration type'"
+                      [model]="register"
+                      role="radiogroup"
+                      aria-label="Choose account type"
+                      aria-required="true"
+                      tabindex="1" />
+          </fieldset>
         </div>
       </div>
       @if(form.get('wregtype')?.value === RegistrationTypes.s ||
       form.get('wregtype')?.value === RegistrationTypes.r) {
-      <div class="row justify-content-xl-center mt-2">
+      <div class="row justify-content-xl-center mt-4"
+           role="group"
+           aria-label="Registration form fields">
         <div class="col-lg col-xl col-xxl-6">
-          <div formGroupName="matchEmails">
-            <co-input
-              [formGroup]="nestedFormGroup"
-              [label]="'Email'"
-              [type]="'email'"
-              [formControlName]="'usemail'"
-              placeholder="Enter your email address"
-              [model]="register"
-            />
-            <co-input
-              [formGroup]="nestedFormGroup"
-              [label]="'Verify Email'"
-              [type]="'email'"
-              [formControlName]="'verifyEmail'"
-              placeholder="Re-enter your email address"
-              [model]="register"
-            />
-          </div>
-          <co-input
-            [formGroup]="form"
-            [label]="'First Name'"
-            [type]="'text'"
-            [formControlName]="'usfname'"
-            placeholder="Enter your first name"
-            [model]="register"
-          />
-          <co-input
-            [formGroup]="form"
-            [label]="'Last Name'"
-            [type]="'text'"
-            [formControlName]="'uslname'"
-            placeholder="Enter your last name"
-            [model]="register"
-          />
+          <fieldset>
+            <legend class="sr-only">Contact Information</legend>
+            <div formGroupName="matchEmails">
+              <co-input [formGroup]="nestedFormGroup"
+                        [label]="'Email'"
+                        [type]="'email'"
+                        [formControlName]="'usemail'"
+                        [placeholder]="'Enter your email address'"
+                        [model]="register"
+                        aria-required="true" />
+              <co-input [formGroup]="nestedFormGroup"
+                        [label]="'Verify Email'"
+                        [type]="'email'"
+                        [formControlName]="'verifyEmail'"
+                        [placeholder]="'Re-enter your email address'"
+                        [model]="register"
+                        aria-required="true" />
+            </div>
+            <co-input [formGroup]="form"
+                      [label]="'First Name'"
+                      [type]="'text'"
+                      [formControlName]="'usfname'"
+                      [placeholder]="'Enter your first name'"
+                      [model]="register"
+                      aria-required="true" />
+            <co-input [formGroup]="form"
+                      [label]="'Last Name'"
+                      [type]="'text'"
+                      [formControlName]="'uslname'"
+                      [placeholder]="'Enter your last name'"
+                      [model]="register"
+                      aria-required="true" />
+          </fieldset>
         </div>
         <div class="col-lg col-xl col-xxl-6">
-          <co-input
-            [formGroup]="form"
-            [label]="'Phone Number'"
-            [type]="'tel'"
-            [formControlName]="'wphone'"
-            placeholder="Enter your phone number"
-            [model]="register"
-            [mask]="phoneMask"
-          />
+          <fieldset>
+            <legend class="sr-only">Account Information</legend>
+            <co-input [formGroup]="form"
+                      [label]="'Phone Number'"
+                      [type]="'tel'"
+                      [formControlName]="'wphone'"
+                      placeholder="Enter your phone number"
+                      [model]="register"
+                      [mask]="phoneMask"
+                      aria-required="true" />
 
-          @if(form.get('wregtype')?.value === RegistrationTypes.r) {
-          <co-input
-            [formGroup]="form"
-            [label]="'Account Number'"
-            [type]="'text'"
-            [formControlName]="'usabnum'"
-            placeholder="Enter your account number"
-            [model]="register"
-          />
-          } @if(form.get('wregtype')?.value === RegistrationTypes.s) {
-          <co-select
-            [formGroup]="form"
-            [label]="'Category Manager'"
-            [formControlName]="'wcatmgr'"
-            [options]="wcatmgrs()"
-            [placeholder]="'Select a category manager'"
-            [model]="register"
-          />
-          }
-          <co-input
-            [formGroup]="form"
-            [label]="'Account Name'"
-            [type]="'text'"
-            [formControlName]="'wacctname'"
-            placeholder="Enter your account name"
-            [model]="register"
-          />
+            @if(form.get('wregtype')?.value === RegistrationTypes.r) {
+            <co-input [formGroup]="form"
+                      [label]="'Account Number'"
+                      [type]="'text'"
+                      [formControlName]="'usabnum'"
+                      placeholder="Enter your account number"
+                      [model]="register"
+                      aria-required="true" />
+            } @if(form.get('wregtype')?.value === RegistrationTypes.s) {
+            <co-select [formGroup]="form"
+                       [label]="'Category Manager'"
+                       [formControlName]="'wcatmgr'"
+                       [options]="wcatmgrs()"
+                       [placeholder]="'Select a category manager'"
+                       [model]="register"
+                       aria-required="true" />
+            }
+            <co-input [formGroup]="form"
+                      [label]="'Account Name'"
+                      [type]="'text'"
+                      [formControlName]="'wacctname'"
+                      [placeholder]="'Enter your account name'"
+                      [model]="register"
+                      aria-required="true" />
+          </fieldset>
         </div>
       </div>
       }
     </form>
   </mat-card-content>
-  <mat-card-actions class="mt-2" align="end">
-      <button mat-button type="button" (click)="onCancel()">
-        Cancel
-      </button>
-        <button
-          mat-raised-button
-          type="submit"
-          color="primary"
-          (click)="onRegister()">
-          Submit
-        </button>
-    </mat-card-actions>
+  <mat-card-actions class="mt-2"
+                    align="end">
+    <button mat-button
+            type="button"
+            (click)="onCancel()"
+            aria-label="Cancel registration and return to previous page">
+      Cancel
+    </button>
+    <button id="submit-register"
+            mat-raised-button
+            type="submit"
+            color="primary"
+            (click)="onRegister()"
+            aria-label="Submit registration form">
+      Submit
+    </button>
+  </mat-card-actions>
 </mat-card>

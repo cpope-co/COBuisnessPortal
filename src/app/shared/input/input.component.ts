@@ -1,29 +1,35 @@
-import { JsonPipe } from '@angular/common';
-import { Component, forwardRef, inject, input } from '@angular/core';
+import { Component, forwardRef, HostBinding, inject, input } from '@angular/core';
 import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { MatFormField } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { FormHandlingService } from '../../services/form-handling.service';
 import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
 
 @Component({
-    selector: 'co-input',
-    imports: [
-        MatFormField,
-        MatInputModule,
-        ReactiveFormsModule,
-        NgxMaskDirective,
-    ],
-    providers: [{
-            provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef(() => InputComponent),
-            multi: true
-        }],
-    templateUrl: './input.component.html',
-    styleUrl: './input.component.scss'
+  selector: 'co-input',
+  imports: [
+    MatFormField,
+    MatInputModule,
+    MatIconModule,
+    MatButtonModule,
+    ReactiveFormsModule,
+    NgxMaskDirective,
+  ],
+  providers: [{
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => InputComponent),
+    multi: true
+  }],
+  templateUrl: './input.component.html',
+  styleUrl: './input.component.scss'
 })
 export class InputComponent implements ControlValueAccessor {
-
+  @HostBinding('id')
+  get hostId(): string {
+    return `${this.type()}-${this.formControlName()}`;
+  }  
   control = new FormControl();
   formHandlerService = inject(FormHandlingService);
 
@@ -53,7 +59,25 @@ export class InputComponent implements ControlValueAccessor {
 
   getErrorMessage(key: string): string {
     return this.formHandlerService.getErrorMessages(this.formGroup(), this.formControlName(), this.model());
+  }
 
+  /**
+   * Clear the input value when the clear icon is clicked
+   */
+  clearInput(): void {
+    const control = this.formGroup().get(this.formControlName());
+    if (control) {
+      control.setValue('');
+      control.markAsTouched();
+    }
+  }
+
+  /**
+   * Check if the input has a value to show/hide the clear icon
+   */
+  hasValue(): boolean {
+    const control = this.formGroup().get(this.formControlName());
+    return control?.value && control.value.length > 0;
   }
 
 }

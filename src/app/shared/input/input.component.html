@@ -1,16 +1,38 @@
-<div class="form-group mt-1" [formGroup]="formGroup()!">
-  <mat-form-field appearance="outline" class="w-100">
+<div class="form-group mt-1"
+     [formGroup]="formGroup()!">
+  <mat-form-field appearance="outline"
+                  class="w-100">
     <mat-label>{{ label() }}</mat-label>
-    <input 
-      matInput 
-      [type]="type()" 
-      [formControlName]="formControlName()"
-      [mask]="mask() || null" />
+
+
+    <input matInput
+           [type]="type()"
+           [placeholder]="placeholder() || ''"
+           [formControlName]="formControlName()"
+           [aria-label]="placeholder() || label()"
+           [mask]="mask() || null"
+           [attr.aria-describedby]="formGroup().get(formControlName())!.invalid && 
+                                        (formGroup().get(formControlName())!.touched || 
+                                         formGroup().get(formControlName())!.dirty) ? 
+                                        'error-' + type() + '-' + formControlName() : null" />
+
+    @if (type() === 'search' && hasValue()) {
+    <button mat-icon-button
+            matSuffix
+            (click)="clearInput()"
+            type="button"
+            aria-label="Clear search">
+      <mat-icon>close</mat-icon>
+    </button>
+    } @else if (type() === 'search') {
+    <mat-icon matSuffix>search</mat-icon>
+    }
 
     @if(formGroup().get(formControlName())!.invalid &&
     (formGroup().get(formControlName())!.touched ||
     formGroup().get(formControlName())!.dirty)) {
-    <mat-error>
+    <mat-error [id]="'error-' + type() + '-' + formControlName()"
+               aria-live="polite">
       {{ getErrorMessage(formControlName()) }}
     </mat-error>
     }

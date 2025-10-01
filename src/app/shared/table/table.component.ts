@@ -91,7 +91,6 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
   });
 
   // Optional inputs
-  filterPlaceholder = input<string>('Filter data...');
   loading = input<boolean>(false);
 
   // Outputs
@@ -108,10 +107,6 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
   // Computed properties
   displayedColumns = computed(() => this.columns().map(col => col.column));
   hasData = computed(() => this.data().length > 0);
-  hasDisplayedData = computed(() => this.dataSource.data.length > 0);
-  showEmptyState = computed(() => !this.loading() && !this.hasDisplayedData() && this.hasData());
-  showNoDataState = computed(() => !this.loading() && !this.hasData());
-  showLoadingState = computed(() => this.loading());
 
   // Filter configuration for advanced filters
   filterConfigs = computed(() => this.generateFilterConfigs());
@@ -144,17 +139,6 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
   ngOnInit() {
     this.originalData = [...this.data()];
     this.dataSource.data = this.data();
-
-    // Custom filter predicate for simple text filtering
-    this.dataSource.filterPredicate = (data: T, filter: string) => {
-      const searchStr = filter.toLowerCase();
-      return this.columns()
-        .filter(col => col.filterable !== false)
-        .some(column => {
-          const value = this.getCellValue(data, column.column);
-          return String(value).toLowerCase().includes(searchStr);
-        });
-    };
   }
 
   ngAfterViewInit() {
@@ -231,18 +215,6 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
 
     // Default to text
     return 'text';
-  }
-
-  /**
-   * Apply simple text filter to the table
-   */
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
   }
 
   /**
@@ -359,17 +331,9 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
   }
 
   /**
-   * Clear the simple filter input and reset data
-   */
-  clearSimpleFilter() {
-    this.resetFiltersAndData();
-  }
-
-  /**
    * Reset all filters, search term, and data to original state
    */
   private resetFiltersAndData() {
-    this.dataSource.filter = '';
     this.currentFilters = {};
     this.currentSearchTerm = '';
     this.dataSource.data = [...this.originalData];

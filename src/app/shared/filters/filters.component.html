@@ -1,16 +1,16 @@
 <div class="filters-container d-flex align-items-center gap-3">
   <!-- Search Input - Show when showSearch is true -->
   @if (showSearch()) {
-  <mat-form-field appearance="outline" class="search-field">
-    <mat-label>Search</mat-label>
-    <input 
-      matInput 
-      (keyup)="onSearchChange($event)" 
+  <div class="search-field">
+    <co-input
+      label="Search"
+      type="search"
       placeholder="Search all fields"
-      #searchInput
-      [value]="currentSearch">
-    <mat-icon matSuffix>search</mat-icon>
-  </mat-form-field>
+      formControlName="search"
+      [formGroup]="searchForm"
+      [model]="searchModel">
+    </co-input>
+  </div>
   }
 
   <!-- Advanced Filters Dialog Trigger - Show when showAdvancedFilters is true -->

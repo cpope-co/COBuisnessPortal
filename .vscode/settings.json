@@ -18,5 +18,10 @@
         "titleBar.inactiveBackground": "#ff3d0099",
         "titleBar.inactiveForeground": "#e7e7e799"
     },
-    "peacock.color": "#ff3d00"
+    "html.format.wrapAttributes": "force-aligned",
+    "html.format.wrapLineLength": 80,
+    "prettier.htmlWhitespaceSensitivity": "ignore",
+    "prettier.printWidth": 80,
+    "prettier.bracketSameLine": false,
+    "prettier.singleAttributePerLine": true
 }

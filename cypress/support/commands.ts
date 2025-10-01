@@ -125,20 +125,20 @@ Cypress.Commands.add('fillSupplierForm', () => {
     accountName: 'Test Supplier Account'
   };
 
-  cy.get('input[formcontrolname="usemail"]', { timeout: 10000 }).should('exist').type(testData.email);
-  cy.get('input[formcontrolname="verifyEmail"]', { timeout: 10000 }).should('exist').type(testData.email);
-  cy.get('input[formcontrolname="usfname"]', { timeout: 10000 }).should('exist').type(testData.firstName);
-  cy.get('input[formcontrolname="uslname"]', { timeout: 10000 }).should('exist').type(testData.lastName);
-  cy.get('input[formcontrolname="wphone"]', { timeout: 10000 }).should('exist').type(testData.phone);
-  cy.get('input[formcontrolname="wacctname"]', { timeout: 10000 }).should('exist').type(testData.accountName);
+  // Wait for the form to be visible first
+  cy.get('div[formgroupname="matchEmails"]', { timeout: 10000 }).should('be.visible');
+
+  // Fill form fields using component ID selectors
+  cy.get('co-input[id="email-usemail"]').find('input').type(testData.email);
+  cy.get('co-input[id="email-verifyEmail"]').find('input').type(testData.email);
+  cy.get('co-input[id="text-usfname"]').find('input').type(testData.firstName);
+  cy.get('co-input[id="text-uslname"]').find('input').type(testData.lastName);
+  cy.get('co-input[id="tel-wphone"]').find('input').type(testData.phone);
+  cy.get('co-input[id="text-wacctname"]').find('input').type(testData.accountName);
   
-  // Select category manager if available (app may cache wcatmgr)
-  cy.window().then((win: any) => {
-    if (win.localStorage.getItem('wcatmgr')) {
-      cy.get('mat-select[formcontrolname="wcatmgr"]', { timeout: 10000 }).should('exist').click({ force: true });
-      cy.get('mat-option', { timeout: 10000 }).first().click({ force: true });
-    }
-  });
+  // Select category manager for supplier (wait for it to be available)
+  cy.get('co-select[id="select-wcatmgr"]', { timeout: 10000 }).should('be.visible').click();
+  cy.get('mat-option', { timeout: 10000 }).eq(1).click();
 });
 
 /**
@@ -155,13 +155,17 @@ Cypress.Commands.add('fillRetailerForm', () => {
     accountName: 'Test Retailer Account'
   };
 
-  cy.get('input[formcontrolname="usemail"]', { timeout: 10000 }).should('exist').type(testData.email);
-  cy.get('input[formcontrolname="verifyEmail"]', { timeout: 10000 }).should('exist').type(testData.email);
-  cy.get('input[formcontrolname="usfname"]', { timeout: 10000 }).should('exist').type(testData.firstName);
-  cy.get('input[formcontrolname="uslname"]', { timeout: 10000 }).should('exist').type(testData.lastName);
-  cy.get('input[formcontrolname="wphone"]', { timeout: 10000 }).should('exist').type(testData.phone);
-  cy.get('input[formcontrolname="usabnum"]', { timeout: 10000 }).should('exist').type(testData.accountNumber);
-  cy.get('input[formcontrolname="wacctname"]', { timeout: 10000 }).should('exist').type(testData.accountName);
+  // Wait for the form to be visible first
+  cy.get('div[formgroupname="matchEmails"]', { timeout: 10000 }).should('be.visible');
+
+  // Fill form fields using component ID selectors
+  cy.get('co-input[id="email-usemail"]').find('input').type(testData.email);
+  cy.get('co-input[id="email-verifyEmail"]').find('input').type(testData.email);
+  cy.get('co-input[id="text-usfname"]').find('input').type(testData.firstName);
+  cy.get('co-input[id="text-uslname"]').find('input').type(testData.lastName);
+  cy.get('co-input[id="tel-wphone"]').find('input').type(testData.phone);
+  cy.get('co-input[id="text-usabnum"]').find('input').type(testData.accountNumber);
+  cy.get('co-input[id="text-wacctname"]').find('input').type(testData.accountName);
 });
 
 /**

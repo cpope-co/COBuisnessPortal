@@ -1,16 +1,21 @@
-<div class="form-group" [formGroup]="formGroup()">
-  <mat-radio-group [formControlName]="formControlName">
+<div class="form-group"
+     [formGroup]="formGroup()">
+  <mat-radio-group [formControlName]="controlName()"
+                   aria-label="{{ placeholder() }}"
+                   >
     @for(option of options(); track $index) {
-    <mat-radio-button [value]="option.id">
+    <mat-radio-button [value]="option.id"
+                      [id]="'radio-' + option.name"
+                      >
       {{ option.name | titlecase }}
     </mat-radio-button>
     }
   </mat-radio-group>
-  @if(formGroup().get(formControlName)!.invalid &&
-  (formGroup().get(formControlName)!.touched ||
-  formGroup().get(formControlName)!.dirty)) {
+  @if(formGroup().get(controlName())!.invalid &&
+  (formGroup().get(controlName())!.touched ||
+  formGroup().get(controlName())!.dirty)) {
   <mat-error>
-    {{ getErrorMessage(formControlName) }}
+    {{ getErrorMessage() }}
   </mat-error>
   }
 </div>

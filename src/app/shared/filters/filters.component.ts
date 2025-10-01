@@ -1,8 +1,8 @@
-import { Component, effect, EventEmitter, input, model, output, signal, ViewChild, ElementRef, QueryList, ViewChildren, inject, Inject } from '@angular/core';
+import { Component, input, output, inject } from '@angular/core';
 import { FormsModule, FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormField, MatInputModule } from '@angular/material/input';
+import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FilterConfig } from '../table/table.component';
 import { InputComponent } from '../input/input.component';
@@ -16,8 +16,9 @@ import { FiltersDialogComponent } from '../filter-dialog/filters-dialog.componen
         MatIconModule,
         MatDialogModule,
         MatInputModule,
-        MatFormField,
         FormsModule,
+        ReactiveFormsModule,
+        InputComponent,
     ],
     templateUrl: './filters.component.html',
     styleUrl: './filters.component.scss'
@@ -25,13 +26,20 @@ import { FiltersDialogComponent } from '../filter-dialog/filters-dialog.componen
 export class FiltersComponent {
 
   private dialog = inject(MatDialog);
-
-  @ViewChild('searchInput') searchInputRef!: ElementRef<HTMLInputElement>;
+  private fb = inject(FormBuilder);
 
   // Inputs
   filterConfigs = input<FilterConfig[]>([]);
   showSearch = input<boolean>(true);
   showAdvancedFilters = input<boolean>(true);
+
+  // Form for search input
+  searchForm = this.fb.group({
+    search: ['']
+  });
+
+  // Model for co-input component
+  searchModel = { search: '' };
 
   // Outputs
   search = output<string>({
@@ -48,22 +56,15 @@ export class FiltersComponent {
   currentSearch: string = ''; // Make public for template access
 
   constructor() {
-    
-  }
-
-  onSearchChange(event: KeyboardEvent): void {
-    const inputElement = event.target as HTMLInputElement;
-    if (inputElement && inputElement.value !== undefined) {
-      this.currentSearch = inputElement.value;
+    // Subscribe to search form changes
+    this.searchForm.get('search')?.valueChanges.subscribe(value => {
+      this.currentSearch = value || '';
       
       // Only emit search when 4+ characters or empty (to clear)
-      if (inputElement.value.length >= 4 || inputElement.value.length === 0) {
-        this.search.emit(inputElement.value);
-      } else if (this.currentSearch.length === 0) {
-        // Also emit when clearing search
-        this.search.emit('');
+      if (this.currentSearch.length >= 4 || this.currentSearch.length === 0) {
+        this.search.emit(this.currentSearch);
       }
-    }
+    });
   }
 
   openFiltersDialog(): void {
@@ -146,10 +147,8 @@ export class FiltersComponent {
     this.currentFilters = {};
     this.currentSearch = '';
     
-    // Clear the search input in the UI
-    if (this.searchInputRef && this.searchInputRef.nativeElement) {
-      this.searchInputRef.nativeElement.value = '';
-    }
+    // Clear the search form
+    this.searchForm.get('search')?.setValue('');
     
     // Emit cleared filters for each filter config
     this.filterConfigs().forEach(config => {

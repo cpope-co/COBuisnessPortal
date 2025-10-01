@@ -1,7 +1,15 @@
-<div class="form-group mt-1" [formGroup]="formGroup()!">
-  <mat-form-field appearance="outline" class="w-100">
+<div class="form-group mt-1"
+     [formGroup]="formGroup()!">
+  <mat-form-field appearance="outline"
+                  class="w-100">
     <mat-label>Choose {{ label() }}</mat-label>
-    <mat-select [value]="null" [compareWith]="compareWithFn" [formControlName]="formControlName()">
+    <mat-select [value]="null"
+                [compareWith]="compareWithFn"
+                [formControlName]="formControlName()"
+                [attr.aria-describedby]="formGroup().get(formControlName())!.invalid && 
+                                        (formGroup().get(formControlName())!.touched || 
+                                         formGroup().get(formControlName())!.dirty) ? 
+                                        'error-select-' + formControlName() : null">
       <mat-option>None</mat-option>
       @for (option of options(); track $index) {
       <mat-option [value]="option.id">
@@ -12,7 +20,8 @@
     @if(formGroup().get(formControlName())!.invalid &&
     (formGroup().get(formControlName())!.touched ||
     formGroup().get(formControlName())!.dirty)) {
-    <mat-error>
+    <mat-error [id]="`error-${'select'+'-'+formControlName()}`"
+               aria-live="polite">
       {{ getErrorMessage(formControlName()) }}
     </mat-error>
     }
