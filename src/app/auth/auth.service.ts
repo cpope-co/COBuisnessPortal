@@ -145,7 +145,6 @@ export class AuthService {
         try {
             const json = sessionStorage.getItem(USER_STORAGE_KEY);
             if (json) {
-                console.log(`Loaded user from storage.`);
                 const user = JSON.parse(json) as User;
                 // Validate that the user object has the required properties
                 if (user && user.exp && typeof user.exp === 'number') {
@@ -166,7 +165,6 @@ export class AuthService {
         try {
             const token = sessionStorage.getItem(TOKEN_STORAGE_KEY);
             if (token && typeof token === 'string' && token.trim() !== '') {
-                console.log(`Loaded token from storage.`);
                 // Validate that the token can be decoded before setting it
                 const testUser = this.safeJwtDecode(token);
                 if (testUser) {

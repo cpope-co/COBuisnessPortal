@@ -1,0 +1,19 @@
+<mat-card>
+  <mat-card-title>API 7 Component</mat-card-title>
+  <mat-card-content>
+    <p>This is the API 7 component content.</p>
+
+    @if (canCreate()) {
+    <button matButton
+            (click)="create()">Create New</button>
+    }
+    @if (canUpdate()) {
+    <button matButton
+            (click)="update()">Update</button>
+    }
+    @if (canDelete()) {
+    <button matButton
+            (click)="delete()">Delete</button>
+    }
+  </mat-card-content>
+</mat-card>

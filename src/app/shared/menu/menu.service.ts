@@ -180,16 +180,16 @@ export class MenuService {
     }
 
     getMenuItems(): MenuItem[] {
-        if (this.menuItems().length === 0) {
-            const storedMenuItems = JSON.parse(sessionStorage.getItem('menuItems') || '[]');
-            if (storedMenuItems.length > 0) {
-                this.menuItems.set(storedMenuItems);
-            } else if (this.authService.user()) {
-                // If no stored menu items but user is logged in, rebuild the menu
+        // Always rebuild menu if we have a user, don't trust stale sessionStorage
+        if (this.authService.user()) {
+            if (this.menuItems().length === 0) {
                 const newMenuItems = this.buildMenu();
                 this.setMenuItems(newMenuItems);
                 this.menuItems.set(newMenuItems);
             }
+        } else {
+            // No user, clear everything
+            this.clearMenuItems();
         }
         return this.menuItems();
     }

@@ -20,14 +20,14 @@ import { ApiTokenManagementComponent } from './apiUser/api-token-management/api-
 import { ApiSettingsComponent } from './admin/api-settings/api-settings.component';
 import { UnsecuredTestComponent } from './unsecured-test/unsecured-test.component';
 import { PriceBookComponent } from './customers/price-book/price-book.component';
-import { Api1Component } from './api/api1/api1.component';
-import { Api2Component } from './api/api2/api2.component';
-import { Api3Component } from './api/api3/api3.component';
-import { Api4Component } from './api/api4/api4.component';
-import { Api5Component } from './api/api5/api5.component';
-import { Api6Component } from './api/api6/api6.component';
-import { Api7Component } from './api/api7/api7.component';
-import { Api8Component } from './api/api8/api8.component';
+import { Api1Component } from './perm/api1/api1.component';
+import { Api2Component } from './perm/api2/api2.component';
+import { Api3Component } from './perm/api3/api3.component';
+import { Api4Component } from './perm/api4/api4.component';
+import { Api5Component } from './perm/api5/api5.component';
+import { Api6Component } from './perm/api6/api6.component';
+import { Api7Component } from './perm/api7/api7.component';
+import { Api8Component } from './perm/api8/api8.component';
 import { hasResourcePermission } from './guards/hasPermission.guard';
 import { Permission } from './models/permissions.model';
 
@@ -221,8 +221,8 @@ export const routes: Routes = [
         canActivate: [isUserAuthenticated, isUserApiUser]
     },
     {
-        path: 'api',
-        title: 'API',
+        path: 'perm',
+        title: 'Permissions',
         children: [
             {
                 path: 'api1',
