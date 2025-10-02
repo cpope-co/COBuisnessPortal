@@ -95,6 +95,7 @@ export class RegisterComponent {
         this.form.patchValue({ wrecaptchatoken: token });
         await this.registerService.registerAccount(this.form.value);
         this.messageService.showMessage('Registration successful. Please check your email for further instructions.', 'success'); 
+        this.form.reset();
         this.router.navigate(['/auth/login']);
       } catch (error: unknown) {
         if (error instanceof ApiResponseError) {

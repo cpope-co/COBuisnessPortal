@@ -87,12 +87,16 @@ export class SessionService {
             clearInterval(this.#sessionIntervalId);
         }
     }
-    resetSession() {
+    async resetSession() {
         this.stopSessionCheck();
-        this.authService.refresh().then(() => {
+        try {
+            await this.authService.refresh();
             this.saveSessionState();
             this.startSessionCheck();
-        });
+        } catch (error) {
+            // Re-throw the error so calling code can handle it
+            throw error;
+        }
     }
     saveSessionState() {
         const user = this.authService.user();

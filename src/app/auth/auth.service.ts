@@ -149,6 +149,7 @@ export class AuthService {
                 // Validate that the user object has the required properties
                 if (user && user.exp && typeof user.exp === 'number') {
                     this.#userSignal.set(user);
+                    console.log('Loaded user from storage.');
                 } else {
                     console.log('Invalid user data in storage, clearing...');
                     sessionStorage.removeItem(USER_STORAGE_KEY);
@@ -169,6 +170,7 @@ export class AuthService {
                 const testUser = this.safeJwtDecode(token);
                 if (testUser) {
                     this.#tokenSignal.set(token);
+                    console.log('Loaded token from storage.');
                 } else {
                     console.log('Invalid token in storage, clearing...');
                     sessionStorage.removeItem(TOKEN_STORAGE_KEY);
@@ -267,7 +269,7 @@ export class AuthService {
             permissions?: Array<{ resource: string; per: number }>;
         }>(
             `${this.env.apiBaseUrl}usraut/refresh`,
-            { observe: 'response', withCredentials: true, context }
+            { headers, observe: 'response', withCredentials: true, context }
         ));
 
         const token = response.headers.get('x-id');

@@ -1,12 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { UsersListComponent } from './users-list.component';
 import { UserAccountService } from '../../services/user-accounts.service';
 import { MessagesService } from '../../messages/messages.service';
-import { UserAccount, statuses, roles } from '../../models/user-accounts.model';
+import { UserAccount, USER_ACCOUNTS_TABLE_COLUMNS, USER_ACCOUNTS_TABLE_CONFIG } from '../../models/user-accounts.model';
 
 describe('UsersListComponent', () => {
   let component: UsersListComponent;
@@ -86,274 +85,237 @@ describe('UsersListComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should inject services correctly', () => {
-    expect(component.userAccountsService).toBeTruthy();
-    expect(component.messageService).toBeTruthy();
-    expect(component.router).toBeTruthy();
-  });
-
-  it('should initialize with correct properties', () => {
-    expect(component.userAccountsSignal).toBeTruthy();
-    expect(component.userAccounts).toBeTruthy();
-    expect(component.userAccountDataSource).toBeTruthy();
-    expect(component.statuses).toEqual(statuses);
-    expect(component.roles).toEqual(roles);
-    expect(component.displayedColumns).toEqual([
-      'usunbr',
-      'usemail',
-      'usfname',
-      'uslname',
-      'usstat',
-      'usroleid'
-    ]);
-    // userAccountFilters is populated by effect, so check it has the expected structure
-    expect(component.userAccountFilters.length).toBe(2);
-  });
-
-  it('should load user accounts on initialization', async () => {
-    expect(mockUserAccountService.loadAllUserAccounts).toHaveBeenCalled();
-    await fixture.whenStable();
-    expect(component.userAccounts().length).toBe(2);
-    expect(component.userAccounts()).toEqual(mockUserAccounts);
-  });
-
-  it('should setup filter configuration with roles and statuses', async () => {
-    await fixture.whenStable();
-    fixture.detectChanges();
-    
-    expect(component.userAccountFilters.length).toBe(2);
-    
-    const roleFilter = component.userAccountFilters.find(f => f.name === 'usroleid');
-    expect(roleFilter).toBeTruthy();
-    expect(roleFilter.label).toBe('Role');
-    expect(roleFilter.options.length).toBe(roles.length);
-    
-    const statusFilter = component.userAccountFilters.find(f => f.name === 'usstat');
-    expect(statusFilter).toBeTruthy();
-    expect(statusFilter.label).toBe('Status');
-    expect(statusFilter.options.length).toBe(statuses.length);
-  });
-
-  it('should handle error when loading user accounts fails', async () => {
-    // Reset the component with a failing service
-    mockUserAccountService.loadAllUserAccounts.and.returnValue(Promise.reject(new Error('Load failed')));
-    
-    const newFixture = TestBed.createComponent(UsersListComponent);
-    const newComponent = newFixture.componentInstance;
-    
-    await newFixture.whenStable();
-    
-    expect(mockMessagesService.showMessage).toHaveBeenCalledWith(
-      'Error loading user accounts, please try again.',
-      'danger'
-    );
-  });
-
-  describe('onDelete', () => {
-    it('should delete user account successfully', async () => {
-      component.userAccountsSignal.set(mockUserAccounts);
-      
-      await component.onDelete(1);
-      
-      expect(mockUserAccountService.deleteUserAccount).toHaveBeenCalledWith(1);
-      expect(component.userAccounts().length).toBe(1);
-      expect(component.userAccounts().find(u => u.usunbr === 1)).toBeUndefined();
+  describe('Component Creation and Initialization', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy();
     });
 
-    it('should handle delete error', async () => {
-      mockUserAccountService.deleteUserAccount.and.returnValue(Promise.reject(new Error('Delete failed')));
+    it('should inject services correctly', () => {
+      expect(component.userAccountsService).toBeTruthy();
+      expect(component.messageService).toBeTruthy();
+      expect(component.router).toBeTruthy();
+    });
+
+    it('should initialize with correct properties', () => {
+      expect(component.userAccounts()).toBeTruthy();
+      expect(component.tableColumns).toEqual(USER_ACCOUNTS_TABLE_COLUMNS);
+      expect(component.tableConfig).toEqual(USER_ACCOUNTS_TABLE_CONFIG);
+    });
+
+    it('should have readonly userAccounts signal', () => {
+      expect(component.userAccounts).toBeTruthy();
+      expect(typeof component.userAccounts).toBe('function'); // Signal is a function
+    });
+  });
+
+  describe('Data Loading', () => {
+    it('should load user accounts on initialization', async () => {
+      expect(mockUserAccountService.loadAllUserAccounts).toHaveBeenCalled();
+      await fixture.whenStable();
+      expect(component.userAccounts().length).toBe(2);
+      expect(component.userAccounts()).toEqual(mockUserAccounts);
+    });
+
+    it('should handle error when loading user accounts fails', async () => {
+      // Reset the component with a failing service
+      mockUserAccountService.loadAllUserAccounts.and.returnValue(Promise.reject(new Error('Load failed')));
       
+      const newFixture = TestBed.createComponent(UsersListComponent);
+      const newComponent = newFixture.componentInstance;
+      
+      await newFixture.whenStable();
+      
+      expect(mockMessagesService.showMessage).toHaveBeenCalledWith(
+        'Error loading user accounts, please try again.',
+        'danger'
+      );
+    });
+
+    it('should call loadUserAccounts in constructor', () => {
+      // Spy on the prototype before creating the component
+      spyOn(UsersListComponent.prototype, 'loadUserAccounts');
+      
+      // Create new component instance to test constructor
+      const newFixture = TestBed.createComponent(UsersListComponent);
+      expect(newFixture.componentInstance.loadUserAccounts).toHaveBeenCalled();
+    });
+  });
+
+  describe('User Account Management', () => {
+    beforeEach(() => {
+      component.userAccountsSignal.set(mockUserAccounts);
+    });
+
+    describe('onDelete', () => {
+      it('should delete user account successfully', async () => {
+        expect(component.userAccounts().length).toBe(2);
+        
+        await component.onDelete(1);
+        
+        expect(mockUserAccountService.deleteUserAccount).toHaveBeenCalledWith(1);
+        expect(component.userAccounts().length).toBe(1);
+        expect(component.userAccounts().find(u => u.usunbr === 1)).toBeUndefined();
+        expect(component.userAccounts()[0].usunbr).toBe(2);
+      });
+
+      it('should handle delete error gracefully', async () => {
+        mockUserAccountService.deleteUserAccount.and.returnValue(Promise.reject(new Error('Delete failed')));
+        
+        await component.onDelete(1);
+        
+        expect(mockMessagesService.showMessage).toHaveBeenCalledWith(
+          'Error deleting user account',
+          'danger'
+        );
+        // Ensure the accounts list is unchanged on error
+        expect(component.userAccounts().length).toBe(2);
+      });
+
+      it('should handle deleting non-existent user account', async () => {
+        const initialLength = component.userAccounts().length;
+        
+        await component.onDelete(999); // Non-existent ID
+        
+        expect(mockUserAccountService.deleteUserAccount).toHaveBeenCalledWith(999);
+        expect(component.userAccounts().length).toBe(initialLength); // Should remain unchanged
+      });
+    });
+
+    describe('viewRow', () => {
+      it('should navigate to user detail page with correct ID', () => {
+        const testRow = { usunbr: 123 };
+        
+        component.viewRow(testRow);
+        
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/admin/user', 123]);
+      });
+
+      it('should handle row object with different structure', () => {
+        const testRow = { 
+          usunbr: 456, 
+          usemail: 'test@example.com',
+          usfname: 'Test'
+        };
+        
+        component.viewRow(testRow);
+        
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/admin/user', 456]);
+      });
+    });
+  });
+
+  describe('Table Configuration', () => {
+    it('should use correct table columns configuration', () => {
+      expect(component.tableColumns).toBeDefined();
+      expect(component.tableColumns).toEqual(USER_ACCOUNTS_TABLE_COLUMNS);
+    });
+
+    it('should use correct table configuration', () => {
+      expect(component.tableConfig).toBeDefined();
+      expect(component.tableConfig).toEqual(USER_ACCOUNTS_TABLE_CONFIG);
+    });
+
+    it('should have table columns as array', () => {
+      expect(Array.isArray(component.tableColumns)).toBe(true);
+      expect(component.tableColumns.length).toBeGreaterThan(0);
+    });
+
+    it('should have table config as object', () => {
+      expect(typeof component.tableConfig).toBe('object');
+      expect(component.tableConfig).not.toBeNull();
+    });
+  });
+
+  describe('Signal Reactivity', () => {
+    it('should update userAccounts signal when new data is set', () => {
+      const newUserAccounts: UserAccount[] = [
+        {
+          usunbr: 3,
+          usemail: 'new@example.com',
+          usfname: 'New',
+          uslname: 'User',
+          usstat: 'A',
+          usfpc: false,
+          usnfla: 0,
+          usibmi: false,
+          usroleid: 1,
+          usidle: 30,
+          usabnum: 11111,
+          usplcts: new Date(),
+          uslflats: new Date(),
+          usllts: new Date(),
+          uscrts: new Date()
+        }
+      ];
+
+      component.userAccountsSignal.set(newUserAccounts);
+      
+      expect(component.userAccounts()).toEqual(newUserAccounts);
+      expect(component.userAccounts().length).toBe(1);
+      expect(component.userAccounts()[0].usunbr).toBe(3);
+    });
+
+    it('should maintain signal reactivity after operations', async () => {
+      component.userAccountsSignal.set(mockUserAccounts);
+      expect(component.userAccounts().length).toBe(2);
+
+      // Delete operation
       await component.onDelete(1);
-      
+      expect(component.userAccounts().length).toBe(1);
+
+      // The signal should still be reactive
+      const newAccount: UserAccount = {
+        usunbr: 4,
+        usemail: 'another@example.com',
+        usfname: 'Another',
+        uslname: 'User',
+        usstat: 'A',
+        usfpc: false,
+        usnfla: 0,
+        usibmi: false,
+        usroleid: 2,
+        usidle: 45,
+        usabnum: 22222,
+        usplcts: new Date(),
+        uslflats: new Date(),
+        usllts: new Date(),
+        uscrts: new Date()
+      };
+
+      component.userAccountsSignal.update(accounts => [...accounts, newAccount]);
+      expect(component.userAccounts().length).toBe(2);
+      expect(component.userAccounts().find(u => u.usunbr === 4)).toBeDefined();
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('should handle network errors during load', async () => {
+      mockUserAccountService.loadAllUserAccounts.and.returnValue(
+        Promise.reject(new Error('Network error'))
+      );
+
+      const newComponent = TestBed.createComponent(UsersListComponent).componentInstance;
+      await TestBed.createComponent(UsersListComponent).whenStable();
+
+      expect(mockMessagesService.showMessage).toHaveBeenCalledWith(
+        'Error loading user accounts, please try again.',
+        'danger'
+      );
+    });
+
+    it('should handle service unavailable errors during delete', async () => {
+      component.userAccountsSignal.set(mockUserAccounts);
+      mockUserAccountService.deleteUserAccount.and.returnValue(
+        Promise.reject(new Error('Service unavailable'))
+      );
+
+      await component.onDelete(1);
+
       expect(mockMessagesService.showMessage).toHaveBeenCalledWith(
         'Error deleting user account',
         'danger'
       );
-    });
-  });
-
-  describe('getNameFromId', () => {
-    it('should return correct name for existing id', () => {
-      const testArray = [
-        { id: 1, name: 'Test Name 1' },
-        { id: 2, name: 'Test Name 2' }
-      ];
-      
-      const result = component.getNameFromId(1, testArray);
-      expect(result).toBe('Test Name 1');
-    });
-
-    it('should return empty string for non-existing id', () => {
-      const testArray = [
-        { id: 1, name: 'Test Name 1' },
-        { id: 2, name: 'Test Name 2' }
-      ];
-      
-      const result = component.getNameFromId(999, testArray);
-      expect(result).toBe('');
-    });
-
-    it('should handle string ids', () => {
-      const testArray = [
-        { id: 'A', name: 'Active' },
-        { id: 'I', name: 'Inactive' }
-      ];
-      
-      const result = component.getNameFromId('A', testArray);
-      expect(result).toBe('Active');
-    });
-  });
-
-  describe('viewRow', () => {
-    it('should navigate to user detail page', () => {
-      const testRow = { usunbr: 123 };
-      
-      component.viewRow(testRow);
-      
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/admin/user', 123]);
-    });
-  });
-
-  describe('setSearch', () => {
-    it('should set search filter', () => {
-      const searchTerm = 'test search';
-      
-      component.setSearch(searchTerm);
-      
-      const filter = JSON.parse(component.userAccountDataSource.filter);
-      expect(filter.search).toBe(searchTerm);
-    });
-
-    it('should preserve existing filters when setting search', () => {
-      // Set initial filter
-      component.userAccountDataSource.filter = JSON.stringify({ usstat: 'A' });
-      
-      component.setSearch('test');
-      
-      const filter = JSON.parse(component.userAccountDataSource.filter);
-      expect(filter.search).toBe('test');
-      expect(filter.usstat).toBe('A');
-    });
-  });
-
-  describe('setFilter', () => {
-    it('should set role filter with number conversion', () => {
-      const mockEvent = {
-        source: { ariaLabel: 'usroleid' },
-        value: '2'
-      };
-      
-      component.setFilter(mockEvent);
-      
-      const filter = JSON.parse(component.userAccountDataSource.filter);
-      expect(filter.usroleid).toBe(2);
-    });
-
-    it('should set status filter as string', () => {
-      const mockEvent = {
-        source: { ariaLabel: 'usstat' },
-        value: 'A'
-      };
-      
-      component.setFilter(mockEvent);
-      
-      const filter = JSON.parse(component.userAccountDataSource.filter);
-      expect(filter.usstat).toBe('A');
-    });
-
-    it('should preserve existing filters when setting new filter', () => {
-      // Set initial filter
-      component.userAccountDataSource.filter = JSON.stringify({ search: 'test' });
-      
-      const mockEvent = {
-        source: { ariaLabel: 'usstat' },
-        value: 'A'
-      };
-      
-      component.setFilter(mockEvent);
-      
-      const filter = JSON.parse(component.userAccountDataSource.filter);
-      expect(filter.search).toBe('test');
-      expect(filter.usstat).toBe('A');
-    });
-  });
-
-  describe('configureFilterPredicate', () => {
-    beforeEach(() => {
-      component.userAccountsSignal.set(mockUserAccounts);
-      component.configureFilterPredicate();
-    });
-
-    it('should filter by search term', () => {
-      const testData = mockUserAccounts[0];
-      const filter = JSON.stringify({ search: 'john' });
-      
-      const result = component.userAccountDataSource.filterPredicate(testData, filter);
-      expect(result).toBe(true);
-    });
-
-    it('should filter by role id', () => {
-      const testData = mockUserAccounts[0]; // usroleid: 1
-      const filter = JSON.stringify({ usroleid: 1 });
-      
-      const result = component.userAccountDataSource.filterPredicate(testData, filter);
-      expect(result).toBe(true);
-      
-      const filterNoMatch = JSON.stringify({ usroleid: 2 });
-      const resultNoMatch = component.userAccountDataSource.filterPredicate(testData, filterNoMatch);
-      expect(resultNoMatch).toBe(false);
-    });
-
-    it('should filter by status', () => {
-      const testData = mockUserAccounts[0]; // usstat: 'A'
-      const filter = JSON.stringify({ usstat: 'A' });
-      
-      const result = component.userAccountDataSource.filterPredicate(testData, filter);
-      expect(result).toBe(true);
-      
-      const filterNoMatch = JSON.stringify({ usstat: 'I' });
-      const resultNoMatch = component.userAccountDataSource.filterPredicate(testData, filterNoMatch);
-      expect(resultNoMatch).toBe(false);
-    });
-
-    it('should handle special role filter value -1 (show all)', () => {
-      const testData = mockUserAccounts[0];
-      const filter = JSON.stringify({ usroleid: -1 });
-      
-      const result = component.userAccountDataSource.filterPredicate(testData, filter);
-      expect(result).toBe(true);
-    });
-
-    it('should handle empty status filter (show all)', () => {
-      const testData = mockUserAccounts[0];
-      const filter = JSON.stringify({ usstat: '' });
-      
-      const result = component.userAccountDataSource.filterPredicate(testData, filter);
-      expect(result).toBe(true);
-    });
-
-    it('should combine multiple filters', () => {
-      const testData = mockUserAccounts[0]; // usstat: 'A', usroleid: 1, usfname: 'John'
-      const filter = JSON.stringify({ 
-        search: 'john',
-        usstat: 'A',
-        usroleid: 1
-      });
-      
-      const result = component.userAccountDataSource.filterPredicate(testData, filter);
-      expect(result).toBe(true);
-      
-      const filterNoMatch = JSON.stringify({ 
-        search: 'john',
-        usstat: 'I', // Different status
-        usroleid: 1
-      });
-      const resultNoMatch = component.userAccountDataSource.filterPredicate(testData, filterNoMatch);
-      expect(resultNoMatch).toBe(false);
+      expect(component.userAccounts().length).toBe(2); // Should remain unchanged
     });
   });
 });

@@ -502,12 +502,12 @@ describe('RegisterComponent', () => {
     it('should have proper heading structure', () => {
       const h1 = fixture.nativeElement.querySelector('h1');
       const h2 = fixture.nativeElement.querySelector('h2');
-      const h3 = fixture.nativeElement.querySelector('h3');
+      const legend = fixture.nativeElement.querySelector('legend');
       
       expect(h1).toBeTruthy();
       expect(h2).toBeTruthy();
-      expect(h3).toBeTruthy();
-      expect(h3.textContent.trim()).toBe('Choose account type');
+      expect(legend).toBeTruthy();
+      expect(legend.textContent.trim()).toBe('Choose account type');
     });
 
     it('should have proper button types', () => {

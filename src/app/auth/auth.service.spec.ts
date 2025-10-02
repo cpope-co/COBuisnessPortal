@@ -26,11 +26,11 @@ describe('AuthService', () => {
     fpc: false
   };
 
-  const mockToken = 'mock.jwt.token';
+  const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsIm5hbWUiOiJUZXN0IFVzZXIiLCJyb2xlIjoxLCJleHAiOjE3NTQ1ODQzOTYsImlhdCI6MTc1NDU4MDc5NiwicmVmZXhwIjoxNzU0NTg3OTk2LCJmcGMiOmZhbHNlfQ.signature';
 
   beforeEach(() => {
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
-    mockHttpClient = jasmine.createSpyObj('HttpClient', ['post']);
+    mockHttpClient = jasmine.createSpyObj('HttpClient', ['post', 'get']);
     mockMessagesService = jasmine.createSpyObj('MessagesService', ['showMessage']);
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
 
@@ -123,7 +123,7 @@ describe('AuthService', () => {
       service.loadTokenFromStorage();
       
       expect(service.token()).toBeNull();
-      expect(console.log).toHaveBeenCalledWith('No token found in storage.');
+      expect(console.log).toHaveBeenCalledWith('No valid token found in storage.');
     });
 
     it('should log when token is loaded from storage', () => {
@@ -319,7 +319,7 @@ describe('AuthService', () => {
 
     it('should successfully refresh token', async () => {
       // Set up current token by storing it in sessionStorage
-      sessionStorage.setItem('token', 'current.jwt.token');
+      sessionStorage.setItem('token', mockToken);
       service.loadTokenFromStorage(); // This will load the token into the service
 
       const newToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjk5OTk5OTk5OTksInJvbGUiOjJ9.Gw_WGV6hA-lfn0-YOjsJjhZOsXNlBIoMRhGX2k6HU';
@@ -331,13 +331,12 @@ describe('AuthService', () => {
         body: {}
       });
 
-      mockHttpClient.post.and.returnValue(of(mockResponse));
+      mockHttpClient.get.and.returnValue(of(mockResponse));
 
       const result = await service.refresh();
 
-      expect(mockHttpClient.post).toHaveBeenCalledWith(
+      expect(mockHttpClient.get).toHaveBeenCalledWith(
         `${environment.apiBaseUrl}usraut/refresh`,
-        {},
         jasmine.objectContaining({
           headers: jasmine.any(HttpHeaders),
           observe: 'response',
@@ -353,7 +352,7 @@ describe('AuthService', () => {
     });
 
     it('should handle refresh failure', async () => {
-      mockHttpClient.post.and.returnValue(throwError(() => new Error('Refresh failed')));
+      mockHttpClient.get.and.returnValue(throwError(() => new Error('Refresh failed')));
 
       try {
         await service.refresh();
@@ -546,7 +545,7 @@ describe('AuthService', () => {
     });
 
     it('should handle HTTP 500 server error', async () => {
-      mockHttpClient.post.and.returnValue(throwError(() => ({ status: 500, message: 'Server Error' })));
+      mockHttpClient.get.and.returnValue(throwError(() => ({ status: 500, message: 'Server Error' })));
 
       try {
         await service.refresh();
@@ -648,7 +647,7 @@ describe('AuthService', () => {
         body: {}
       });
 
-      mockHttpClient.post.and.returnValue(of(mockRefreshResponse));
+      mockHttpClient.get.and.returnValue(of(mockRefreshResponse));
 
       const oldToken = service.token();
       await service.refresh();
@@ -726,6 +725,12 @@ describe('AuthService', () => {
 
   describe('validateTokenOnInit', () => {
     it('should refresh token when status is expiring', async () => {
+      // Set up authenticated state
+      sessionStorage.setItem('user', JSON.stringify(mockUser));
+      sessionStorage.setItem('token', mockToken);
+      service.loadUserFromStorage();
+      service.loadTokenFromStorage();
+      
       spyOn(service, 'checkExpiry').and.returnValue(Promise.resolve('expiring'));
       spyOn(service as any, 'refreshToken').and.returnValue(Promise.resolve());
 
@@ -735,6 +740,12 @@ describe('AuthService', () => {
     });
 
     it('should refresh token when status is expired', async () => {
+      // Set up authenticated state
+      sessionStorage.setItem('user', JSON.stringify(mockUser));
+      sessionStorage.setItem('token', mockToken);
+      service.loadUserFromStorage();
+      service.loadTokenFromStorage();
+      
       spyOn(service, 'checkExpiry').and.returnValue(Promise.resolve('expired'));
       spyOn(service as any, 'refreshToken').and.returnValue(Promise.resolve());
 
@@ -753,6 +764,12 @@ describe('AuthService', () => {
     });
 
     it('should logout when token validation fails', async () => {
+      // Set up authenticated state
+      sessionStorage.setItem('user', JSON.stringify(mockUser));
+      sessionStorage.setItem('token', mockToken);
+      service.loadUserFromStorage();
+      service.loadTokenFromStorage();
+      
       spyOn(service, 'checkExpiry').and.returnValue(Promise.reject('Token check failed'));
       spyOn(service, 'logout').and.returnValue(Promise.resolve());
       spyOn(console, 'log');
@@ -764,6 +781,12 @@ describe('AuthService', () => {
     });
 
     it('should logout when refresh token fails during validation', async () => {
+      // Set up authenticated state
+      sessionStorage.setItem('user', JSON.stringify(mockUser));
+      sessionStorage.setItem('token', mockToken);
+      service.loadUserFromStorage();
+      service.loadTokenFromStorage();
+      
       spyOn(service, 'checkExpiry').and.returnValue(Promise.resolve('expired'));
       spyOn(service as any, 'refreshToken').and.returnValue(Promise.reject('Refresh failed'));
       spyOn(service, 'logout').and.returnValue(Promise.resolve());

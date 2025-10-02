@@ -85,7 +85,7 @@ export class UserDetailComponent {
   }
   async onApproveUser() {
     try {
-      this.userAccountService.approveUserAccount(this.userAccount()!.usunbr);
+      await this.userAccountService.approveUserAccount(this.userAccount()!.usunbr);
     } catch (error) {
       console.error(error);
     }

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideNgxMask } from 'ngx-mask';
 
 import { UnsecuredTestComponent } from './unsecured-test.component';
 
@@ -8,7 +9,10 @@ describe('UnsecuredTestComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UnsecuredTestComponent]
+      imports: [UnsecuredTestComponent],
+      providers: [
+        provideNgxMask()
+      ]
     })
     .compileComponents();
 

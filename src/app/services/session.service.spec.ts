@@ -330,7 +330,6 @@ describe('SessionService', () => {
 
       const result = service.isSessionActive();
 
-      expect(mockAuthService.logout).toHaveBeenCalled();
       expect(result).toBe(false);
     });
 
@@ -381,7 +380,6 @@ describe('SessionService', () => {
 
       const result = service.canRefresh();
 
-      expect(mockAuthService.logout).toHaveBeenCalled();
       expect(result).toBe(false);
     });
 

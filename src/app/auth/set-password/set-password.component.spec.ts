@@ -243,9 +243,11 @@ describe('SetPasswordComponent', () => {
       ];
       const apiError = new ApiResponseError('Validation failed', validationErrors);
       mockPasswordService.setPassword.and.returnValue(Promise.reject(apiError));
+      spyOn(console, 'error');
       
       await component.onChangePassword();
       
+      expect(console.error).toHaveBeenCalledWith('Error changing password', apiError);
       expect(mockFormHandlingService.handleFormErrors).toHaveBeenCalledWith(
         validationErrors,
         mockForm

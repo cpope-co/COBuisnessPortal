@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { provideNgxMask } from 'ngx-mask';
 
 import { FiltersDialogComponent } from './filters-dialog.component';
 import { FilterConfig } from '../table/table.component';
@@ -26,6 +27,7 @@ describe('FiltersDialogComponent', () => {
     await TestBed.configureTestingModule({
       imports: [FiltersDialogComponent, ReactiveFormsModule, NoopAnimationsModule],
       providers: [
+        provideNgxMask(),
         { provide: MatDialogRef, useValue: dialogRefSpy },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData }
       ]
@@ -118,6 +120,7 @@ describe('FiltersDialogComponent', () => {
       TestBed.configureTestingModule({
         imports: [FiltersDialogComponent, ReactiveFormsModule, NoopAnimationsModule],
         providers: [
+          provideNgxMask(),
           { provide: MatDialogRef, useValue: jasmine.createSpyObj('MatDialogRef', ['close']) },
           { provide: MAT_DIALOG_DATA, useValue: testData }
         ]
