@@ -3,32 +3,45 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    
+    "// Development": "",
     "start": "ng serve --proxy-config src/proxy.conf.json --open",
+    "dev": "ng serve --proxy-config src/proxy.conf.json",
+    
+    "// Building": "",
     "build": "ng build",
-    "build:production": "ng build --configuration=production",
     "build:dev": "ng build --configuration=development",
-    "build:dev:with-reports": "npm run build:test && npm run copy:reports:dev",
-    "build:test": "ng build && npm run test:all",
-    "test:all": "npm run test:ci && npm run e2e:ci",
-    "test:all:ignore-failures": "npm run test:ci:ignore-failures && npm run e2e:ci:ignore-failures",
+    "build:prod": "ng build --configuration=production",
+    
+    "// Testing - Unit": "",
     "test": "ng test --karma-config karma.conf.js --watch=true",
     "test:ci": "ng test --watch=false --browsers=ChromeHeadless --code-coverage",
-    "test:ci:ignore-failures": "npm run test:ci || echo 'Unit tests had failures but continuing...'",
-    "copy:reports:dev": "powershell -Command \"if (!(Test-Path '\\\\owen400\\cnodevsrv\\reports')) { New-Item -ItemType Directory -Path '\\\\owen400\\cnodevsrv\\reports' -Force }; if (!(Test-Path '\\\\owen400\\cnodevsrv\\reports\\coverage')) { New-Item -ItemType Directory -Path '\\\\owen400\\cnodevsrv\\reports\\coverage' -Force }; if (!(Test-Path '\\\\owen400\\cnodevsrv\\reports\\cypress')) { New-Item -ItemType Directory -Path '\\\\owen400\\cnodevsrv\\reports\\cypress' -Force }; Copy-Item -Path 'coverage\\*' -Destination '\\\\owen400\\cnodevsrv\\reports\\coverage\\' -Recurse -Force; Copy-Item -Path 'cypress\\reports\\*' -Destination '\\\\owen400\\cnodevsrv\\reports\\cypress\\' -Recurse -Force; Write-Host 'Reports copied to dev server'\"",
-    "open-test": "start coverage/cobuisness-portal/index.html",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run",
-    "cypress:run:headless": "cypress run --headless",
-    "cypress:report": "cypress run --headless && start cypress/reports/index.html",
-    "e2e": "cypress run --headless",
-    "e2e:ci": "cypress run --headless --reporter cypress-mochawesome-reporter",
-    "e2e:report": "npm run e2e:ci && start cypress/reports/index.html",
-    "deploy:test": "npm run build:test && echo 'Ready for deployment with test reports'",
-    "deploy:dev:with-reports": "npm run build:dev:with-reports && echo 'Deployed to dev server with test reports'",
-    "deploy:dev:with-reports:force": "npm run build:test:force && npm run copy:reports:dev && echo 'Deployed to dev server with test reports (ignoring test failures)'",
-    "build:test:force": "ng build && npm run test:all:ignore-failures",
-    "e2e:ci:ignore-failures": "npm run e2e:ci || echo 'E2E tests had failures but continuing...'",
-    "deploy:prod": "npm run build:production"
+    "test:headless": "ng test --watch=false --browsers=ChromeHeadless",
+    
+    "// Testing - E2E": "",
+    "e2e": "cypress run --headless --reporter cypress-mochawesome-reporter",
+    "e2e:open": "cypress open",
+    "e2e:watch": "cypress run",
+    
+    "// Testing - Combined": "",
+    "test:all": "npm run test:ci && npm run e2e",
+    "test:all:force": "npm run test:ci:force && npm run e2e:force",
+    "test:ci:force": "npm run test:ci || echo 'Unit tests failed but continuing...'",
+    "e2e:force": "npm run e2e || echo 'E2E tests failed but continuing...'",
+    
+    "// Reports": "",
+    "reports:open:coverage": "start coverage/cobuisness-portal/index.html",
+    "reports:open:e2e": "start cypress/reports/index.html",
+    "reports:copy": "powershell -Command \"if (!(Test-Path '\\\\owen400\\cnodevsrv\\reports')) { New-Item -ItemType Directory -Path '\\\\owen400\\cnodevsrv\\reports' -Force }; if (!(Test-Path '\\\\owen400\\cnodevsrv\\reports\\coverage')) { New-Item -ItemType Directory -Path '\\\\owen400\\cnodevsrv\\reports\\coverage' -Force }; if (!(Test-Path '\\\\owen400\\cnodevsrv\\reports\\cypress')) { New-Item -ItemType Directory -Path '\\\\owen400\\cnodevsrv\\reports\\cypress' -Force }; Copy-Item -Path 'coverage\\*' -Destination '\\\\owen400\\cnodevsrv\\reports\\coverage\\' -Recurse -Force -ErrorAction SilentlyContinue; Copy-Item -Path 'cypress\\reports\\*' -Destination '\\\\owen400\\cnodevsrv\\reports\\cypress\\' -Recurse -Force -ErrorAction SilentlyContinue; Write-Host 'Reports copied to dev server'\"",
+    
+    "// Deployment - Development": "",
+    "deploy:dev": "npm run build:dev && npm run test:all && npm run reports:copy",
+    "deploy:dev:force": "npm run build:dev && npm run test:all:force && npm run reports:copy",
+    "deploy:dev:quick": "npm run build:dev && npm run reports:copy",
+    
+    "// Deployment - Production": "",
+    "deploy:prod": "npm run build:prod && npm run test:all",
+    "deploy:prod:force": "npm run build:prod && npm run test:all:force"
   },
   "private": true,
   "dependencies": {
