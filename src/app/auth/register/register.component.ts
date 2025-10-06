@@ -24,24 +24,24 @@ import { ApiResponseError } from '../../shared/api-response-error';
 import { matchControlsValidator } from '../../validators/verifypassword.validator';
 
 @Component({
-    selector: 'register',
-    imports: [
-        MatCardModule,
-        MatButtonModule,
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        InputComponent,
-        SelectComponent,
-        RadioComponent,
-        RecaptchaV3Module,
-    ],
-    providers: [
-        ReCaptchaV3Service,
-        RecaptchaLoaderService,
-        { provide: RECAPTCHA_V3_SITE_KEY, useValue: environment.recaptchaSiteKey }
-    ],
-    templateUrl: './register.component.html',
-    styleUrl: './register.component.scss'
+  selector: 'register',
+  imports: [
+    MatCardModule,
+    MatButtonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    InputComponent,
+    SelectComponent,
+    RadioComponent,
+    RecaptchaV3Module,
+  ],
+  providers: [
+    ReCaptchaV3Service,
+    RecaptchaLoaderService,
+    { provide: RECAPTCHA_V3_SITE_KEY, useValue: environment.recaptchaSiteKey }
+  ],
+  templateUrl: './register.component.html',
+  styleUrl: './register.component.scss'
 })
 export class RegisterComponent {
 
@@ -94,12 +94,14 @@ export class RegisterComponent {
         const token = await this.getRecaptchaToken();
         this.form.patchValue({ wrecaptchatoken: token });
         await this.registerService.registerAccount(this.form.value);
-        this.messageService.showMessage('Registration successful. Please check your email for further instructions.', 'success'); 
         this.form.reset();
-        this.router.navigate(['/auth/login']);
+        this.router.navigate(['/auth/login']); 
+        this.messageService.showMessage('Registration successful. Please check your email for further instructions.', 'success');
+
       } catch (error: unknown) {
         if (error instanceof ApiResponseError) {
-          this.formHandlerService.handleFormErrors(error.validationErrors, this.form)
+          this.formHandlerService.handleFormErrors(error.validationErrors, this.form);
+          this.messageService.showMessage('Registration failed. Please check the errors below.', 'danger');
         }
       }
     } else {

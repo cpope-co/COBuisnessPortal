@@ -410,6 +410,60 @@ describe('FormHandlingService', () => {
       expect(usernameControl?.hasError('customError')).toBe(true);
       expect(usernameControl?.getError('customError')).toBe('Custom server error');
     });
+
+    it('should handle errors for nested form controls', () => {
+      // Create a form with nested controls (similar to registration form)
+      const nestedModel: { [key: string]: FormHandling } = {
+        usemail: {
+          Validators: [Validators.email, Validators.required],
+          ErrorMessages: { 
+            email: 'Please enter a valid email address.',
+            required: 'Please enter your email address.'
+          },
+          value: '',
+          formGroup: {
+            name: 'matchEmails',
+          }
+        },
+        verifyEmail: {
+          Validators: [Validators.email, Validators.required],
+          ErrorMessages: {
+            email: 'Please enter a valid email address.',
+            required: 'Please enter your email address.'
+          },
+          value: '',
+          formGroup: {
+            name: 'matchEmails',
+          }
+        },
+        firstName: {
+          Validators: [Validators.required],
+          ErrorMessages: { required: 'First name is required' },
+          value: ''
+        }
+      };
+
+      const nestedFormGroup = service.createFormGroup(nestedModel);
+      
+      // Test setting error on a nested control
+      const errors = [
+        { field: 'usemail', errDesc: 'Email address is already in use' },
+        { field: 'firstName', errDesc: 'First name already exists' }
+      ];
+
+      service.handleFormErrors(errors, nestedFormGroup);
+
+      // Check that the nested email control has the error
+      const matchEmailsGroup = nestedFormGroup.get('matchEmails') as FormGroup;
+      const emailControl = matchEmailsGroup?.get('usemail');
+      expect(emailControl?.hasError('customError')).toBe(true);
+      expect(emailControl?.getError('customError')).toBe('Email address is already in use');
+
+      // Check that the root level control also has the error
+      const firstNameControl = nestedFormGroup.get('firstName');
+      expect(firstNameControl?.hasError('customError')).toBe(true);
+      expect(firstNameControl?.getError('customError')).toBe('First name already exists');
+    });
   });
 
   describe('Integration Tests', () => {

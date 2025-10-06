@@ -90,9 +90,28 @@ export class FormHandlingService {
   getNestedFormGroup(form: FormGroup, formGroupName: string): FormGroup {
     return form.get(formGroupName) as FormGroup;
   }
+  
   handleFormErrors(errors: ValidationError[], form: FormGroup): void {
     errors.forEach(error => {
-      const formControl = form.get(error.field);
+      // Try to find the control at the root level first
+      let formControl = form.get(error.field);
+      
+      // If not found at root level, search in nested form groups
+      if (!formControl) {
+        // Iterate through all controls in the form
+        Object.keys(form.controls).forEach(controlName => {
+          const control = form.get(controlName);
+          // If it's a FormGroup, search within it
+          if (control instanceof FormGroup) {
+            const nestedControl = control.get(error.field);
+            if (nestedControl) {
+              formControl = nestedControl;
+            }
+          }
+        });
+      }
+      
+      // Set the error if we found the control
       if (formControl) {
         formControl.setErrors({ customError: error.errDesc });
       }

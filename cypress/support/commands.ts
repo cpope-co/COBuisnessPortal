@@ -140,7 +140,34 @@ Cypress.Commands.add('fillSupplierForm', () => {
   cy.get('co-select[id="select-wcatmgr"]', { timeout: 10000 }).should('be.visible').click();
   cy.get('mat-option', { timeout: 10000 }).eq(1).click();
 });
+/**
+ * Custom command to fill supplier registration form
+ */
+// @ts-ignore
+Cypress.Commands.add('fillSupplierWithInUseEmail', () => {
+  const testData = {
+    email: 'cstore@draxlers.com',
+    firstName: 'John',
+    lastName: 'Doe',
+    phone: '1234567890',
+    accountName: 'Test Supplier Account'
+  };
 
+  // Wait for the form to be visible first
+  cy.get('div[formgroupname="matchEmails"]', { timeout: 10000 }).should('be.visible');
+
+  // Fill form fields using component ID selectors
+  cy.get('co-input[id="email-usemail"]').find('input').type(testData.email);
+  cy.get('co-input[id="email-verifyEmail"]').find('input').type(testData.email);
+  cy.get('co-input[id="text-usfname"]').find('input').type(testData.firstName);
+  cy.get('co-input[id="text-uslname"]').find('input').type(testData.lastName);
+  cy.get('co-input[id="tel-wphone"]').find('input').type(testData.phone);
+  cy.get('co-input[id="text-wacctname"]').find('input').type(testData.accountName);
+  
+  // Select category manager for supplier (wait for it to be available)
+  cy.get('co-select[id="select-wcatmgr"]', { timeout: 10000 }).should('be.visible').click();
+  cy.get('mat-option', { timeout: 10000 }).eq(1).click();
+});
 /**
  * Custom command to fill retailer registration form
  */
@@ -167,7 +194,32 @@ Cypress.Commands.add('fillRetailerForm', () => {
   cy.get('co-input[id="text-usabnum"]').find('input').type(testData.accountNumber);
   cy.get('co-input[id="text-wacctname"]').find('input').type(testData.accountName);
 });
+/**
+ * Custom command to fill retailer registration form with an in use email
+ */
+// @ts-ignore
+Cypress.Commands.add('fillReailerWithInUseEmail', () => {
+  const testData = {
+    email: 'cstore@draxlers.comm',
+    firstName: 'Jane',
+    lastName: 'Smith',
+    phone: '9876543210',
+    accountNumber: 'RET123456',
+    accountName: 'Test Retailer Account'
+  };
 
+  // Wait for the form to be visible first
+  cy.get('div[formgroupname="matchEmails"]', { timeout: 10000 }).should('be.visible');
+
+  // Fill form fields using component ID selectors
+  cy.get('co-input[id="email-usemail"]').find('input').type(testData.email);
+  cy.get('co-input[id="email-verifyEmail"]').find('input').type(testData.email);
+  cy.get('co-input[id="text-usfname"]').find('input').type(testData.firstName);
+  cy.get('co-input[id="text-uslname"]').find('input').type(testData.lastName);
+  cy.get('co-input[id="tel-wphone"]').find('input').type(testData.phone);
+  cy.get('co-input[id="text-usabnum"]').find('input').type(testData.accountNumber);
+  cy.get('co-input[id="text-wacctname"]').find('input').type(testData.accountName);
+});
 /**
  * Custom command for keyboard tab navigation
  */

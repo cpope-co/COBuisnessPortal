@@ -210,6 +210,31 @@ describe('RegisterService', () => {
         expect(error).toBeTruthy();
       }
     });
+
+    it('should throw ApiResponseError when server returns email in use error', async () => {
+      const emailInUseResponse: apiResponse = {
+        success: false,
+        validationErrors: [
+          { field: 'usemail', errDesc: 'Email address is already in use' }
+        ]
+      };
+
+      const promise = service.registerAccount(mockRegisterData);
+
+      const req = httpTestingController.expectOne(`${environment.apiBaseUrl}register`);
+      req.flush(emailInUseResponse);
+
+      try {
+        await promise;
+        fail('Should have thrown ApiResponseError');
+      } catch (error) {
+        expect(error).toBeInstanceOf(ApiResponseError);
+        expect((error as ApiResponseError).message).toBe('Validation errors');
+        expect((error as ApiResponseError).validationErrors).toEqual([
+          { field: 'usemail', errDesc: 'Email address is already in use' }
+        ]);
+      }
+    });
   });
 
   // 4. Input Validation Tests
