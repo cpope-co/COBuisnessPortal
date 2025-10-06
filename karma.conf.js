@@ -10,7 +10,7 @@ module.exports = function (config) {
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
-      
+      require('karma-html-reporter'),
       require('karma-spec-reporter')
     ],
     client: {
@@ -27,11 +27,12 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/cobuisness-portal'),
+      dir: require('path').join(__dirname, './coverage/cobusiness-portal'),
       subdir: '.',
       reporters: [
         { type: 'html' },
-        { type: 'text-summary' }
+        { type: 'text-summary' },
+        { type: 'json-summary' }
       ],
       check: {
         global: {
@@ -42,7 +43,17 @@ module.exports = function (config) {
         },
       },
     },
-    reporters: ['progress', 'kjhtml', 'spec'],
+    reporters: ['progress', 'kjhtml', 'spec', 'html'],
+    htmlReporter: {
+      outputDir: 'reports/unit-tests',
+      templatePath: null,
+      focusOnFailures: true,
+      namedFiles: false,
+      pageTitle: 'CO Business Portal Unit Tests',
+      urlFriendlyName: false,
+      preserveDescribeNesting: false,
+      foldAll: false,
+    },
     specReporter: {
       maxLogLines: 5,         // limit number of lines logged per test
       suppressErrorSummary: true,  // do not print error summary
