@@ -3,6 +3,17 @@ import { defineConfig } from "cypress";
 export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:4200',
+    reporter: 'cypress-mochawesome-reporter',
+    reporterOptions: {
+      reportDir: 'cypress/reports',
+      overwrite: true,
+      html: true,
+      json: true,
+      charts: true,
+      reportFilename: 'index',
+      reportPageTitle: 'CO Business Portal E2E Tests',
+      reportTitle: 'CO Business Portal Test Results'
+    },
     viewportWidth: 1280,
     viewportHeight: 720,
     video: false,
@@ -11,12 +22,13 @@ export default defineConfig({
     requestTimeout: 10000,
     responseTimeout: 10000,
     setupNodeEvents(on, config) {
-      // implement node event listeners here
+      require('cypress-mochawesome-reporter/plugin')(on);
+      return config;
     },
     env: {
       // Test user credentials (these should be valid test accounts)
       testEmail: 'testuser@chambers-owen.com',
-      testPassword: 'A975$pQ8',
+      testPassword: 'it2T*&gf',
       invalidEmail: 'invalid@example.com',
       invalidPassword: 'wrongpassword'
     }
