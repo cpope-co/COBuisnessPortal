@@ -8,7 +8,7 @@ import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NGX_MASK_CONFIG } from 'ngx-mask';
 import { ReCaptchaV3Service } from 'ng-recaptcha-2';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { RegisterComponent } from './register.component';
 import { RegisterService } from './register.service';
@@ -21,7 +21,7 @@ import { ApiResponseError } from '../../shared/api-response-error';
 
 // Mock components
 @Component({
-  selector: 'co-input',
+selector: 'co-input',
   template: `<div class="mock-input"></div>`,
   providers: [
     {
@@ -201,7 +201,15 @@ describe('RegisterComponent', () => {
           shownMaskExpression: ''
         } }
       ]
-    }).compileComponents();
+    })
+    .overrideComponent(RegisterComponent, {
+      set: {
+        providers: [
+          { provide: ReCaptchaV3Service, useValue: recaptchaSpy }
+        ]
+      }
+    })
+    .compileComponents();
 
     fixture = TestBed.createComponent(RegisterComponent);
     component = fixture.componentInstance;
@@ -216,6 +224,13 @@ describe('RegisterComponent', () => {
     // Override the form creation to use our mock form
     component.form = mockForm;
     component.nestedFormGroup = mockNestedForm;
+  });
+
+  afterEach(() => {
+    // Reset all mocks to their default state to prevent test interference
+    if (mockRecaptchaService) {
+      mockRecaptchaService.execute.and.returnValue(of('mock-recaptcha-token'));
+    }
   });
 
   // 1. Component Initialization Tests
@@ -332,7 +347,7 @@ describe('RegisterComponent', () => {
 
   // 4. Registration Flow Tests
   describe('Registration Flow', () => {
-    xit('should successfully register with valid form', async () => {
+    it('should successfully register with valid form', async () => {
       spyOn(component, 'getRecaptchaToken').and.returnValue(Promise.resolve('mock-recaptcha-token'));
       
       await component.onRegister();
@@ -347,7 +362,7 @@ describe('RegisterComponent', () => {
       expect(mockForm.reset).toHaveBeenCalled();
     });
 
-    xit('should remove wcatmgr control for retailer registration', async () => {
+    it('should remove wcatmgr control for retailer registration', async () => {
       component.form.patchValue({ wregtype: RegistrationTypes.r });
 
       await component.onRegister();
@@ -355,7 +370,7 @@ describe('RegisterComponent', () => {
       expect(mockForm.removeControl).toHaveBeenCalledWith('wcatmgr');
     });
 
-    xit('should remove usabnum control for supplier registration', async () => {
+    it('should remove usabnum control for supplier registration', async () => {
       // Update the mock to return RegistrationTypes.s for supplier
       (mockForm.get as jasmine.Spy).and.callFake((controlName: string) => {
         if (controlName === 'wregtype') {
@@ -427,7 +442,7 @@ describe('RegisterComponent', () => {
       );
     });
 
-    xit('should handle invalid form submission', async () => {
+    it('should handle invalid form submission', async () => {
       Object.defineProperty(mockForm, 'valid', { get: () => false });
 
       await component.onRegister();
@@ -444,15 +459,18 @@ describe('RegisterComponent', () => {
   // 5. reCAPTCHA Integration Tests
   describe('reCAPTCHA Integration', () => {
     it('should get reCAPTCHA token successfully', async () => {
-      spyOn(component, 'getRecaptchaToken').and.returnValue(Promise.resolve('mock-recaptcha-token'));
+      // Reset the service mock to ensure it returns the expected value
+      mockRecaptchaService.execute.and.returnValue(of('mock-recaptcha-token'));
       
       const token = await component.getRecaptchaToken();
 
       expect(token).toBe('mock-recaptcha-token');
+      expect(mockRecaptchaService.execute).toHaveBeenCalledWith('SubmitRegisterForm');
     });
 
     it('should handle reCAPTCHA token errors', async () => {
-      spyOn(component, 'getRecaptchaToken').and.returnValue(Promise.reject(''));
+      // Mock the service to return an error Observable instead of spying on the component method
+      mockRecaptchaService.execute.and.returnValue(throwError(() => 'recaptcha error'));
       spyOn(console, 'error');
 
       try {
@@ -460,6 +478,7 @@ describe('RegisterComponent', () => {
         fail('Should have thrown an error');
       } catch (error) {
         expect(error).toBe('');
+        expect(console.error).toHaveBeenCalled();
       }
     });
   });

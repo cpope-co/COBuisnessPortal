@@ -186,7 +186,7 @@ describe('ApiSettingsService', () => {
       // Check that the correct context is set (no SKIP_AUTH_KEY for get)
       expect(req.request.context).toBeInstanceOf(HttpContext);
       expect(req.request.context.get(SKIP_REFRESH_KEY)).toBe(true);
-      expect(req.request.context.get(SKIP_AUTH_KEY)).toBeUndefined();
+      expect(req.request.context.get(SKIP_AUTH_KEY)).toBe(false);
 
       req.flush(mockSuccessResponse);
 
