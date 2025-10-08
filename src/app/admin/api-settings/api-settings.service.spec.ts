@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpContext } from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 
 import { ApiSettingsService } from './api-settings.service';
@@ -9,6 +9,8 @@ import { apiResponse } from '../../models/response.model';
 import { environment } from '../../../environments/environment';
 import { SKIP_AUTH_KEY, SKIP_REFRESH_KEY } from '../../shared/http-context-keys';
 import { ApiResponseError } from '../../shared/api-response-error';
+import { of } from 'rxjs';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ApiSettingsService', () => {
   let service: ApiSettingsService;
@@ -69,16 +71,24 @@ describe('ApiSettingsService', () => {
   beforeEach(() => {
     const dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-
+    const mockMatDialog = {
+      open: jasmine.createSpy('open').and.returnValue({
+        afterClosed: () => of(null)
+      })
+    };
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [
+        HttpClientTestingModule,
+        MatDialogModule,
+        NoopAnimationsModule
+      ],
       providers: [
         ApiSettingsService,
         { provide: MatDialog, useValue: dialogSpy },
         { provide: Router, useValue: routerSpy }
       ]
     });
-    
+
     service = TestBed.inject(ApiSettingsService);
     httpTestingController = TestBed.inject(HttpTestingController);
     mockDialog = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
@@ -120,7 +130,7 @@ describe('ApiSettingsService', () => {
       const req = httpTestingController.expectOne(`${environment.apiBaseUrl}api-settings`);
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(mockApiSettingsData);
-      
+
       // Check that the correct context is set
       expect(req.request.context).toBeInstanceOf(HttpContext);
       expect(req.request.context.get(SKIP_REFRESH_KEY)).toBe(true);
@@ -137,7 +147,7 @@ describe('ApiSettingsService', () => {
 
       const req = httpTestingController.expectOne(`${environment.apiBaseUrl}api-settings`);
       expect(req.request.url).toBe(`${environment.apiBaseUrl}api-settings`);
-      
+
       req.flush(mockSuccessResponse);
       await promise;
     });
@@ -182,11 +192,11 @@ describe('ApiSettingsService', () => {
 
       const req = httpTestingController.expectOne(`${environment.apiBaseUrl}api-settings/${testId}`);
       expect(req.request.method).toBe('GET');
-      
+
       // Check that the correct context is set (no SKIP_AUTH_KEY for get)
       expect(req.request.context).toBeInstanceOf(HttpContext);
       expect(req.request.context.get(SKIP_REFRESH_KEY)).toBe(true);
-      expect(req.request.context.get(SKIP_AUTH_KEY)).toBeUndefined();
+      expect(req.request.context.get(SKIP_AUTH_KEY)).toBe(false);
 
       req.flush(mockSuccessResponse);
 
@@ -200,7 +210,7 @@ describe('ApiSettingsService', () => {
 
       const req = httpTestingController.expectOne(`${environment.apiBaseUrl}api-settings/${testId}`);
       expect(req.request.url).toBe(`${environment.apiBaseUrl}api-settings/${testId}`);
-      
+
       req.flush(mockSuccessResponse);
       await promise;
     });
@@ -243,7 +253,7 @@ describe('ApiSettingsService', () => {
 
       const req = httpTestingController.expectOne(`${environment.apiBaseUrl}api-settings`);
       expect(req.request.method).toBe('GET');
-      
+
       // Check that the correct context is set
       expect(req.request.context).toBeInstanceOf(HttpContext);
       expect(req.request.context.get(SKIP_REFRESH_KEY)).toBe(true);
@@ -260,7 +270,7 @@ describe('ApiSettingsService', () => {
 
       const req = httpTestingController.expectOne(`${environment.apiBaseUrl}api-settings`);
       expect(req.request.url).toBe(`${environment.apiBaseUrl}api-settings`);
-      
+
       req.flush(mockListSuccessResponse);
       await promise;
     });
@@ -291,7 +301,7 @@ describe('ApiSettingsService', () => {
       const req = httpTestingController.expectOne(`${environment.apiBaseUrl}api-settings/${testId}`);
       expect(req.request.method).toBe('PUT');
       expect(req.request.body).toEqual(updateData);
-      
+
       // Check that the correct context is set
       expect(req.request.context).toBeInstanceOf(HttpContext);
       expect(req.request.context.get(SKIP_REFRESH_KEY)).toBe(true);
@@ -308,7 +318,7 @@ describe('ApiSettingsService', () => {
 
       const req = httpTestingController.expectOne(`${environment.apiBaseUrl}api-settings/${testId}`);
       expect(req.request.url).toBe(`${environment.apiBaseUrl}api-settings/${testId}`);
-      
+
       req.flush(mockSuccessResponse);
       await promise;
     });
@@ -352,7 +362,7 @@ describe('ApiSettingsService', () => {
 
       const req = httpTestingController.expectOne(`${environment.apiBaseUrl}api-settings/${testId}`);
       expect(req.request.method).toBe('DELETE');
-      
+
       // Check that the correct context is set
       expect(req.request.context).toBeInstanceOf(HttpContext);
       expect(req.request.context.get(SKIP_REFRESH_KEY)).toBe(true);
@@ -369,7 +379,7 @@ describe('ApiSettingsService', () => {
 
       const req = httpTestingController.expectOne(`${environment.apiBaseUrl}api-settings/${testId}`);
       expect(req.request.url).toBe(`${environment.apiBaseUrl}api-settings/${testId}`);
-      
+
       req.flush(mockSuccessResponse);
       await promise;
     });

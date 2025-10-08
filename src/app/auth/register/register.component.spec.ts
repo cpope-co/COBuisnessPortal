@@ -332,7 +332,7 @@ describe('RegisterComponent', () => {
 
   // 4. Registration Flow Tests
   describe('Registration Flow', () => {
-    xit('should successfully register with valid form', async () => {
+    it('should successfully register with valid form', async () => {
       spyOn(component, 'getRecaptchaToken').and.returnValue(Promise.resolve('mock-recaptcha-token'));
       
       await component.onRegister();
@@ -347,7 +347,7 @@ describe('RegisterComponent', () => {
       expect(mockForm.reset).toHaveBeenCalled();
     });
 
-    xit('should remove wcatmgr control for retailer registration', async () => {
+    it('should remove wcatmgr control for retailer registration', async () => {
       component.form.patchValue({ wregtype: RegistrationTypes.r });
 
       await component.onRegister();
@@ -355,7 +355,7 @@ describe('RegisterComponent', () => {
       expect(mockForm.removeControl).toHaveBeenCalledWith('wcatmgr');
     });
 
-    xit('should remove usabnum control for supplier registration', async () => {
+    it('should remove usabnum control for supplier registration', async () => {
       // Update the mock to return RegistrationTypes.s for supplier
       (mockForm.get as jasmine.Spy).and.callFake((controlName: string) => {
         if (controlName === 'wregtype') {
@@ -427,7 +427,7 @@ describe('RegisterComponent', () => {
       );
     });
 
-    xit('should handle invalid form submission', async () => {
+    it('should handle invalid form submission', async () => {
       Object.defineProperty(mockForm, 'valid', { get: () => false });
 
       await component.onRegister();
@@ -509,11 +509,20 @@ describe('RegisterComponent', () => {
   // 9. Error Handling Tests
   describe('Error Handling', () => {
     it('should handle API response errors with form validation', async () => {
+      // Ensure form is valid
+      Object.defineProperty(mockForm, 'valid', { 
+        get: () => true, 
+        configurable: true 
+      });
+      
       const validationErrors = [
         { field: 'email', errDesc: 'Email already in use' },
         { field: 'phone', errDesc: 'Invalid phone format' }
       ];
+      
+      // Create a real ApiResponseError instance
       const apiError = new ApiResponseError('Validation failed', validationErrors);
+      
       mockRegisterService.registerAccount.and.returnValue(Promise.reject(apiError));
 
       await component.onRegister();

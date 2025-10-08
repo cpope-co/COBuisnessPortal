@@ -14,7 +14,7 @@ import { MatCardModule } from '@angular/material/card';
   styleUrl: './api5.component.scss'
 })
 export class Api5Component {
-  RESOURCE_NAME = 'API2';
+  RESOURCE_NAME = 'API5';
   permissionService = inject(PermissionsService);
 
   canCreate = this.permissionService.createResourcePermissionSignal(this.RESOURCE_NAME, Permission.CREATE);
