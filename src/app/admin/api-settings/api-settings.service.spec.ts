@@ -73,7 +73,7 @@ describe('ApiSettingsService', () => {
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     const mockMatDialog = {
       open: jasmine.createSpy('open').and.returnValue({
-        afterClosed: () => of(null)
+        afterClosed: () => of()
       })
     };
     TestBed.configureTestingModule({

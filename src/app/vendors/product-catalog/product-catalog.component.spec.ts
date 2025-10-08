@@ -7,7 +7,7 @@ import { signal } from '@angular/core';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { provideNgxMask } from 'ngx-mask';
-import { of, Subject } from 'rxjs';
+import { of, Subject, EMPTY } from 'rxjs';
 
 import { ProductCatalogComponent } from './product-catalog.component';
 import { ProductCatalogService } from './product-catalog.service';
@@ -26,6 +26,7 @@ describe('ProductCatalogComponent', () => {
   let dialog: jasmine.SpyObj<MatDialog>;
   let httpTestingController: HttpTestingController;
   let mockDialogRef: jasmine.SpyObj<any>;
+  let afterClosedSubject: Subject<any>;
 
   const mockProducts: Product[] = [
     {
@@ -69,11 +70,14 @@ describe('ProductCatalogComponent', () => {
       message: signal(null)
     });
     
-    // Set up mock dialog reference
-    mockDialogRef = jasmine.createSpyObj('MatDialogRef', ['close', 'afterClosed']);
-    mockDialogRef.afterClosed.and.returnValue(of(null));
+    // Create a proper Subject for afterClosed to avoid merge issues
+    afterClosedSubject = new Subject<any>();
     
-    // Simple dialog mock - the complex mock is now provided directly in TestBed configuration
+    // Set up mock dialog reference with proper observable
+    mockDialogRef = jasmine.createSpyObj('MatDialogRef', ['close']);
+    Object.defineProperty(mockDialogRef, 'afterClosed', {
+      value: jasmine.createSpy('afterClosed').and.returnValue(afterClosedSubject.asObservable())
+    });
 
     // Set up successful default promises that resolve immediately
     productCatalogServiceSpy.loadAllProducts.and.returnValue(Promise.resolve(mockProducts));
@@ -98,9 +102,12 @@ describe('ProductCatalogComponent', () => {
             closeAll: jasmine.createSpy('closeAll'),
             getDialogById: jasmine.createSpy('getDialogById'),
             openDialogs: [],
-            afterAllClosed: of(null),
-            afterOpened: of(null),
-            _getAfterAllClosed: jasmine.createSpy('_getAfterAllClosed').and.returnValue(of(null))
+            afterAllClosed: EMPTY,
+            afterOpened: new Subject(),
+            _openDialogsAtThisLevel: [],
+            _afterAllClosedAtThisLevel: new Subject(),
+            _afterOpenedAtThisLevel: new Subject(),
+            _ariaHiddenElements: new Map()
           }
         },
         provideNgxMask()
@@ -131,6 +138,11 @@ describe('ProductCatalogComponent', () => {
 
   afterEach(() => {
     httpTestingController.verify();
+    
+    // Properly complete the subject to avoid memory leaks and RxJS errors
+    if (afterClosedSubject && !afterClosedSubject.closed) {
+      afterClosedSubject.complete();
+    }
   });
 
   describe('Component Initialization', () => {

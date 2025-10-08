@@ -66,9 +66,8 @@ describe('Api3Component', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should initialize with RESOURCE_NAME (note: currently using API2)', () => {
-      // NOTE: This component has a bug - it uses 'API2' instead of 'API3'
-      expect(component.RESOURCE_NAME).toBe('API2');
+    it('should initialize with RESOURCE_NAME', () => {
+      expect(component.RESOURCE_NAME).toBe('API3');
     });
 
     it('should inject PermissionsService', () => {
@@ -79,10 +78,9 @@ describe('Api3Component', () => {
 
   describe('Permission Signals Initialization', () => {
     it('should create permission signals for CREATE, UPDATE, and DELETE', () => {
-      // NOTE: Testing with 'API2' because that's what the component actually uses (bug)
-      expect(mockPermissionsService.createResourcePermissionSignal).toHaveBeenCalledWith('API2', Permission.CREATE);
-      expect(mockPermissionsService.createResourcePermissionSignal).toHaveBeenCalledWith('API2', Permission.UPDATE);
-      expect(mockPermissionsService.createResourcePermissionSignal).toHaveBeenCalledWith('API2', Permission.DELETE);
+      expect(mockPermissionsService.createResourcePermissionSignal).toHaveBeenCalledWith('API3', Permission.CREATE);
+      expect(mockPermissionsService.createResourcePermissionSignal).toHaveBeenCalledWith('API3', Permission.UPDATE);
+      expect(mockPermissionsService.createResourcePermissionSignal).toHaveBeenCalledWith('API3', Permission.DELETE);
       expect(mockPermissionsService.createResourcePermissionSignal).toHaveBeenCalledTimes(3);
     });
 
@@ -116,9 +114,9 @@ describe('Api3Component', () => {
     });
 
     it('should use resource name for permission signals', () => {
-      // Verify the service was called with the resource name (currently 'API2' due to bug)
+      // Verify the service was called with the resource name
       const calls = mockPermissionsService.createResourcePermissionSignal.calls.all();
-      expect(calls.every(call => call.args[0] === 'API2')).toBe(true);
+      expect(calls.every(call => call.args[0] === 'API3')).toBe(true);
     });
   });
 
@@ -171,19 +169,18 @@ describe('Api3Component', () => {
       const deleteCall = mockPermissionsService.createResourcePermissionSignal.calls.all()
         .find(call => call.args[1] === Permission.DELETE);
 
-      // NOTE: Currently using 'API2' due to bug in component
-      expect(createCall?.args[0]).toBe('API2');
-      expect(updateCall?.args[0]).toBe('API2');
-      expect(deleteCall?.args[0]).toBe('API2');
+      // Verify resource names are used correctly
+      expect(createCall?.args[0]).toBe('API3');
+      expect(updateCall?.args[0]).toBe('API3');
+      expect(deleteCall?.args[0]).toBe('API3');
     });
   });
 
   describe('Permission System Integration', () => {
     it('should call PermissionsService methods with correct parameters', () => {
-      // NOTE: Testing with 'API2' because that's what the component actually uses
-      expect(mockPermissionsService.createResourcePermissionSignal).toHaveBeenCalledWith('API2', Permission.CREATE);
-      expect(mockPermissionsService.createResourcePermissionSignal).toHaveBeenCalledWith('API2', Permission.UPDATE);
-      expect(mockPermissionsService.createResourcePermissionSignal).toHaveBeenCalledWith('API2', Permission.DELETE);
+      expect(mockPermissionsService.createResourcePermissionSignal).toHaveBeenCalledWith('API3', Permission.CREATE);
+      expect(mockPermissionsService.createResourcePermissionSignal).toHaveBeenCalledWith('API3', Permission.UPDATE);
+      expect(mockPermissionsService.createResourcePermissionSignal).toHaveBeenCalledWith('API3', Permission.DELETE);
     });
 
     it('should handle permission service dependency injection', () => {
@@ -203,10 +200,9 @@ describe('Api3Component', () => {
   });
 
   describe('Bug Documentation', () => {
-    it('should document the RESOURCE_NAME bug for future fixing', () => {
-      // This test documents the bug where Api3Component uses 'API2' instead of 'API3'
-      // When this bug is fixed, this test should be updated to expect 'API3'
-      expect(component.RESOURCE_NAME).toBe('API2'); // Should be 'API3'
+    it('should use correct resource name for the API3 component', () => {
+      // Verify the component uses the correct resource name
+      expect(component.RESOURCE_NAME).toBe('API3');
     });
   });
   describe('Component Initialization', () => {

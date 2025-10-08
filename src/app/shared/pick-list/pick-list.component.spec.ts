@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSelectionListChange } from '@angular/material/list';
+import { By } from '@angular/platform-browser';
+import { DebugElement } from '@angular/core';
 
 import { PickListComponent } from './pick-list.component';
 import { FormHandlingService } from '../../services/form-handling.service';
@@ -18,7 +20,7 @@ describe('PickListComponent', () => {
   ];
 
   const mockFormGroup = new FormGroup({
-    testControl: new FormControl([])
+    testControl: new FormControl<any>(null)
   });
 
   beforeEach(async () => {
@@ -382,6 +384,338 @@ describe('PickListComponent', () => {
         primary: mockSourceOptions[0]
       });
       expect(mockOnTouched).toHaveBeenCalled();
+    });
+  });
+
+  describe('Template Rendering', () => {
+    it('should render source and target labels', () => {
+      const sourceTitle = fixture.debugElement.query(By.css('mat-card-title'));
+      expect(sourceTitle.nativeElement.textContent.trim()).toBe('Source Items');
+      
+      const targetTitle = fixture.debugElement.queryAll(By.css('mat-card-title'))[1];
+      expect(targetTitle.nativeElement.textContent.trim()).toBe('Selected Items');
+    });
+
+    it('should render available items in source list', () => {
+      const sourceItems = fixture.debugElement.queryAll(By.css('mat-selection-list mat-list-option'));
+      expect(sourceItems.length).toBe(3); // All items available initially
+      
+      const firstItem = sourceItems[0];
+      expect(firstItem.nativeElement.textContent.trim()).toBe('Item 1');
+    });
+
+    it('should show "No items available" when all items are selected', () => {
+      component.selectedItems = [...mockSourceOptions];
+      fixture.detectChanges();
+      
+      const noItemsMessage = fixture.debugElement.query(By.css('.text-muted'));
+      expect(noItemsMessage.nativeElement.textContent.trim()).toBe('No items available');
+    });
+
+    it('should show "No items selected" when target list is empty', () => {
+      component.selectedItems = [];
+      fixture.detectChanges();
+      
+      const noItemsMessages = fixture.debugElement.queryAll(By.css('.text-muted'));
+      const targetMessage = noItemsMessages.find(msg => 
+        msg.nativeElement.textContent.trim() === 'No items selected'
+      );
+      expect(targetMessage).toBeTruthy();
+    });
+
+    it('should disable Add button when no source items selected', () => {
+      component.selectedSourceItems = [];
+      fixture.detectChanges();
+      
+      const buttons = fixture.debugElement.queryAll(By.css('button'));
+      const addButton = buttons.find(btn => 
+        btn.nativeElement.textContent.trim().includes('Add')
+      );
+      expect(addButton?.nativeElement.disabled).toBeTruthy();
+    });
+
+    it('should enable Add button when source items selected', () => {
+      component.selectedSourceItems = [mockSourceOptions[0]];
+      fixture.detectChanges();
+      
+      const buttons = fixture.debugElement.queryAll(By.css('button'));
+      const addButton = buttons.find(btn => 
+        btn.nativeElement.textContent.trim().includes('Add')
+      );
+      expect(addButton?.nativeElement.disabled).toBeFalsy();
+    });
+
+    it('should disable Remove button when no target items selected', () => {
+      component.selectedTargetItems = [];
+      fixture.detectChanges();
+      
+      const buttons = fixture.debugElement.queryAll(By.css('button'));
+      const removeButton = buttons.find(btn => 
+        btn.nativeElement.textContent.trim().includes('Remove')
+      );
+      expect(removeButton?.nativeElement.disabled).toBeTruthy();
+    });
+
+    it('should enable Remove button when target items selected', () => {
+      component.selectedTargetItems = [mockSourceOptions[0]];
+      fixture.detectChanges();
+      
+      const buttons = fixture.debugElement.queryAll(By.css('button'));
+      const removeButton = buttons.find(btn => 
+        btn.nativeElement.textContent.trim().includes('Remove')
+      );
+      expect(removeButton?.nativeElement.disabled).toBeFalsy();
+    });
+
+    it('should disable Set Primary button when no target items or multiple items selected', () => {
+      component.selectedTargetItems = [];
+      fixture.detectChanges();
+      
+      const buttons = fixture.debugElement.queryAll(By.css('button'));
+      const primaryButton = buttons.find(btn => 
+        btn.nativeElement.textContent.trim().includes('Set Primary')
+      );
+      expect(primaryButton?.nativeElement.disabled).toBeTruthy();
+      
+      component.selectedTargetItems = [mockSourceOptions[0], mockSourceOptions[1]];
+      fixture.detectChanges();
+      
+      expect(primaryButton?.nativeElement.disabled).toBeTruthy();
+    });
+
+    it('should enable Set Primary button when exactly one target item selected', () => {
+      component.selectedTargetItems = [mockSourceOptions[0]];
+      fixture.detectChanges();
+      
+      const buttons = fixture.debugElement.queryAll(By.css('button'));
+      const primaryButton = buttons.find(btn => 
+        btn.nativeElement.textContent.trim().includes('Set Primary')
+      );
+      expect(primaryButton?.nativeElement.disabled).toBeFalsy();
+    });
+
+    it('should show primary badge for primary item', () => {
+      component.selectedItems = [mockSourceOptions[0], mockSourceOptions[1]];
+      component.primaryItem = mockSourceOptions[0];
+      fixture.detectChanges();
+      
+      const badges = fixture.debugElement.queryAll(By.css('.badge'));
+      expect(badges.length).toBe(1);
+      expect(badges[0].nativeElement.textContent.trim()).toBe('Primary');
+    });
+
+    it('should display error message when form control is invalid and touched', () => {
+      const formControl = mockFormGroup.get('testControl');
+      formControl?.setValidators([Validators.required]);
+      formControl?.setValue(null);
+      formControl?.markAsTouched();
+      
+      mockFormHandlingService.getErrorMessages.and.returnValue('This field is required');
+      fixture.detectChanges();
+      
+      const errorMessage = fixture.debugElement.query(By.css('.text-danger'));
+      expect(errorMessage).toBeTruthy();
+      expect(errorMessage.nativeElement.textContent.trim()).toBe('This field is required');
+    });
+
+    it('should not display error message when form control is valid', () => {
+      const formControl = mockFormGroup.get('testControl');
+      formControl?.setValue(mockSourceOptions[0]);
+      formControl?.markAsTouched();
+      fixture.detectChanges();
+      
+      const errorMessage = fixture.debugElement.query(By.css('.text-danger'));
+      expect(errorMessage).toBeFalsy();
+    });
+  });
+
+  describe('Button Click Integration', () => {
+    it('should add items when Add button is clicked', () => {
+      component.selectedSourceItems = [mockSourceOptions[0]];
+      fixture.detectChanges();
+      spyOn(component, 'addItems');
+      
+      const buttons = fixture.debugElement.queryAll(By.css('button'));
+      const addButton = buttons.find(btn => 
+        btn.nativeElement.textContent.trim().includes('Add')
+      );
+      addButton?.nativeElement.click();
+      
+      expect(component.addItems).toHaveBeenCalled();
+    });
+
+    it('should remove items when Remove button is clicked', () => {
+      component.selectedTargetItems = [mockSourceOptions[0]];
+      fixture.detectChanges();
+      spyOn(component, 'removeItems');
+      
+      const buttons = fixture.debugElement.queryAll(By.css('button'));
+      const removeButton = buttons.find(btn => 
+        btn.nativeElement.textContent.trim().includes('Remove')
+      );
+      removeButton?.nativeElement.click();
+      
+      expect(component.removeItems).toHaveBeenCalled();
+    });
+
+    it('should set primary when Set Primary button is clicked', () => {
+      component.selectedTargetItems = [mockSourceOptions[0]];
+      fixture.detectChanges();
+      spyOn(component, 'setPrimary');
+      
+      const buttons = fixture.debugElement.queryAll(By.css('button'));
+      const primaryButton = buttons.find(btn => 
+        btn.nativeElement.textContent.trim().includes('Set Primary')
+      );
+      primaryButton?.nativeElement.click();
+      
+      expect(component.setPrimary).toHaveBeenCalled();
+    });
+  });
+
+  describe('Edge Cases and Error Handling', () => {
+    it('should handle empty source options', () => {
+      fixture.componentRef.setInput('sourceOptions', []);
+      fixture.detectChanges();
+      
+      expect(component.availableItems).toEqual([]);
+    });
+
+    it('should handle items without id property', () => {
+      const stringItems = ['item1', 'item2', 'item3'];
+      fixture.componentRef.setInput('sourceOptions', stringItems);
+      fixture.detectChanges();
+      
+      component.selectedItems = ['item1'];
+      
+      expect(component.availableItems).toEqual(['item2', 'item3']);
+      expect(component['compareItems']('item1', 'item1')).toBeTruthy();
+      expect(component['compareItems']('item1', 'item2')).toBeFalsy();
+    });
+
+    it('should handle mixed item types (objects and strings)', () => {
+      const mixedItems = [{ id: 1, name: 'Object Item' }, 'String Item'];
+      fixture.componentRef.setInput('sourceOptions', mixedItems);
+      fixture.detectChanges();
+      
+      component.selectedItems = [mixedItems[0]];
+      
+      expect(component.availableItems).toEqual(['String Item']);
+    });
+
+    it('should handle duplicate additions gracefully', () => {
+      component.selectedItems = [mockSourceOptions[0]];
+      component.selectedSourceItems = [mockSourceOptions[0]]; // Already selected
+      
+      const initialCount = component.selectedItems.length;
+      component.addItems();
+      
+      // Should add duplicate (component doesn't prevent this)
+      expect(component.selectedItems.length).toBe(initialCount + 1);
+    });
+
+    it('should handle removal of non-existent items', () => {
+      component.selectedItems = [mockSourceOptions[0]];
+      component.selectedTargetItems = [mockSourceOptions[1]]; // Not in selected items
+      
+      const initialItems = [...component.selectedItems];
+      component.removeItems();
+      
+      expect(component.selectedItems).toEqual(initialItems); // No change
+    });
+  });
+
+  describe('Complex Scenarios', () => {
+    it('should maintain primary item when adding new items', () => {
+      component.selectedItems = [mockSourceOptions[0]];
+      component.primaryItem = mockSourceOptions[0];
+      component.selectedSourceItems = [mockSourceOptions[1]];
+      
+      component.addItems();
+      
+      expect(component.primaryItem).toEqual(mockSourceOptions[0]); // Still primary
+      expect(component.selectedItems).toContain(mockSourceOptions[1]); // New item added
+    });
+
+    it('should handle setting primary on item without id', () => {
+      const stringItems = ['item1', 'item2'];
+      component.selectedItems = stringItems;
+      component.selectedTargetItems = ['item1'];
+      component.primaryItem = null;
+      
+      component.setPrimary();
+      
+      expect(component.primaryItem).toBe('item1');
+    });
+
+    it('should update form value when primary changes', () => {
+      const mockOnChange = jasmine.createSpy('onChange');
+      component.registerOnChange(mockOnChange);
+      
+      component.selectedItems = [mockSourceOptions[0]];
+      component.selectedTargetItems = [mockSourceOptions[0]];
+      
+      component.setPrimary();
+      
+      expect(mockOnChange).toHaveBeenCalledWith({
+        items: [mockSourceOptions[0]],
+        primary: mockSourceOptions[0]
+      });
+    });
+
+    it('should clear selections after adding items', () => {
+      component.selectedSourceItems = [mockSourceOptions[0], mockSourceOptions[1]];
+      
+      component.addItems();
+      
+      expect(component.selectedSourceItems).toEqual([]);
+    });
+
+    it('should clear selections after removing items', () => {
+      component.selectedItems = [mockSourceOptions[0], mockSourceOptions[1]];
+      component.selectedTargetItems = [mockSourceOptions[0]];
+      
+      component.removeItems();
+      
+      expect(component.selectedTargetItems).toEqual([]);
+    });
+  });
+
+  describe('Accessibility and Performance', () => {
+    it('should have proper trackBy function for performance', () => {
+      const itemWithId = { id: 42, name: 'Test' };
+      const itemWithoutId = 'simple';
+      
+      expect(component.trackByFn(0, itemWithId)).toBe(42);
+      expect(component.trackByFn(1, itemWithoutId)).toBe('simple');
+    });
+
+    it('should handle button type attributes correctly', () => {
+      const buttons = fixture.debugElement.queryAll(By.css('button[type="button"]'));
+      expect(buttons.length).toBe(3); // All three buttons should have type="button"
+    });
+  });
+
+  describe('ControlValueAccessor Edge Cases', () => {
+    it('should handle writeValue with undefined', () => {
+      component.writeValue(undefined);
+      
+      expect(component.selectedItems).toEqual([]);
+      expect(component.primaryItem).toBeNull();
+    });
+
+    it('should handle writeValue with value containing only items', () => {
+      component.writeValue({ items: [mockSourceOptions[0]] });
+      
+      expect(component.selectedItems).toEqual([mockSourceOptions[0]]);
+      expect(component.primaryItem).toBeNull();
+    });
+
+    it('should handle writeValue with value containing only primary', () => {
+      component.writeValue({ primary: mockSourceOptions[0] });
+      
+      expect(component.selectedItems).toEqual([]);
+      expect(component.primaryItem).toEqual(mockSourceOptions[0]);
     });
   });
 });

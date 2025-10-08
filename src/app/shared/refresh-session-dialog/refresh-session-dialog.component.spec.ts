@@ -33,7 +33,7 @@ describe('RefreshSessionDialogComponent', () => {
     };
 
     // Setup afterClosed to return observable
-    mockDialogRef.afterClosed.and.returnValue(of(undefined));
+    mockDialogRef.afterClosed.and.returnValue(of());
 
     await TestBed.configureTestingModule({
       imports: [
