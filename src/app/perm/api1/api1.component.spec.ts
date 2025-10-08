@@ -1,12 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal, computed } from '@angular/core';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-
-import { Api1Component } from './api1.component';
+import { computed, signal } from '@angular/core';
 import { PermissionsService } from '../../services/permissions.service';
-import { Permission } from '../../models/permissions.model';
+import { Permission, UserPermissions } from '../../models/permissions.model';
+import { Api1Component } from './api1.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('Api1Component', () => {
   let component: Api1Component;

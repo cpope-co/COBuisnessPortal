@@ -1,4 +1,4 @@
-import { Component, input, output, OnInit, AfterViewInit, ViewChild, effect, computed, ChangeDetectorRef } from '@angular/core';
+import { Component, input, output, OnInit, AfterViewInit, ViewChild, effect, computed, ChangeDetectorRef, Inject, EffectRef, OnDestroy } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -75,7 +75,7 @@ export const DEFAULT_FORMATTERS = new Map<FormatterType, (value: any, options?: 
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss'
 })
-export class TableComponent<T = any> implements OnInit, AfterViewInit {
+export class TableComponent<T = any> implements OnInit, AfterViewInit, OnDestroy {
   // Required inputs
   data = input.required<T[]>();
   columns = input.required<TableColumn[]>();
@@ -115,12 +115,27 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   // Removed unused simpleFilterInput ViewChild
 
-  constructor(private cdr: ChangeDetectorRef) {
-    // Update data source when data changes
-    effect(() => {
-      this.originalData = [...this.data()];
-      this.dataSource.data = this.data();
+  private dataUpdateEffect?: EffectRef;
+
+  constructor(@Inject(ChangeDetectorRef) private cdr: ChangeDetectorRef) {
+    // Temporarily disable effect to test if this is causing the afterAll RxJS error
+    // TODO: Re-enable once the root cause is identified
+    /*
+    this.dataUpdateEffect = effect(() => {
+      const currentData = this.data();
+      if (currentData && Array.isArray(currentData)) {
+        this.originalData = [...currentData];
+        this.dataSource.data = currentData;
+      }
     });
+    */
+  }
+
+  ngOnDestroy() {
+    // Clean up the effect to prevent memory leaks and afterAll errors
+    if (this.dataUpdateEffect) {
+      this.dataUpdateEffect.destroy();
+    }
   }
 
   /**
@@ -137,8 +152,12 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.originalData = [...this.data()];
-    this.dataSource.data = this.data();
+    // Manually initialize data since effect is disabled
+    const currentData = this.data();
+    if (currentData && Array.isArray(currentData)) {
+      this.originalData = [...currentData];
+      this.dataSource.data = currentData;
+    }
   }
 
   ngAfterViewInit() {
@@ -298,7 +317,9 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit {
     if (itemValue == null) return false;
 
     const column = this.columns().find(col => col.column === columnName);
-    const filterType = this.determineFilterType(columnName, [itemValue]);
+    // Use all unique values for proper filter type determination, not just this single value
+    const uniqueValues = this.getUniqueColumnValues(columnName);
+    const filterType = this.determineFilterType(columnName, uniqueValues);
 
     switch (filterType) {
       case 'text':

@@ -434,6 +434,9 @@ describe('AuthService', () => {
       // Clear token
       sessionStorage.clear();
       service.loadTokenFromStorage();
+      
+      // Mock the HTTP call to return an Observable
+      mockHttpClient.post.and.returnValue(of({}));
 
       await service.logout();
 
@@ -569,19 +572,23 @@ describe('AuthService', () => {
     it('should handle malformed JWT token', async () => {
       const mockResponse = new HttpResponse({
         headers: new HttpHeaders({
-          'x-id': 'invalid.jwt.token'
+          'x-id': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalidjson.signature'
         }),
         status: 200,
         body: {}
       });
 
       mockHttpClient.post.and.returnValue(of(mockResponse));
+      
+      // Spy on console.error to prevent error logs during test
+      spyOn(console, 'error');
 
       try {
         await service.login('test@example.com', 'password');
         fail('Expected JWT decode error');
       } catch (error) {
         expect(error).toBeTruthy();
+        expect(console.error).toHaveBeenCalled();
       }
     });
 

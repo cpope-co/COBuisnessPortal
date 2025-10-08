@@ -10,7 +10,6 @@ module.exports = function (config) {
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
-      require('karma-html-reporter'),
       require('karma-spec-reporter')
     ],
     client: {
@@ -27,7 +26,7 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/cobusiness-portal'),
+      dir: require('path').join(__dirname, './coverage'),
       subdir: '.',
       reporters: [
         { type: 'html' },
@@ -43,17 +42,7 @@ module.exports = function (config) {
         },
       },
     },
-    reporters: ['progress', 'kjhtml', 'spec', 'html'],
-    htmlReporter: {
-      outputDir: 'reports/unit-tests',
-      templatePath: null,
-      focusOnFailures: true,
-      namedFiles: false,
-      pageTitle: 'CO Business Portal Unit Tests',
-      urlFriendlyName: false,
-      preserveDescribeNesting: false,
-      foldAll: false,
-    },
+    reporters: ['progress', 'kjhtml', 'spec', 'coverage'],
     specReporter: {
       maxLogLines: 5,         // limit number of lines logged per test
       suppressErrorSummary: true,  // do not print error summary
@@ -63,7 +52,48 @@ module.exports = function (config) {
       showSpecTiming: false,  // print the time elapsed for each spec
       failFast: false          // test would finish with error when a first fail occurs. 
     },
+    port: 9876,
+    colors: true,
+    logLevel: config.LOG_INFO,
+    autoWatch: true,
     browsers: ['Chrome'],
-    restartOnFileChange: true
+    singleRun: false,
+    restartOnFileChange: true,
+    browserDisconnectTimeout: 10000,
+    browserDisconnectTolerance: 3,
+    browserNoActivityTimeout: 60000,
+    captureTimeout: 60000,
+    // Add cleanup configuration for webstream issues
+    processKillTimeout: 2000,
+    pingTimeout: 10000,
+    // Improved cleanup handling for Node.js 20+ webstreams
+    transports: ['polling', 'websocket'],
+    customLaunchers: {
+      ChromeHeadlessCustom: {
+        base: 'ChromeHeadless',
+        flags: [
+          '--no-sandbox',
+          '--disable-gpu',
+          '--disable-web-security',
+          '--disable-dev-shm-usage',
+          '--disable-extensions',
+          '--remote-debugging-port=9222',
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-renderer-backgrounding'
+        ]
+      }
+    }
+  });
+
+  // Handle graceful shutdown to prevent webstream controller errors
+  process.on('SIGINT', () => {
+    console.log('\nReceived SIGINT, shutting down gracefully...');
+    process.exit(0);
+  });
+  
+  process.on('SIGTERM', () => {
+    console.log('\nReceived SIGTERM, shutting down gracefully...');
+    process.exit(0);
   });
 };

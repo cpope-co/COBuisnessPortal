@@ -5,7 +5,7 @@ export default defineConfig({
     baseUrl: 'http://localhost:4200',
     reporter: 'cypress-mochawesome-reporter',
     reporterOptions: {
-      reportDir: 'cypress/reports',
+      reportDir: 'e2e/reports',
       overwrite: true,
       html: true,
       json: true,

@@ -3,9 +3,11 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "// Environment": "",
+    "node:check": "node --version && echo Expected: && type .nvmrc",
+    "node:env": "set NODE_OPTIONS=--max-old-space-size=4096 --experimental-webstreams",
     "// Development": "",
     "start": "ng serve --proxy-config src/proxy.conf.json --open",
-    "dev": "ng serve --proxy-config src/proxy.conf.json",
     "// Building": "",
     "build": "ng build",
     "build:dev": "ng build --output-path=dist/cobusiness-portal",
@@ -22,14 +24,15 @@
     "// Testing - Combined": "",
     "test:all": "npm run test:ci && npm run e2e",
     "test:all:force": "npm run test:ci:force && npm run e2e:force",
-    "test:ci:force": "npm run test:ci || echo 'Unit tests failed but continuing...'",
+    "test:ci:simple": "set NODE_OPTIONS=--max-old-space-size=4096 && ng test --watch=false --browsers=ChromeHeadlessCustom --code-coverage --source-map=false",
+    "test:ci:safe": "run-tests.bat",
+    "test:ci:force": "npm run test:ci:safe || echo 'Unit tests failed but continuing...'",
     "e2e:force": "npm run e2e || echo 'E2E tests failed but continuing...'",
     "// Reports": "",
-    "reports:open:coverage": "start coverage/cobusiness-portal/index.html",
+    "reports:open:coverage": "start coverage/index.html",
     "reports:open:e2e": "start cypress/reports/index.html",
-    "reports:open:unit": "start \"reports/unit-tests/Chrome Headless 141.0.0.0 (Windows 10)/index.html\"",
-    "reports:copy": "powershell -Command \"if (!(Test-Path '\\\\10.1.0.251\\cnodevsrv\\reports')) { New-Item -ItemType Directory -Path '\\\\10.1.0.251\\cnodevsrv\\reports' -Force }; if (!(Test-Path '\\\\10.1.0.251\\cnodevsrv\\reports\\coverage')) { New-Item -ItemType Directory -Path '\\\\10.1.0.251\\cnodevsrv\\reports\\coverage' -Force }; if (!(Test-Path '\\\\10.1.0.251\\cnodevsrv\\reports\\cypress')) { New-Item -ItemType Directory -Path '\\\\10.1.0.251\\cnodevsrv\\reports\\cypress' -Force }; if (!(Test-Path '\\\\10.1.0.251\\cnodevsrv\\reports\\unit-tests')) { New-Item -ItemType Directory -Path '\\\\10.1.0.251\\cnodevsrv\\reports\\unit-tests' -Force }; Copy-Item -Path 'coverage\\*' -Destination '\\\\10.1.0.251\\cnodevsrv\\reports\\coverage\\' -Recurse -Force -ErrorAction SilentlyContinue; Copy-Item -Path 'cypress\\reports\\*' -Destination '\\\\10.1.0.251\\cnodevsrv\\reports\\cypress\\' -Recurse -Force -ErrorAction SilentlyContinue; Copy-Item -Path 'reports\\unit-tests\\*' -Destination '\\\\10.1.0.251\\cnodevsrv\\reports\\unit-tests\\' -Recurse -Force -ErrorAction SilentlyContinue; Write-Host 'All reports copied to dev server'\"",
-    "deploy:copy": "powershell -Command \"Copy-Item -Path 'dist\\cobusiness-portal\\*' -Destination '\\\\10.1.0.251\\cnodevsrv\\' -Recurse -Force; Write-Host 'Application deployed to dev server'\"",
+    "reports:open:unit": "start reports/unit-tests/index.html",
+    "reports:copy": "powershell -Command \"if (!(Test-Path '\\\\owen400\\cnodevsrv\\reports')) { New-Item -ItemType Directory -Path '\\\\owen400\\cnodevsrv\\reports' -Force }; if (!(Test-Path '\\\\owen400\\cnodevsrv\\reports\\coverage')) { New-Item -ItemType Directory -Path '\\\\owen400\\cnodevsrv\\reports\\coverage' -Force }; if (!(Test-Path '\\\\owen400\\cnodevsrv\\reports\\cypress')) { New-Item -ItemType Directory -Path '\\\\owen400\\cnodevsrv\\reports\\cypress' -Force }; if (!(Test-Path '\\\\owen400\\cnodevsrv\\reports\\unit-tests')) { New-Item -ItemType Directory -Path '\\\\owen400\\cnodevsrv\\reports\\unit-tests' -Force }; Copy-Item -Path 'coverage\\*' -Destination '\\\\owen400\\cnodevsrv\\reports\\coverage\\' -Recurse -Force -ErrorAction SilentlyContinue; Copy-Item -Path 'cypress\\reports\\*' -Destination '\\\\owen400\\cnodevsrv\\reports\\cypress\\' -Recurse -Force -ErrorAction SilentlyContinue; Copy-Item -Path 'reports\\unit-tests\\*' -Destination '\\\\owen400\\cnodevsrv\\reports\\unit-tests\\' -Recurse -Force -ErrorAction SilentlyContinue; Write-Host 'All reports copied to dev server'\"",
     "// Deployment - Development": "",
     "deploy:dev": "npm run build:dev && npm run test:all && npm run reports:copy && npm run deploy:copy",
     "deploy:dev:force": "npm run build:dev && npm run test:all:force && npm run reports:copy && npm run deploy:copy",
@@ -71,7 +74,6 @@
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
-    "karma-html-reporter": "^0.2.7",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "karma-junit-reporter": "^2.0.1",
@@ -79,6 +81,6 @@
     "typescript": "5.8.3"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.0.0 <=20.15.0"
   }
 }
