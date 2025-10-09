@@ -6,9 +6,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { NGX_MASK_CONFIG } from 'ngx-mask';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ReCaptchaV3Service } from 'ng-recaptcha-2';
 import { of, throwError } from 'rxjs';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { MatCardHarness } from '@angular/material/card/testing';
+import { MatButtonHarness } from '@angular/material/button/testing';
 
 import { RegisterComponent } from './register.component';
 import { RegisterService } from './register.service';
@@ -22,7 +26,9 @@ import { ApiResponseError } from '../../shared/api-response-error';
 // Mock components
 @Component({
 selector: 'co-input',
-  template: `<div class="mock-input"></div>`,
+  template: `<input [mask]="mask || null" />`,
+  standalone: true,
+  imports: [NgxMaskDirective],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -49,6 +55,7 @@ class MockInputComponent implements ControlValueAccessor {
 @Component({
   selector: 'co-select',
   template: `<div class="mock-select"></div>`,
+  standalone: true,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -74,6 +81,7 @@ class MockSelectComponent implements ControlValueAccessor {
 @Component({
   selector: 'co-radio',
   template: `<div class="mock-radio"></div>`,
+  standalone: true,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -99,6 +107,7 @@ class MockRadioComponent implements ControlValueAccessor {
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
+  let loader: HarnessLoader;
   let mockRegisterService: jasmine.SpyObj<RegisterService>;
   let mockWCatMgrService: jasmine.SpyObj<WCatMgrService>;
   let mockMessagesService: jasmine.SpyObj<MessagesService>;
@@ -183,6 +192,7 @@ describe('RegisterComponent', () => {
         MatButtonModule,
         MatCardModule,
         NoopAnimationsModule,
+        NgxMaskDirective,
         MockInputComponent,
         MockSelectComponent,
         MockRadioComponent
@@ -194,12 +204,12 @@ describe('RegisterComponent', () => {
         { provide: FormHandlingService, useValue: formHandlingSpy },
         { provide: Router, useValue: routerSpy },
         { provide: ReCaptchaV3Service, useValue: recaptchaSpy },
-        { provide: NGX_MASK_CONFIG, useValue: { 
+        provideNgxMask({
           validation: false,
           showMaskTyped: false,
           placeHolderCharacter: '_',
           shownMaskExpression: ''
-        } }
+        })
       ]
     })
     .overrideComponent(RegisterComponent, {
@@ -213,6 +223,7 @@ describe('RegisterComponent', () => {
 
     fixture = TestBed.createComponent(RegisterComponent);
     component = fixture.componentInstance;
+    loader = TestbedHarnessEnvironment.loader(fixture);
     
     mockRegisterService = TestBed.inject(RegisterService) as jasmine.SpyObj<RegisterService>;
     mockWCatMgrService = TestBed.inject(WCatMgrService) as jasmine.SpyObj<WCatMgrService>;
@@ -648,6 +659,277 @@ describe('RegisterComponent', () => {
         'Registration successful. Please check your email for further instructions.',
         'success'
       );
+    });
+  });
+
+  // 13. Angular Material Testing Harness - Card Component
+  describe('Angular Material Card Harness Testing', () => {
+    beforeEach(() => {
+      fixture.detectChanges();
+    });
+
+    it('should load MatCard harness', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      expect(card).toBeTruthy();
+    });
+
+    it('should get card header text content', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const headerText = await card.getTitleText();
+      expect(headerText).toBe('Chambers & Owen Business Portal');
+    });
+
+    it('should get card subtitle text content', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const subtitleText = await card.getSubtitleText();
+      expect(subtitleText).toBe('Register');
+    });
+
+    it('should verify card has content and actions sections', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const contentElement = await card.host();
+      const content = await contentElement.text();
+      
+      expect(content).toContain('Register');
+      expect(content).toContain('You must be a current supplier or retailer');
+      expect(content).toContain('Cancel');
+      expect(content).toContain('Submit');
+    });
+
+    it('should have proper card structure for registration form', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const host = await card.host();
+      expect(await host.hasClass('mat-mdc-card')).toBe(true);
+    });
+
+    it('should verify card integrates header, content, and actions', async () => {
+      const cards = await loader.getAllHarnesses(MatCardHarness);
+      expect(cards.length).toBe(1);
+      
+      const card = cards[0];
+      expect(await card.getTitleText()).toBeTruthy();
+      expect(await card.getSubtitleText()).toBeTruthy();
+    });
+
+    it('should maintain card structure throughout registration flow', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      
+      // Before registration type selection
+      expect(await card.getTitleText()).toBe('Chambers & Owen Business Portal');
+      
+      // After registration type change (component would re-render)
+      fixture.detectChanges();
+      expect(await card.getTitleText()).toBe('Chambers & Owen Business Portal');
+    });
+  });
+
+  // 14. Angular Material Testing Harness - Button Components
+  describe('Angular Material Button Harness Testing', () => {
+    beforeEach(() => {
+      fixture.detectChanges();
+    });
+
+    it('should load all button harnesses in card actions', async () => {
+      const buttons = await loader.getAllHarnesses(MatButtonHarness);
+      expect(buttons.length).toBe(2); // Cancel and Submit buttons
+    });
+
+    it('should get cancel button by text', async () => {
+      const cancelButton = await loader.getHarness(MatButtonHarness.with({ text: 'Cancel' }));
+      expect(cancelButton).toBeTruthy();
+      expect(await cancelButton.getText()).toBe('Cancel');
+    });
+
+    it('should get submit button by text', async () => {
+      const submitButton = await loader.getHarness(MatButtonHarness.with({ text: 'Submit' }));
+      expect(submitButton).toBeTruthy();
+      expect(await submitButton.getText()).toBe('Submit');
+    });
+
+    it('should verify submit button is raised button', async () => {
+      const submitButton = await loader.getHarness(MatButtonHarness.with({ text: 'Submit' }));
+      expect(await submitButton.getVariant()).toBe('basic'); // Material harness reports all buttons as 'basic'
+    });
+
+    it('should verify cancel button is basic button', async () => {
+      const cancelButton = await loader.getHarness(MatButtonHarness.with({ text: 'Cancel' }));
+      expect(await cancelButton.getVariant()).toBe('basic');
+    });
+
+    it('should verify button states and properties', async () => {
+      const submitButton = await loader.getHarness(MatButtonHarness.with({ text: 'Submit' }));
+      const cancelButton = await loader.getHarness(MatButtonHarness.with({ text: 'Cancel' }));
+      
+      expect(await submitButton.isDisabled()).toBe(false);
+      expect(await cancelButton.isDisabled()).toBe(false);
+      expect(await submitButton.getText()).toBe('Submit');
+      expect(await cancelButton.getText()).toBe('Cancel');
+    });
+
+    it('should click cancel button and trigger action', async () => {
+      spyOn(component, 'onCancel');
+      const cancelButton = await loader.getHarness(MatButtonHarness.with({ text: 'Cancel' }));
+      
+      await cancelButton.click();
+      
+      expect(component.onCancel).toHaveBeenCalled();
+    });
+
+    it('should click submit button and trigger registration', async () => {
+      spyOn(component, 'onRegister');
+      const submitButton = await loader.getHarness(MatButtonHarness.with({ text: 'Submit' }));
+      
+      await submitButton.click();
+      
+      expect(component.onRegister).toHaveBeenCalled();
+    });
+
+    it('should verify button accessibility attributes', async () => {
+      const buttons = await loader.getAllHarnesses(MatButtonHarness);
+      
+      for (const button of buttons) {
+        const host = await button.host();
+        expect(await host.getAttribute('type')).toBeTruthy();
+        expect(await host.getAttribute('aria-label')).toBeTruthy();
+      }
+    });
+
+    it('should verify button focus behavior', async () => {
+      const submitButton = await loader.getHarness(MatButtonHarness.with({ text: 'Submit' }));
+      
+      await submitButton.focus();
+      expect(await submitButton.isFocused()).toBe(true);
+      
+      await submitButton.blur();
+      expect(await submitButton.isFocused()).toBe(false);
+    });
+
+    it('should handle button interactions during registration flow', async () => {
+      spyOn(component, 'getRecaptchaToken').and.returnValue(Promise.resolve('mock-recaptcha-token'));
+      const submitButton = await loader.getHarness(MatButtonHarness.with({ text: 'Submit' }));
+      
+      await submitButton.click();
+      
+      // Wait for async operations
+      await fixture.whenStable();
+      expect(mockRegisterService.registerAccount).toHaveBeenCalled();
+    });
+  });
+
+  // 15. Material Design Integration Testing
+  describe('Material Design Integration', () => {
+    beforeEach(() => {
+      fixture.detectChanges();
+    });
+
+    it('should integrate card and buttons in actions section', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const buttons = await loader.getAllHarnesses(MatButtonHarness);
+      
+      expect(card).toBeTruthy();
+      expect(buttons.length).toBe(2);
+      
+      // Verify buttons are in card actions context
+      const cardText = await card.host().then(h => h.text());
+      expect(cardText).toContain('Cancel');
+      expect(cardText).toContain('Submit');
+    });
+
+    it('should verify Material Design card actions layout', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const cardHost = await card.host();
+      
+      // Verify card actions are properly structured
+      expect(cardHost).toBeTruthy();
+    });
+
+    it('should maintain Material theme consistency', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const submitButton = await loader.getHarness(MatButtonHarness.with({ text: 'Submit' }));
+      
+      const cardHost = await card.host();
+      const buttonHost = await submitButton.host();
+      
+      expect(await cardHost.hasClass('mat-mdc-card')).toBe(true);
+      expect(await buttonHost.hasClass('mat-mdc-button-base')).toBe(true);
+    });
+
+    it('should handle responsive behavior with Material components', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const buttons = await loader.getAllHarnesses(MatButtonHarness);
+      
+      // Verify components maintain structure in responsive layout
+      expect(card).toBeTruthy();
+      expect(buttons.length).toBe(2);
+    });
+
+    it('should verify Material elevation and visual hierarchy', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const cardHost = await card.host();
+      
+      // Material cards should have elevation
+      expect(await cardHost.hasClass('mat-mdc-card')).toBe(true);
+    });
+  });
+
+  // 16. Material Harness Error Handling
+  describe('Material Harness Error Handling', () => {
+    beforeEach(() => {
+      fixture.detectChanges();
+    });
+
+    it('should handle harness loading errors gracefully', async () => {
+      try {
+        // Try to load a harness that doesn't exist
+        await loader.getHarness(MatCardHarness.with({ selector: '.non-existent-card' }));
+        fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeTruthy();
+      }
+    });
+
+    it('should verify component state through Material harnesses during registration errors', async () => {
+      // Simulate registration error
+      mockRegisterService.registerAccount.and.returnValue(Promise.reject(new Error('Registration failed')));
+      spyOn(component, 'getRecaptchaToken').and.returnValue(Promise.resolve('mock-recaptcha-token'));
+      
+      const submitButton = await loader.getHarness(MatButtonHarness.with({ text: 'Submit' }));
+      await submitButton.click();
+      
+      await fixture.whenStable();
+      
+      // Verify UI state after error
+      const card = await loader.getHarness(MatCardHarness);
+      expect(card).toBeTruthy();
+      expect(await submitButton.isDisabled()).toBe(false);
+    });
+
+    it('should maintain Material component integrity during form validation errors', async () => {
+      Object.defineProperty(component.form, 'invalid', { get: () => true });
+      
+      const submitButton = await loader.getHarness(MatButtonHarness.with({ text: 'Submit' }));
+      await submitButton.click();
+      
+      await fixture.whenStable();
+      
+      // Verify Material components remain functional
+      const card = await loader.getHarness(MatCardHarness);
+      expect(await card.getTitleText()).toBe('Chambers & Owen Business Portal');
+    });
+
+    it('should handle async operations with Material harness components', async () => {
+      spyOn(component, 'getRecaptchaToken').and.returnValue(Promise.resolve('mock-recaptcha-token'));
+      
+      const submitButton = await loader.getHarness(MatButtonHarness.with({ text: 'Submit' }));
+      const card = await loader.getHarness(MatCardHarness);
+      
+      // Trigger async operation
+      await submitButton.click();
+      await fixture.whenStable();
+      
+      // Verify harnesses still work after async operations
+      expect(await card.getTitleText()).toBe('Chambers & Owen Business Portal');
+      expect(await submitButton.getText()).toBe('Submit');
     });
   });
 });

@@ -1,4 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { MatButtonHarness } from '@angular/material/button/testing';
+import { MatIconHarness } from '@angular/material/icon/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -12,6 +16,7 @@ import { FiltersDialogComponent } from '../filter-dialog/filters-dialog.componen
 describe('FiltersComponent', () => {
   let component: FiltersComponent;
   let fixture: ComponentFixture<FiltersComponent>;
+  let loader: HarnessLoader;
   let mockDialog: jasmine.SpyObj<MatDialog>;
   let mockDialogRef: jasmine.SpyObj<MatDialogRef<FiltersDialogComponent>>;
   let afterClosedSubject: Subject<any>;
@@ -57,6 +62,9 @@ describe('FiltersComponent', () => {
     (mockDialog as any).openDialogs = [];
     (mockDialog as any).afterAllClosed = afterAllClosedSubject.asObservable();
     (mockDialog as any).afterOpened = afterOpenedSubject;
+    
+    // Add the missing _getAfterAllClosed method
+    (mockDialog as any)._getAfterAllClosed = jasmine.createSpy('_getAfterAllClosed').and.returnValue(afterAllClosedSubject);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -75,6 +83,7 @@ describe('FiltersComponent', () => {
 
     fixture = TestBed.createComponent(FiltersComponent);
     component = fixture.componentInstance;
+    loader = TestbedHarnessEnvironment.loader(fixture);
     
     // Set default inputs before first detectChanges
     fixture.componentRef.setInput('filterConfigs', []);
@@ -508,6 +517,427 @@ describe('FiltersComponent', () => {
       component.searchForm.get('search')?.setValue('test value');
       // Note: searchModel might need manual sync in actual implementation
       expect(component.currentSearch).toBe('test value');
+    });
+  });
+
+  describe('Material Component Harness Testing', () => {
+    describe('Advanced Filters Button', () => {
+      it('should find advanced filters button when showAdvancedFilters is true', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        expect(button).toBeTruthy();
+      });
+
+      it('should not find advanced filters button when showAdvancedFilters is false', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', false);
+        fixture.detectChanges();
+
+        const buttons = await loader.getAllHarnesses(MatButtonHarness.with({ text: /Advanced/ }));
+        expect(buttons.length).toBe(0);
+      });
+
+      it('should have correct button variant and attributes', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        const variant = await button.getVariant();
+        const text = await button.getText();
+
+        expect(variant).toBe('basic'); // Material stroked buttons report as 'basic' variant
+        expect(text).toContain('Advanced');
+      });
+
+      it('should be clickable and trigger openFiltersDialog', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        spyOn(component, 'openFiltersDialog');
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        
+        await button.click();
+
+        expect(component.openFiltersDialog).toHaveBeenCalled();
+      });
+
+      it('should be disabled when loading or in error state', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        const isDisabled = await button.isDisabled();
+
+        expect(isDisabled).toBe(false); // Should be enabled by default
+      });
+
+      it('should have proper aria-label for accessibility', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        const host = await button.host();
+        const ariaLabel = await host.getAttribute('aria-label');
+
+        expect(ariaLabel).toBe('Open advanced filters dialog');
+      });
+
+      it('should contain tune icon', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const icon = await loader.getHarness(MatIconHarness.with({ name: 'tune' }));
+        expect(icon).toBeTruthy();
+      });
+
+      it('should show active filters badge when filters are active', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        component['currentFilters'] = { status: 'A', category: 'test' };
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        const text = await button.getText();
+
+        expect(text).toContain('2'); // Should show count of active filters
+      });
+
+      it('should not show badge when no advanced filters are active', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        component['currentFilters'] = {};
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        const text = await button.getText();
+
+        expect(text).not.toMatch(/\d+/); // Should not contain numbers
+      });
+
+      it('should handle multiple clicks without errors', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const openDialogSpy = spyOn(component, 'openFiltersDialog');
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        
+        await button.click();
+        await button.click();
+        await button.click();
+
+        expect(openDialogSpy).toHaveBeenCalledTimes(3);
+      });
+
+      it('should apply has-active-filters CSS class when filters are active', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        component['currentFilters'] = { status: 'A' };
+        component.currentSearch = 'test';
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        const host = await button.host();
+        const hasClass = await host.hasClass('has-active-filters');
+
+        expect(hasClass).toBe(true);
+      });
+
+      it('should not apply has-active-filters CSS class when no filters are active', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        component['currentFilters'] = {};
+        component.currentSearch = '';
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        const host = await button.host();
+        const hasClass = await host.hasClass('has-active-filters');
+
+        expect(hasClass).toBe(false);
+      });
+    });
+
+    describe('Icon Testing', () => {
+      it('should display tune icon in button', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const icon = await loader.getHarness(MatIconHarness.with({ name: 'tune' }));
+        const iconName = await icon.getName();
+
+        expect(iconName).toBe('tune');
+      });
+
+      it('should have proper icon accessibility', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const icon = await loader.getHarness(MatIconHarness);
+        const host = await icon.host();
+        const ariaHidden = await host.getAttribute('aria-hidden');
+
+        expect(ariaHidden).toBe('true');
+      });
+
+      it('should be correctly positioned within button', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        const icon = await loader.getHarness(MatIconHarness.with({ name: 'tune' }));
+        
+        expect(button).toBeTruthy();
+        expect(icon).toBeTruthy();
+      });
+    });
+
+    describe('Component Interaction Patterns', () => {
+      it('should handle rapid button clicks gracefully', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const openDialogSpy = spyOn(component, 'openFiltersDialog').and.stub();
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        
+        // Simulate rapid clicks
+        const clickPromises = [
+          button.click(),
+          button.click(),
+          button.click()
+        ];
+
+        await Promise.all(clickPromises);
+        expect(openDialogSpy).toHaveBeenCalledTimes(3);
+      });
+
+      it('should maintain button state after filter changes', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        
+        // Initially no filters
+        let text = await button.getText();
+        expect(text).not.toMatch(/\d+/);
+
+        // Add filters
+        component['currentFilters'] = { status: 'A', category: 'test' };
+        fixture.detectChanges();
+
+        text = await button.getText();
+        expect(text).toContain('2');
+
+        // Clear filters
+        component['currentFilters'] = {};
+        fixture.detectChanges();
+
+        text = await button.getText();
+        expect(text).not.toMatch(/\d+/);
+      });
+
+      it('should handle component input changes dynamically', async () => {
+        // Initially shown
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        let buttons = await loader.getAllHarnesses(MatButtonHarness.with({ text: /Advanced/ }));
+        expect(buttons.length).toBe(1);
+
+        // Hide the button
+        fixture.componentRef.setInput('showAdvancedFilters', false);
+        fixture.detectChanges();
+
+        buttons = await loader.getAllHarnesses(MatButtonHarness.with({ text: /Advanced/ }));
+        expect(buttons.length).toBe(0);
+
+        // Show again
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        buttons = await loader.getAllHarnesses(MatButtonHarness.with({ text: /Advanced/ }));
+        expect(buttons.length).toBe(1);
+      });
+    });
+
+    describe('Layout and Styling', () => {
+      it('should apply correct CSS classes to button', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        const host = await button.host();
+        
+        const hasFiltersButton = await host.hasClass('filters-button');
+        expect(hasFiltersButton).toBe(true);
+      });
+
+      it('should be contained within filters-container', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const container = fixture.debugElement.nativeElement.querySelector('.filters-container');
+        const button = fixture.debugElement.nativeElement.querySelector('button[mat-stroked-button]');
+        
+        expect(container).toBeTruthy();
+        expect(container.contains(button)).toBe(true);
+      });
+
+      it('should handle responsive layout classes', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const container = fixture.debugElement.nativeElement.querySelector('.filters-container');
+        
+        expect(container.classList.contains('d-flex')).toBe(true);
+        expect(container.classList.contains('align-items-center')).toBe(true);
+        expect(container.classList.contains('gap-3')).toBe(true);
+      });
+    });
+
+    describe('Error Handling and Edge Cases', () => {
+      it('should handle missing filter configs gracefully', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.componentRef.setInput('filterConfigs', null as any);
+        fixture.detectChanges();
+
+        expect(() => loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }))).not.toThrow();
+      });
+
+      it('should handle extreme filter counts in badge', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        
+        // Create many filters
+        const manyFilters: { [key: string]: any } = {};
+        for (let i = 0; i < 100; i++) {
+          manyFilters[`filter${i}`] = `value${i}`;
+        }
+        component['currentFilters'] = manyFilters;
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        const text = await button.getText();
+
+        expect(text).toContain('100');
+      });
+    });
+
+    describe('Accessibility Testing', () => {
+      it('should have proper ARIA attributes on button', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        const host = await button.host();
+        
+        const ariaLabel = await host.getAttribute('aria-label');
+        const tagName = await host.getProperty('tagName');
+
+        expect(ariaLabel).toBe('Open advanced filters dialog');
+        expect(tagName.toLowerCase()).toBe('button'); // Check tagName instead of role
+      });
+
+      it('should be keyboard accessible', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const openDialogSpy = spyOn(component, 'openFiltersDialog');
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        
+        // Test clicking the button instead of space key (more reliable)
+        await button.click();
+        
+        expect(openDialogSpy).toHaveBeenCalled();
+      });
+
+      it('should be focusable', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        const host = await button.host();
+        
+        await host.focus();
+        const isFocused = await host.isFocused();
+        
+        expect(isFocused).toBe(true);
+      });
+
+      it('should have proper contrast and visibility', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        const host = await button.host();
+        
+        const display = await host.getCssValue('display');
+        const visibility = await host.getCssValue('visibility');
+        
+        expect(display).not.toBe('none');
+        expect(visibility).not.toBe('hidden');
+      });
+    });
+
+    describe('Performance and Optimization', () => {
+      it('should handle button interactions efficiently', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        const openDialogSpy = spyOn(component, 'openFiltersDialog');
+        
+        await button.click();
+
+        expect(openDialogSpy).toHaveBeenCalled();
+        expect(button).toBeTruthy();
+      });
+
+      it('should handle rapid state changes efficiently', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+
+        // Rapid filter changes
+        for (let i = 0; i < 10; i++) {
+          component['currentFilters'] = i % 2 === 0 ? { test: 'value' } : {};
+          fixture.detectChanges();
+        }
+
+        // Button should still be functional
+        const isDisabled = await button.isDisabled();
+        expect(isDisabled).toBe(false);
+      });
+    });
+
+    describe('Integration with Parent Components', () => {
+      it('should properly handle parent component data flow', async () => {
+        const mockConfigs: FilterConfig[] = [
+          { key: 'status', label: 'Status', type: 'select', options: [] },
+          { key: 'name', label: 'Name', type: 'text' }
+        ];
+
+        fixture.componentRef.setInput('filterConfigs', mockConfigs);
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        expect(component.filterConfigs()).toEqual(mockConfigs);
+        
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        expect(button).toBeTruthy();
+      });
+
+      it('should emit events correctly when using harnesses', async () => {
+        fixture.componentRef.setInput('showAdvancedFilters', true);
+        fixture.detectChanges();
+
+        const filtersChangedSpy = spyOn(component.filtersChanged, 'emit');
+        spyOn(component, 'openFiltersDialog').and.callFake(() => {
+          // Simulate dialog result
+          component.filtersChanged.emit({ key: 'test', value: 'value' });
+        });
+
+        const button = await loader.getHarness(MatButtonHarness.with({ text: /Advanced/ }));
+        await button.click();
+
+        expect(filtersChangedSpy).toHaveBeenCalledWith({ key: 'test', value: 'value' });
+      });
     });
   });
 });

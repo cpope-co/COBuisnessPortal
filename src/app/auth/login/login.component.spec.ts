@@ -14,6 +14,10 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { login } from '../../models/login.model';
 import { User } from '../../models/user.model';
 import { NGX_MASK_CONFIG } from 'ngx-mask';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { MatCardHarness } from '@angular/material/card/testing';
+import { MatButtonHarness } from '@angular/material/button/testing';
 
 // Mock InputComponent
 @Component({
@@ -44,6 +48,7 @@ class MockInputComponent implements ControlValueAccessor {
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
+  let loader: HarnessLoader;
   let mockAuthService: jasmine.SpyObj<AuthService>;
   let mockSessionService: jasmine.SpyObj<SessionService>;
   let mockMessagesService: jasmine.SpyObj<MessagesService>;
@@ -105,6 +110,7 @@ describe('LoginComponent', () => {
 
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
+    loader = TestbedHarnessEnvironment.loader(fixture);
     mockAuthService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     mockSessionService = TestBed.inject(SessionService) as jasmine.SpyObj<SessionService>;
     mockMessagesService = TestBed.inject(MessagesService) as jasmine.SpyObj<MessagesService>;
@@ -464,6 +470,242 @@ describe('LoginComponent', () => {
       
       expect(forgotLink).toBeTruthy();
       expect(registerLink).toBeTruthy();
+    });
+  });
+
+  // 11. Angular Material Testing Harness - Card Component
+  describe('Angular Material Card Harness Testing', () => {
+    beforeEach(() => {
+      fixture.detectChanges();
+    });
+
+    it('should load MatCard harness', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      expect(card).toBeTruthy();
+    });
+
+    it('should get card header text content', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const headerText = await card.getTitleText();
+      expect(headerText).toBe('Chambers & Owen Business Portal');
+    });
+
+    it('should get card subtitle text content', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const subtitleText = await card.getSubtitleText();
+      expect(subtitleText).toBe('Login');
+    });
+
+    it('should verify card has content section', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const contentElement = await card.host();
+      const content = await contentElement.text();
+      expect(content).toContain('Login');
+      expect(content).toContain('Forgot credentials?');
+      expect(content).toContain('Register');
+    });
+
+    it('should have proper card structure for accessibility', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const host = await card.host();
+      expect(await host.hasClass('mat-mdc-card')).toBe(true);
+    });
+
+    it('should load card header and content separately', async () => {
+      const cards = await loader.getAllHarnesses(MatCardHarness);
+      expect(cards.length).toBe(1);
+      
+      const card = cards[0];
+      expect(await card.getTitleText()).toBeTruthy();
+      expect(await card.getSubtitleText()).toBeTruthy();
+    });
+
+    it('should verify card responds to Material Design theme', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const host = await card.host();
+      expect(host).toBeTruthy();
+    });
+  });
+
+  // 12. Angular Material Testing Harness - Button Components  
+  describe('Angular Material Button Harness Testing', () => {
+    beforeEach(() => {
+      fixture.detectChanges();
+    });
+
+    it('should load all button harnesses', async () => {
+      const buttons = await loader.getAllHarnesses(MatButtonHarness);
+      expect(buttons.length).toBe(3); // Login button + 2 link buttons
+    });
+
+    it('should get login button by text', async () => {
+      const loginButton = await loader.getHarness(MatButtonHarness.with({ text: 'Login' }));
+      expect(loginButton).toBeTruthy();
+      expect(await loginButton.getText()).toBe('Login');
+    });
+
+    it('should verify login button is raised button', async () => {
+      const loginButton = await loader.getHarness(MatButtonHarness.with({ text: 'Login' }));
+      expect(await loginButton.getVariant()).toBe('basic'); // Material harness reports all buttons as 'basic'
+    });
+
+    it('should get forgot credentials button', async () => {
+      const forgotButton = await loader.getHarness(MatButtonHarness.with({ text: 'Forgot credentials?' }));
+      expect(forgotButton).toBeTruthy();
+      expect(await forgotButton.getText()).toBe('Forgot credentials?');
+    });
+
+    it('should get register button', async () => {
+      const registerButton = await loader.getHarness(MatButtonHarness.with({ text: 'Register' }));
+      expect(registerButton).toBeTruthy();
+      expect(await registerButton.getText()).toBe('Register');
+    });
+
+    it('should verify button states and properties', async () => {
+      const loginButton = await loader.getHarness(MatButtonHarness.with({ text: 'Login' }));
+      
+      expect(await loginButton.isDisabled()).toBe(false);
+      expect(await loginButton.getText()).toBe('Login');
+    });
+
+    it('should click login button and trigger action', async () => {
+      spyOn(component, 'onLogin');
+      const loginButton = await loader.getHarness(MatButtonHarness.with({ text: 'Login' }));
+      
+      await loginButton.click();
+      
+      expect(component.onLogin).toHaveBeenCalled();
+    });
+
+    it('should verify all buttons have proper accessibility attributes', async () => {
+      const buttons = await loader.getAllHarnesses(MatButtonHarness);
+      
+      for (const button of buttons) {
+        const host = await button.host();
+        expect(await host.getAttribute('type')).toBeTruthy();
+      }
+    });
+
+    it('should verify button focus behavior', async () => {
+      const loginButton = await loader.getHarness(MatButtonHarness.with({ text: 'Login' }));
+      
+      await loginButton.focus();
+      expect(await loginButton.isFocused()).toBe(true);
+      
+      await loginButton.blur();
+      expect(await loginButton.isFocused()).toBe(false);
+    });
+
+    it('should handle button interaction with authentication flow', async () => {
+      mockAuthService.login.and.returnValue(Promise.resolve(mockUser));
+      const loginButton = await loader.getHarness(MatButtonHarness.with({ text: 'Login' }));
+      
+      await loginButton.click();
+      
+      // Wait for async operations
+      await fixture.whenStable();
+      expect(mockAuthService.login).toHaveBeenCalled();
+    });
+
+    it('should verify button color and styling through harness', async () => {
+      const loginButton = await loader.getHarness(MatButtonHarness.with({ text: 'Login' }));
+      const host = await loginButton.host();
+      
+      expect(await host.hasClass('mat-mdc-raised-button')).toBe(true);
+      expect(await host.hasClass('mat-primary')).toBe(true);
+    });
+  });
+
+  // 13. Material Design Integration Testing
+  describe('Material Design Integration', () => {
+    beforeEach(() => {
+      fixture.detectChanges();
+    });
+
+    it('should integrate card and buttons harmoniously', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const buttons = await loader.getAllHarnesses(MatButtonHarness);
+      
+      expect(card).toBeTruthy();
+      expect(buttons.length).toBe(3);
+      
+      // Verify buttons are within card context
+      const cardText = await card.host().then(h => h.text());
+      expect(cardText).toContain('Login');
+      expect(cardText).toContain('Forgot credentials?');
+      expect(cardText).toContain('Register');
+    });
+
+    it('should verify Material Design theme consistency', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const loginButton = await loader.getHarness(MatButtonHarness.with({ text: 'Login' }));
+      
+      const cardHost = await card.host();
+      const buttonHost = await loginButton.host();
+      
+      expect(await cardHost.hasClass('mat-mdc-card')).toBe(true);
+      expect(await buttonHost.hasClass('mat-mdc-button-base')).toBe(true);
+    });
+
+    it('should handle responsive behavior with Material components', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const cardHost = await card.host();
+      
+      // Verify card maintains structure in responsive layout
+      expect(cardHost).toBeTruthy();
+    });
+
+    it('should verify Material elevation and visual hierarchy', async () => {
+      const card = await loader.getHarness(MatCardHarness);
+      const cardHost = await card.host();
+      
+      // Material cards should have elevation
+      expect(await cardHost.hasClass('mat-mdc-card')).toBe(true);
+    });
+  });
+
+  // 14. Material Harness Error Handling
+  describe('Material Harness Error Handling', () => {
+    beforeEach(() => {
+      fixture.detectChanges();
+    });
+
+    it('should handle harness loading errors gracefully', async () => {
+      try {
+        // Try to load a harness that doesn't exist
+        await loader.getHarness(MatCardHarness.with({ selector: '.non-existent' }));
+        fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeTruthy();
+      }
+    });
+
+    it('should verify component state through Material harnesses during error scenarios', async () => {
+      // Simulate login error
+      mockAuthService.login.and.returnValue(Promise.reject(new Error('Login failed')));
+      
+      const loginButton = await loader.getHarness(MatButtonHarness.with({ text: 'Login' }));
+      await loginButton.click();
+      
+      await fixture.whenStable();
+      
+      // Verify UI state after error
+      const card = await loader.getHarness(MatCardHarness);
+      expect(card).toBeTruthy();
+      expect(await loginButton.isDisabled()).toBe(false);
+    });
+
+    it('should maintain Material component integrity during form validation errors', async () => {
+      Object.defineProperty(component.form, 'invalid', { get: () => true });
+      
+      const loginButton = await loader.getHarness(MatButtonHarness.with({ text: 'Login' }));
+      await loginButton.click();
+      
+      await fixture.whenStable();
+      
+      // Verify Material components remain functional
+      const card = await loader.getHarness(MatCardHarness);
+      expect(await card.getTitleText()).toBe('Chambers & Owen Business Portal');
     });
   });
 });

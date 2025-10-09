@@ -22,13 +22,18 @@ describe('SessionService', () => {
       refexp: Math.floor(Date.now() / 1000) + 7200 // 2 hours from now
     });
 
-    const dialogSpy = jasmine.createSpyObj('MatDialog', ['closeAll']);
+    const dialogSpy = jasmine.createSpyObj('MatDialog', ['closeAll', 'open']);
     const authServiceSpy = jasmine.createSpyObj('AuthService', ['logout', 'refresh'], {
       user: mockUser,
       loginEvent: of(true),
       logoutEvent: of(true)
     });
     const messagesServiceSpy = jasmine.createSpyObj('MessagesService', ['showMessage']);
+
+    // Setup dialog.open to return a mock dialog reference
+    const mockDialogRef = jasmine.createSpyObj('MatDialogRef', ['close', 'afterClosed']);
+    mockDialogRef.afterClosed.and.returnValue(of());
+    dialogSpy.open.and.returnValue(mockDialogRef);
 
     TestBed.configureTestingModule({
       providers: [

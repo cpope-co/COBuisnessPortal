@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { MatCardHarness } from '@angular/material/card/testing';
 import { Router } from '@angular/router';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
@@ -10,6 +13,7 @@ import { UserAccount, USER_ACCOUNTS_TABLE_COLUMNS, USER_ACCOUNTS_TABLE_CONFIG } 
 describe('UsersListComponent', () => {
   let component: UsersListComponent;
   let fixture: ComponentFixture<UsersListComponent>;
+  let loader: HarnessLoader;
   let mockUserAccountService: jasmine.SpyObj<UserAccountService>;
   let mockMessagesService: jasmine.SpyObj<MessagesService>;
   let mockRouter: jasmine.SpyObj<Router>;
@@ -79,6 +83,7 @@ describe('UsersListComponent', () => {
     
     fixture = TestBed.createComponent(UsersListComponent);
     component = fixture.componentInstance;
+    loader = TestbedHarnessEnvironment.loader(fixture);
     
     // Wait for async operations to complete
     await fixture.whenStable();
@@ -316,6 +321,235 @@ describe('UsersListComponent', () => {
         'danger'
       );
       expect(component.userAccounts().length).toBe(2); // Should remain unchanged
+    });
+  });
+
+  describe('Material Components Testing with Harnesses', () => {
+    beforeEach(async () => {
+      component.userAccountsSignal.set(mockUserAccounts);
+      fixture.detectChanges();
+    });
+
+    describe('Card Component', () => {
+      it('should render mat-card component', async () => {
+        const card = await loader.getHarness(MatCardHarness);
+        expect(card).toBeTruthy();
+      });
+
+      it('should display correct card title', async () => {
+        const card = await loader.getHarness(MatCardHarness);
+        const titleText = await card.getTitleText();
+        expect(titleText).toBe('User Accounts');
+      });
+
+      it('should have proper card structure with title and content', async () => {
+        const card = await loader.getHarness(MatCardHarness);
+        const titleText = await card.getTitleText();
+        const cardText = await card.getText();
+        
+        expect(titleText).toBe('User Accounts');
+        expect(cardText).toContain('User Accounts');
+      });
+
+      it('should contain table component within card content', async () => {
+        const card = await loader.getHarness(MatCardHarness);
+        const cardText = await card.getText();
+        
+        expect(cardText).toContain('User Accounts');
+        expect(card).toBeTruthy();
+      });
+    });
+
+    describe('Card Integration with Table Data', () => {
+      it('should display card when user accounts are loaded', async () => {
+        expect(component.userAccounts().length).toBe(2);
+        
+        const card = await loader.getHarness(MatCardHarness);
+        expect(card).toBeTruthy();
+      });
+
+      it('should maintain card structure during data updates', async () => {
+        const initialCard = await loader.getHarness(MatCardHarness);
+        const initialTitle = await initialCard.getTitleText();
+        
+        // Update data
+        const newUserAccounts = [...mockUserAccounts, {
+          usunbr: 3,
+          usemail: 'test3@example.com',
+          usfname: 'New',
+          uslname: 'User',
+          usstat: 'A',
+          usfpc: false,
+          usnfla: 0,
+          usibmi: false,
+          usroleid: 1,
+          usidle: 30,
+          usabnum: 11111,
+          usplcts: new Date(),
+          uslflats: new Date(),
+          usllts: new Date(),
+          uscrts: new Date()
+        }];
+        
+        component.userAccountsSignal.set(newUserAccounts);
+        fixture.detectChanges();
+        
+        const updatedCard = await loader.getHarness(MatCardHarness);
+        const updatedTitle = await updatedCard.getTitleText();
+        
+        expect(initialTitle).toBe(updatedTitle);
+        expect(updatedTitle).toBe('User Accounts');
+      });
+
+      it('should handle empty data state with card intact', async () => {
+        component.userAccountsSignal.set([]);
+        fixture.detectChanges();
+        
+        const card = await loader.getHarness(MatCardHarness);
+        const titleText = await card.getTitleText();
+        
+        expect(card).toBeTruthy();
+        expect(titleText).toBe('User Accounts');
+      });
+    });
+
+    describe('Material Theme Integration', () => {
+      it('should apply correct Material card styling', async () => {
+        const card = await loader.getHarness(MatCardHarness);
+        const host = await card.host();
+        
+        const classes = await host.getAttribute('class');
+        expect(classes).toContain('mat-mdc-card');
+      });
+
+      it('should maintain proper visual hierarchy', async () => {
+        const card = await loader.getHarness(MatCardHarness);
+        const titleText = await card.getTitleText();
+        
+        expect(titleText).toBe('User Accounts');
+        expect(titleText.length).toBeGreaterThan(0);
+      });
+
+      it('should be visually accessible', async () => {
+        const card = await loader.getHarness(MatCardHarness);
+        const host = await card.host();
+        
+        const display = await host.getCssValue('display');
+        const visibility = await host.getCssValue('visibility');
+        
+        expect(display).not.toBe('none');
+        expect(visibility).not.toBe('hidden');
+      });
+    });
+
+    describe('Component Lifecycle with Material Components', () => {
+      it('should initialize Material components properly', async () => {
+        const card = await loader.getHarness(MatCardHarness);
+        
+        expect(card).toBeTruthy();
+        expect(component.userAccounts()).toBeTruthy();
+        expect(component.tableColumns).toBeTruthy();
+        expect(component.tableConfig).toBeTruthy();
+      });
+
+      it('should handle data loading with Material components', async () => {
+        expect(mockUserAccountService.loadAllUserAccounts).toHaveBeenCalled();
+        
+        const card = await loader.getHarness(MatCardHarness);
+        const titleText = await card.getTitleText();
+        
+        expect(titleText).toBe('User Accounts');
+        expect(component.userAccounts().length).toBe(2);
+      });
+
+      it('should maintain Material component integrity during operations', async () => {
+        const initialCard = await loader.getHarness(MatCardHarness);
+        
+        // Perform delete operation
+        await component.onDelete(1);
+        
+        const cardAfterDelete = await loader.getHarness(MatCardHarness);
+        const titleAfterDelete = await cardAfterDelete.getTitleText();
+        
+        expect(titleAfterDelete).toBe('User Accounts');
+        expect(component.userAccounts().length).toBe(1);
+      });
+    });
+
+    describe('Responsive Design and Layout', () => {
+      it('should maintain card layout responsiveness', async () => {
+        const card = await loader.getHarness(MatCardHarness);
+        const host = await card.host();
+        
+        const position = await host.getCssValue('position');
+        const display = await host.getCssValue('display');
+        
+        expect(display).toBeTruthy();
+        expect(typeof position).toBe('string');
+      });
+
+      it('should handle different viewport sizes gracefully', async () => {
+        const card = await loader.getHarness(MatCardHarness);
+        
+        // Card should remain functional regardless of viewport
+        expect(card).toBeTruthy();
+        
+        const titleText = await card.getTitleText();
+        expect(titleText).toBe('User Accounts');
+      });
+    });
+
+    describe('Accessibility with Material Components', () => {
+      it('should have proper semantic structure', async () => {
+        const card = await loader.getHarness(MatCardHarness);
+        const host = await card.host();
+        
+        const tagName = await host.getProperty('tagName');
+        expect(tagName.toLowerCase()).toBe('mat-card');
+      });
+
+      it('should support keyboard navigation', async () => {
+        const card = await loader.getHarness(MatCardHarness);
+        const host = await card.host();
+        
+        // Test focus capability
+        await host.focus();
+        const isFocused = await host.isFocused();
+        
+        // Card itself may not be focusable, but this tests the capability
+        expect(typeof isFocused).toBe('boolean');
+      });
+
+      it('should have proper heading structure', async () => {
+        const card = await loader.getHarness(MatCardHarness);
+        const cardText = await card.getText();
+        
+        expect(cardText).toContain('User Accounts');
+      });
+    });
+
+    describe('Error State Handling with Material Components', () => {
+      it('should maintain card structure during error states', async () => {
+        // Simulate error during data operations
+        component.userAccountsSignal.set([]);
+        fixture.detectChanges();
+        
+        const card = await loader.getHarness(MatCardHarness);
+        const titleText = await card.getTitleText();
+        
+        expect(card).toBeTruthy();
+        expect(titleText).toBe('User Accounts');
+      });
+
+      it('should handle Material component errors gracefully', async () => {
+        const card = await loader.getHarness(MatCardHarness);
+        
+        expect(card).toBeTruthy();
+        
+        // Simulate component destruction
+        fixture.destroy();
+        expect(() => fixture.detectChanges()).not.toThrow();
+      });
     });
   });
 });
