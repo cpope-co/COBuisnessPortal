@@ -53,3 +53,4 @@ cypress/reports/
 
 #Reports
 reports/
+karma_html/*/index.html

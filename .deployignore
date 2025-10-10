@@ -1,0 +1,11 @@
+# Files and folders to exclude from deployment
+dist/
+node_modules/
+coverage/
+cypress/screenshots/
+cypress/videos/
+reports/
+*.log
+.angular/
+.vscode/
+.git/

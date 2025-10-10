@@ -10,7 +10,9 @@ module.exports = function (config) {
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
-      require('karma-spec-reporter')
+      require('karma-spec-reporter'),
+      require('karma-junit-reporter'),
+      require('karma-html-reporter')
     ],
     client: {
       jasmine: {
@@ -23,7 +25,9 @@ module.exports = function (config) {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
     jasmineHtmlReporter: {
-      suppressAll: true // removes the duplicated traces
+      suppressAll: true, // removes the duplicated traces
+      outputPath: 'reports/unit-tests',
+      outputFile: 'index.html'
     },
     coverageReporter: {
       dir: require('path').join(__dirname, './coverage'),
@@ -42,7 +46,23 @@ module.exports = function (config) {
         },
       },
     },
-    reporters: ['progress', 'kjhtml', 'spec', 'coverage'],
+    htmlReporter: {
+      outputFile: 'reports/unit-tests/index.html',
+      pageTitle: 'CO Business Portal Unit Tests',
+      subPageTitle: 'Test Results',
+      groupSuites: true,
+      useCompactStyle: true
+    },
+    junitReporter: {
+      outputDir: 'reports/unit-tests',
+      outputFile: 'results.xml',
+      suite: 'unit-tests',
+      useBrowserName: false,
+      nameFormatter: undefined,
+      classNameFormatter: undefined,
+      properties: {}
+    },
+    reporters: ['progress', 'kjhtml', 'spec', 'coverage', 'html'],
     specReporter: {
       maxLogLines: 5,         // limit number of lines logged per test
       suppressErrorSummary: true,  // do not print error summary
