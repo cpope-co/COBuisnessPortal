@@ -67,5 +67,38 @@ declare namespace Cypress {
      * Keyboard tab navigation
      */
     tab(): Chainable<Element>;
+
+    /**
+     * Setup authenticated user for menu testing
+     * @param userRole - User role (default: 2)
+     */
+    setupAuthenticatedUser(userRole?: number): Chainable<Element>;
+
+    /**
+     * Verify basic menu structure is present and visible
+     */
+    verifyMenuStructure(): Chainable<Element>;
+
+    /**
+     * Test navigation to a specific menu item
+     * @param menuItemText - Text content of the menu item to click
+     * @param expectedRoute - Expected route after navigation
+     */
+    testMenuNavigation(menuItemText: string, expectedRoute: string): Chainable<Element>;
+
+    /**
+     * Check menu accessibility features
+     */
+    checkMenuAccessibility(): Chainable<Element>;
+
+    /**
+     * Verify menu accessibility compliance with WCAG 2.1 AA
+     */
+    verifyMenuAccessibility(): Chainable<Element>;
+
+    /**
+     * Test menu keyboard navigation
+     */
+    testMenuKeyboardNavigation(): Chainable<Element>;
   }
 }

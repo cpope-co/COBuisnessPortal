@@ -1,16 +1,38 @@
 @if(menuItems()) { 
-    <mat-nav-list>
-      @for(menuItem of menuItems(); track $index) {
-        @if(menuItem.options?.heading) {
-          <h2 class="nav-heading">{{ menuItem.title }}</h2>
-          @if(menuItem.children) { 
-            @for(child of menuItem.children; track $index) {
-              <a mat-list-item [routerLink]="[child.route]"> {{ child.title }}</a>
-            } 
-          } 
-        } @else {
-          <a mat-list-item [routerLink]="[menuItem.route]"> {{ menuItem.title }}</a>
-        } 
-      }
-  </mat-nav-list>
+    <nav role="navigation" aria-label="Main navigation">
+        <mat-nav-list role="menubar">
+            @for(menuItem of menuItems(); track $index) {
+                @if(menuItem.options?.heading) {
+                    <h3 mat-subheader 
+                        id="heading-{{$index}}" 
+                        class="nav-heading">
+                        {{ menuItem.title }}
+                    </h3>
+                    @if(menuItem.children) { 
+                        @for(child of menuItem.children; track $index) {
+                            <a mat-list-item 
+                               [routerLink]="[child.route]" 
+                               role="menuitem"
+                               [attr.tabindex]="-1"
+                               [class.current-page]="isCurrentRoute(child.route)"
+                               (keydown)="onKeyDown($event)"
+                               class="nav-item">
+                                <span matListItemTitle>{{ child.title }}</span>
+                            </a>
+                        } 
+                    } 
+                } @else {
+                    <a mat-list-item 
+                       [routerLink]="[menuItem.route]" 
+                       role="menuitem"
+                       [attr.tabindex]="-1"
+                       [class.current-page]="isCurrentRoute(menuItem.route)"
+                       (keydown)="onKeyDown($event)"
+                       class="nav-item">
+                        <span matListItemTitle>{{ menuItem.title }}</span>
+                    </a>
+                } 
+            }
+        </mat-nav-list>
+    </nav>
 }

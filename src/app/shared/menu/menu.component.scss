@@ -1,5 +1,154 @@
 
-.nav-heading {
-    margin: 0 0 0 8px;
-    border-bottom: 1px #eee solid;
+// Navigation container
+nav[role="navigation"] {
+  width: 100%;
+}
+
+// Material nav-list styling
+mat-nav-list {
+  padding: 0;
+  
+  // Subheaders for navigation sections
+  .mat-mdc-subheader {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--mdc-list-list-item-label-text-color, rgba(0, 0, 0, 0.6));
+    margin-top: 16px;
+    
+    &:first-child {
+      margin-top: 8px;
+    }
   }
+}
+
+// Navigation items
+a[mat-list-item] {
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  
+  // Current page indicator
+  &.current-page {
+    background-color: var(--mdc-list-list-item-selected-container-color, rgba(103, 80, 164, 0.12));
+    
+    .mat-mdc-list-item-content {
+      font-weight: 500;
+    }
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background-color: var(--mdc-theme-primary, #6750a4);
+    }
+  }
+  
+  // Hover state
+  &:hover:not(.current-page) {
+    background-color: var(--mdc-list-list-item-hover-state-layer-color, rgba(0, 0, 0, 0.04));
+  }
+  
+  // Focus state - WCAG 2.1 AA compliant
+  &:focus {
+    outline: 2px solid var(--mdc-theme-primary, #6750a4);
+    outline-offset: -2px;
+    background-color: var(--mdc-list-list-item-focus-state-layer-color, rgba(103, 80, 164, 0.12));
+    position: relative;
+    z-index: 1;
+  }
+  
+  // Remove Material's default focus indicator
+  &.mat-mdc-focus-indicator::before {
+    display: none;
+  }
+  
+  // List item title styling
+  .mat-mdc-list-item-title {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+    letter-spacing: 0.0178571429em;
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  a[mat-list-item] {
+    border: 1px solid transparent;
+    
+    &:focus {
+      border-color: currentColor;
+      outline: 3px solid;
+    }
+    
+    &.current-page {
+      border-color: currentColor;
+    }
+  }
+  
+  .mat-mdc-subheader {
+    border-bottom: 2px solid currentColor;
+    padding-bottom: 4px;
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  a[mat-list-item] {
+    transition: none;
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .mat-mdc-subheader {
+    color: var(--mdc-theme-on-surface, rgba(255, 255, 255, 0.87));
+  }
+  
+  a[mat-list-item] {
+    &:hover:not(.current-page) {
+      background-color: var(--mdc-list-list-item-hover-state-layer-color, rgba(255, 255, 255, 0.08));
+    }
+    
+    &:focus {
+      outline-color: var(--mdc-theme-primary, #d0bcff);
+      background-color: var(--mdc-list-list-item-focus-state-layer-color, rgba(208, 188, 255, 0.12));
+    }
+    
+    &.current-page {
+      background-color: var(--mdc-list-list-item-selected-container-color, rgba(208, 188, 255, 0.12));
+      
+      &::before {
+        background-color: var(--mdc-theme-primary, #d0bcff);
+      }
+    }
+  }
+}
+
+// Screen reader only content
+.sr-only {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+// Ensure minimum touch target size (44px x 44px) - WCAG 2.1 AA
+@media (pointer: coarse) {
+  a[mat-list-item] {
+    min-height: 44px;
+    
+    .mat-mdc-list-item-content {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+  }
+}

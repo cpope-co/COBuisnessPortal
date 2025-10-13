@@ -39,7 +39,7 @@ Cypress.Commands.add('login', (email: string, password: string) => {
         exp: Math.floor(Date.now() / 1000) + 3600,
         iat: Math.floor(Date.now() / 1000)
       };
-      
+
       win.sessionStorage.setItem('user', JSON.stringify(mockUser));
       win.sessionStorage.setItem('token', 'mock-jwt-token');
     });
@@ -78,7 +78,7 @@ Cypress.Commands.add('setupLoggedInUser', (userRole: number = 1) => {
       exp: Math.floor(Date.now() / 1000) + 3600,
       iat: Math.floor(Date.now() / 1000)
     };
-    
+
     win.sessionStorage.setItem('user', JSON.stringify(mockUser));
     win.sessionStorage.setItem('token', 'mock-jwt-token');
   });
@@ -135,7 +135,7 @@ Cypress.Commands.add('fillSupplierForm', () => {
   cy.get('co-input[id="text-uslname"]').find('input').type(testData.lastName);
   cy.get('co-input[id="tel-wphone"]').find('input').type(testData.phone);
   cy.get('co-input[id="text-wacctname"]').find('input').type(testData.accountName);
-  
+
   // Select category manager for supplier (wait for it to be available)
   cy.get('co-select[id="select-wcatmgr"]', { timeout: 10000 }).should('be.visible').click();
   cy.get('mat-option', { timeout: 10000 }).eq(1).click();
@@ -163,7 +163,7 @@ Cypress.Commands.add('fillSupplierWithInUseEmail', () => {
   cy.get('co-input[id="text-uslname"]').find('input').type(testData.lastName);
   cy.get('co-input[id="tel-wphone"]').find('input').type(testData.phone);
   cy.get('co-input[id="text-wacctname"]').find('input').type(testData.accountName);
-  
+
   // Select category manager for supplier (wait for it to be available)
   cy.get('co-select[id="select-wcatmgr"]', { timeout: 10000 }).should('be.visible').click();
   cy.get('mat-option', { timeout: 10000 }).eq(1).click();
@@ -226,4 +226,206 @@ Cypress.Commands.add('fillReailerWithInUseEmail', () => {
 // @ts-ignore
 Cypress.Commands.add('tab', { prevSubject: true }, (subject) => {
   return cy.wrap(subject).trigger('keydown', { key: 'Tab' });
+});
+
+/**
+ * Custom command to setup authenticated user for menu testing
+ */
+// @ts-ignore
+Cypress.Commands.add('setupAuthenticatedUser', (userRole: number = 2) => {
+  // Clear any existing session data first
+  cy.clearAllCookies();
+  cy.clearAllLocalStorage();
+  cy.clearAllSessionStorage();
+
+  // Define real test users by role
+  const testUsers: {
+    [key in 1 | 2 | 3 | 4 | 6]: { email: string; password: string; type: string }
+  } = {
+    1: { email: 'testuser@chambers-owen.com', password: 'it2T*&gf', type: 'Admin' },
+    2: { email: 'cstore@draxlers.com', password: 'HeavenHill17!', type: 'Customer' },
+    3: { email: 'jvigna@swisher.com', password: 'HeavenHill17!', type: 'Vendor' },
+    4: { email: 'bart@bart.com', password: 'HeavenHill17!', type: 'Employee' },
+    6: { email: 'ryan@blackbuffalo.com', password: 'HeavenHill17!', type: 'Employee-Sales' }
+  };
+
+  const user = testUsers[userRole as 1 | 2 | 3 | 4 | 6];
+  if (!user) {
+    throw new Error(`No test user defined for role ID: ${userRole}. Available roles: ${Object.keys(testUsers).join(', ')}`);
+  }
+
+  // Visit login page and authenticate with real credentials
+  cy.visit('/auth/login');
+
+  // Wait for the login form to be ready
+  cy.get('input[type="email"]').should('be.visible');
+  cy.get('input[type="password"]').should('be.visible');
+
+  // Fill in the real credentials for the specified role
+  cy.get('input[type="email"]').type(user.email);
+  cy.get('input[type="password"]').type(user.password);
+
+  // Submit the form
+  cy.get('button').contains('Login').click();
+
+  // Wait for successful login by checking we're redirected away from login page
+  cy.url().should('not.include', '/auth/login');
+
+  // Wait for the application to be ready
+  cy.get('co-menu').should('exist');
+  
+  // Log which user we're testing with
+  cy.log(`Authenticated as ${user.type} (Role ${userRole}): ${user.email}`);
+});
+
+/**
+ * Custom command to verify menu structure
+ */
+// @ts-ignore
+Cypress.Commands.add('verifyMenuStructure', () => {
+  cy.get('co-menu').should('exist');
+  cy.get('nav[role="navigation"]').should('be.visible');
+  cy.get('mat-nav-list[role="menubar"]').should('be.visible');
+  cy.get('a[mat-list-item][role="menuitem"]').should('exist');
+});
+
+/**
+ * Custom command to test menu navigation
+ */
+// @ts-ignore
+Cypress.Commands.add('testMenuNavigation', (menuItemText: string, expectedRoute: string) => {
+  cy.contains('mat-nav-list a[mat-list-item]', menuItemText).click();
+  cy.url().should('include', expectedRoute);
+});
+
+/**
+ * Custom command to check menu accessibility features
+ */
+// @ts-ignore
+Cypress.Commands.add('checkMenuAccessibility', () => {
+  // Check for proper ARIA attributes
+  cy.get('mat-nav-list').should('have.attr', 'role', 'menubar');
+  
+  // Check that menu items are focusable and have meaningful text
+  cy.get('a[mat-list-item][role="menuitem"]').each(($el) => {
+    cy.wrap($el).should('not.be.empty');
+    cy.wrap($el).invoke('text').should('not.be.empty');
+    cy.wrap($el).should('be.visible');
+  });
+  
+  // Test keyboard navigation
+  cy.get('a[mat-list-item][role="menuitem"]').first().focus();
+  cy.focused().should('exist');
+});
+
+/**
+ * Custom command to verify menu accessibility compliance with WCAG 2.1 AA
+ */
+// @ts-ignore
+Cypress.Commands.add('verifyMenuAccessibility', () => {
+  // Check semantic structure
+  cy.get('nav[role="navigation"][aria-label="Main navigation"]').should('exist');
+  cy.get('mat-nav-list[role="menubar"]').should('exist');
+  
+  // Check menu items have proper roles and roving tabindex pattern
+  cy.get('a[mat-list-item][role="menuitem"]').should('exist').each(($item, index) => {
+    cy.wrap($item).should('have.attr', 'role', 'menuitem');
+    // First item should have tabindex="0", rest should have tabindex="-1" (roving tabindex pattern)
+    if (index === 0) {
+      cy.wrap($item).should('have.attr', 'tabindex', '0');
+    } else {
+      cy.wrap($item).should('have.attr', 'tabindex', '-1');
+    }
+  });
+  
+  // Check headings are properly structured (using Material subheaders)
+  cy.get('h3[mat-subheader].nav-heading').each(($heading) => {
+    cy.wrap($heading).should('have.attr', 'id');
+  });
+  
+  // Check current page is indicated visually (if there's a matching menu item for current route)
+  cy.url().then((currentUrl) => {
+    cy.get('a[mat-list-item][role="menuitem"]').then(($items) => {
+      const matchingItem = Array.from($items).find(item => {
+        const href = item.getAttribute('href');
+        return href && (currentUrl.endsWith(href) || currentUrl.includes(href));
+      });
+      
+      if (matchingItem) {
+        cy.wrap(matchingItem).should('have.class', 'current-page');
+      } else {
+        cy.log('No matching menu item found for current route, skipping current page check');
+      }
+    });
+  });
+});
+
+/**
+ * Custom command to test menu keyboard navigation
+ */
+// @ts-ignore
+Cypress.Commands.add('testMenuKeyboardNavigation', () => {
+  // Focus first menu item
+  cy.get('a[mat-list-item][role="menuitem"]').first().focus();
+  
+  // First item should now have tabindex="0"
+  cy.get('a[mat-list-item][role="menuitem"]').first().should('have.attr', 'tabindex', '0');
+  
+  // Test that roving tabindex pattern works (the core accessibility requirement)
+  // We test the programmatic behavior rather than browser-specific focus handling
+  cy.get('a[mat-list-item][role="menuitem"]').should('have.length.greaterThan', 1);
+  
+  // Verify initial state: first item should be focusable (tabindex="0")
+  cy.get('a[mat-list-item][role="menuitem"]').first().should('have.attr', 'tabindex', '0');
+  
+  // Test keyboard navigation by directly invoking the component method
+  cy.window().then((win) => {
+    // Get the menu component instance and test keyboard navigation
+    const menuComponent = win.document.querySelector('co-menu');
+    if (menuComponent) {
+      // Simulate ArrowDown keypress programmatically
+      const firstItem = menuComponent.querySelector('a[mat-list-item][role="menuitem"]');
+      if (firstItem) {
+        const keydownEvent = new KeyboardEvent('keydown', { 
+          key: 'ArrowDown', 
+          bubbles: true, 
+          cancelable: true 
+        });
+        firstItem.dispatchEvent(keydownEvent);
+        
+        // Allow time for event processing
+        cy.wait(100);
+        
+        // Verify tabindex management after keyboard interaction
+        cy.get('a[mat-list-item][role="menuitem"]').eq(1).should('have.attr', 'tabindex', '0');
+        cy.get('a[mat-list-item][role="menuitem"]').first().should('have.attr', 'tabindex', '-1');
+      }
+    }
+  });
+  
+  // Test Home key functionality (should set first item as focusable)
+  cy.window().then((win) => {
+    const menuComponent = win.document.querySelector('co-menu');
+    if (menuComponent) {
+      const firstItem = menuComponent.querySelector('a[mat-list-item][role="menuitem"]');
+      if (firstItem) {
+        const homeEvent = new KeyboardEvent('keydown', { key: 'Home', bubbles: true });
+        firstItem.dispatchEvent(homeEvent);
+      }
+    }
+  });
+  cy.get('a[mat-list-item][role="menuitem"]').first().should('have.attr', 'tabindex', '0');
+  
+  // Test End key functionality (should set last item as focusable)  
+  cy.window().then((win) => {
+    const menuComponent = win.document.querySelector('co-menu');
+    if (menuComponent) {
+      const firstItem = menuComponent.querySelector('a[mat-list-item][role="menuitem"]');
+      if (firstItem) {
+        const endEvent = new KeyboardEvent('keydown', { key: 'End', bubbles: true });
+        firstItem.dispatchEvent(endEvent);
+      }
+    }
+  });
+  cy.get('a[mat-list-item][role="menuitem"]').last().should('have.attr', 'tabindex', '0');
 });
