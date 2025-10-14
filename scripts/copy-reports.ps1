@@ -32,12 +32,7 @@ try {
         }
     } else {
         Write-Host "No coverage reports found" -ForegroundColor Yellow
-        try {
-            Copy-Item -Path "cypress\reports\*" -Destination "$ReportsPath\cypress\" -Recurse -Force -ErrorAction Continue
-        }
-        catch {
-            Write-Error "Error copying Cypress reports: $_"
-        }
+    }
 
     Write-Host "Copying Cypress reports..." -ForegroundColor Cyan
     if (Test-Path "cypress\reports") {
