@@ -63,6 +63,10 @@ describe('AppComponent', () => {
     menuService = TestBed.inject(MenuService) as jasmine.SpyObj<MenuService>;
     sessionService = TestBed.inject(SessionService) as jasmine.SpyObj<SessionService>;
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    
+    // Configure menu service mock return values to prevent undefined errors
+    menuService.getMenuItems.and.returnValue([]);
+    menuService.buildMenu.and.returnValue([]);
   });
 
   beforeEach(() => {

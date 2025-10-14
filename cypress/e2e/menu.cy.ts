@@ -79,7 +79,7 @@ describe('Menu Component E2E Tests', () => {
         });
     });
 
-    xdescribe('Menu Structure and Navigation', () => {
+    describe('Menu Structure and Navigation', () => {
         beforeEach(() => {
             cy.setupAuthenticatedUser(2);
             cy.visit('/home');
@@ -122,7 +122,7 @@ describe('Menu Component E2E Tests', () => {
         });
     });
 
-    xdescribe('Menu Visibility and Authentication', () => {
+    describe('Menu Visibility and Authentication', () => {
         it('should not display menu when user is not authenticated', () => {
             cy.visit('/auth/login');
             cy.get('co-menu').should('exist');
@@ -147,7 +147,7 @@ describe('Menu Component E2E Tests', () => {
         });
     });
 
-    xdescribe('Menu Structure and Navigation', () => {
+    describe('Menu Structure and Navigation', () => {
         beforeEach(() => {
             // Setup authenticated user before each test
             cy.setupAuthenticatedUser(1); // Regular user role
@@ -159,6 +159,7 @@ describe('Menu Component E2E Tests', () => {
             // Wait for menu to load
             cy.get('co-menu').should('exist');
 
+            cy.get('button[id="co-menu-button"]').click();
             // Verify menu items exist with correct Material Design structure
             cy.get('a[mat-list-item]').should('exist');
 
@@ -172,7 +173,7 @@ describe('Menu Component E2E Tests', () => {
                 cy.wrap($el).should('have.attr', 'href');
 
                 // Should have text content
-                cy.wrap($el).find('.mat-mdc-list-item-unscoped-content').should('not.be.empty');
+                cy.wrap($el).find('.mat-mdc-list-item-title').should('not.be.empty');
             });
         });
 
@@ -181,7 +182,7 @@ describe('Menu Component E2E Tests', () => {
 
             // Look for heading elements if they exist in the menu
             cy.get('mat-nav-list').within(() => {
-                cy.get('h2.nav-heading').should('exist');
+                cy.get('h3.nav-heading').should('exist');
             });
         });
 
@@ -199,7 +200,7 @@ describe('Menu Component E2E Tests', () => {
         });
     });
 
-    xdescribe('Role-Based Menu Access', () => {
+    describe('Role-Based Menu Access', () => {
         it('should show admin-specific menu items for admin users', () => {
             // Setup admin user
             cy.setupAuthenticatedUser(1); // Admin role
@@ -233,7 +234,7 @@ describe('Menu Component E2E Tests', () => {
         });
     });
 
-    xdescribe('Menu Refresh and Updates', () => {
+    describe('Menu Refresh and Updates', () => {
         beforeEach(() => {
             // Setup authenticated user
             cy.setupAuthenticatedUser(2);
@@ -293,7 +294,7 @@ describe('Menu Component E2E Tests', () => {
         });
     });
 
-    xdescribe('Menu Accessibility', () => {
+    describe('Menu Accessibility', () => {
         beforeEach(() => {
             // Setup authenticated user
             cy.setupAuthenticatedUser(2);
@@ -308,7 +309,8 @@ describe('Menu Component E2E Tests', () => {
 
         it('should have meaningful text content for screen readers', () => {
             cy.visit('/home');
-
+            cy.get('mat-toolbar').should('be.visible');
+            cy.get('button[id="co-menu-button"]').click({ force: true });
             // Verify menu items have descriptive text
             cy.get('mat-nav-list a[mat-list-item]').each(($el) => {
                 cy.wrap($el).should('not.be.empty');
@@ -316,13 +318,13 @@ describe('Menu Component E2E Tests', () => {
             });
 
             // Check headings are properly structured
-            cy.get('h2.nav-heading').each(($heading) => {
+            cy.get('h3.nav-heading').each(($heading) => {
                 cy.wrap($heading).invoke('text').should('not.be.empty');
             });
         });
     });
 
-    xdescribe('Menu Performance and Error Handling', () => {
+    describe('Menu Performance and Error Handling', () => {
         it('should handle menu building errors gracefully', () => {
             // Setup user with invalid/corrupted data
             cy.window().then((win) => {
@@ -340,6 +342,7 @@ describe('Menu Component E2E Tests', () => {
             // Application should not crash, even with invalid user data
             cy.get('body').should('exist');
             // Menu might not be present, but page should still load
+            // This test specifically tests error handling, so we don't need to open the drawer
         });
 
         it('should handle route changes efficiently', () => {
@@ -347,6 +350,18 @@ describe('Menu Component E2E Tests', () => {
             cy.setupAuthenticatedUser(2);
 
             cy.visit('/home');
+            
+            // Wait for page to be fully loaded
+            cy.get('mat-toolbar').should('be.visible');
+            
+            // Open the drawer to access menu items
+            cy.get('body').then(($body) => {
+                if ($body.find('mat-drawer.mat-drawer-opened').length === 0) {
+                    // Use force: true to overcome element covering issues
+                    cy.get('#co-menu-button').should('exist').click({ force: true });
+                    cy.get('mat-drawer').should('have.class', 'mat-drawer-opened');
+                }
+            });
 
             // Rapidly navigate between routes to test performance
             cy.get('mat-nav-list a[mat-list-item]').first().click();
@@ -358,7 +373,7 @@ describe('Menu Component E2E Tests', () => {
         });
     });
 
-    xdescribe('Menu Component E2E Tests', () => {
+    describe('Menu Component E2E Tests', () => {
         it('should show customer menu for customer role', () => {
             cy.setupAuthenticatedUser(2); // Customer: cstore@draxlers.com
             cy.visit('/home');

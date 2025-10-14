@@ -284,6 +284,7 @@ Cypress.Commands.add('setupAuthenticatedUser', (userRole: number = 2) => {
 // @ts-ignore
 Cypress.Commands.add('verifyMenuStructure', () => {
   cy.get('co-menu').should('exist');
+  cy.get('button[id="co-menu-button"]').should('exist').click({ force: true });
   cy.get('nav[role="navigation"]').should('be.visible');
   cy.get('mat-nav-list[role="menubar"]').should('be.visible');
   cy.get('a[mat-list-item][role="menuitem"]').should('exist');
@@ -294,6 +295,14 @@ Cypress.Commands.add('verifyMenuStructure', () => {
  */
 // @ts-ignore
 Cypress.Commands.add('testMenuNavigation', (menuItemText: string, expectedRoute: string) => {
+  // Open the navigation drawer first if not already open
+  cy.get('body').then(($body) => {
+    if ($body.find('mat-drawer.mat-drawer-opened').length === 0) {
+      cy.get('#co-menu-button').should('exist').click({ force: true });
+      cy.get('mat-drawer').should('have.class', 'mat-drawer-opened');
+    }
+  });
+  
   cy.contains('mat-nav-list a[mat-list-item]', menuItemText).click();
   cy.url().should('include', expectedRoute);
 });
@@ -303,6 +312,12 @@ Cypress.Commands.add('testMenuNavigation', (menuItemText: string, expectedRoute:
  */
 // @ts-ignore
 Cypress.Commands.add('checkMenuAccessibility', () => {
+  // Open the navigation drawer first
+  cy.get('#co-menu-button').should('exist').click({ force: true });
+  
+  // Wait for drawer to open and menu to be visible
+  cy.get('mat-drawer').should('have.class', 'mat-drawer-opened');
+  
   // Check for proper ARIA attributes
   cy.get('mat-nav-list').should('have.attr', 'role', 'menubar');
   
@@ -323,6 +338,12 @@ Cypress.Commands.add('checkMenuAccessibility', () => {
  */
 // @ts-ignore
 Cypress.Commands.add('verifyMenuAccessibility', () => {
+  // Open the navigation drawer first
+  cy.get('#co-menu-button').should('exist').click({ force: true });
+  
+  // Wait for drawer to open
+  cy.get('mat-drawer').should('have.class', 'mat-drawer-opened');
+  
   // Check semantic structure
   cy.get('nav[role="navigation"][aria-label="Main navigation"]').should('exist');
   cy.get('mat-nav-list[role="menubar"]').should('exist');
@@ -365,6 +386,12 @@ Cypress.Commands.add('verifyMenuAccessibility', () => {
  */
 // @ts-ignore
 Cypress.Commands.add('testMenuKeyboardNavigation', () => {
+  // Open the navigation drawer first
+  cy.get('#co-menu-button').should('exist').click({ force: true });
+  
+  // Wait for drawer to open
+  cy.get('mat-drawer').should('have.class', 'mat-drawer-opened');
+  
   // Focus first menu item
   cy.get('a[mat-list-item][role="menuitem"]').first().focus();
   
