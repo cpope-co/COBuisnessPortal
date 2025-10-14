@@ -44,6 +44,9 @@ Thumbs.db
 .logs
 .evfevent
 .env
+/dist
+/backup
+/scripts
 
 # Cypress
 cypress/screenshots/
@@ -54,3 +57,5 @@ cypress/reports/
 #Reports
 reports/
 karma_html/*/index.html
+scripts/copy-reports.ps1
+scripts/deploy-to-dev.ps1
