@@ -54,8 +54,9 @@ cypress/downloads/
 cypress/reports/
 
 #Reports
-reports/
+reports/unit-tests
 karma_html/*/index.html
 
 # Scripts folder
 scripts/
+e2e/*
