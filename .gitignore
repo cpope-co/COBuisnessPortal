@@ -56,3 +56,6 @@ cypress/reports/
 #Reports
 reports/
 karma_html/*/index.html
+
+# Scripts folder
+scripts/
