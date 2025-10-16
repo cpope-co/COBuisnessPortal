@@ -4,10 +4,12 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MenuService } from './menu.service';
 import { MenuItem, MenuItemOptions } from './menu.model';
 import { AuthService } from '../../auth/auth.service';
+import { PermissionsService } from '../../services/permissions.service';
 
 describe('MenuService', () => {
   let service: MenuService;
   let mockAuthService: jasmine.SpyObj<AuthService>;
+  let mockPermissionsService: jasmine.SpyObj<PermissionsService>;
 
   const mockUser = {
     id: 1,
@@ -29,16 +31,33 @@ describe('MenuService', () => {
       user: jasmine.createSpy('user').and.returnValue(mockUser)
     });
 
+    const permissionsServiceSpy = jasmine.createSpyObj('PermissionsService', [
+      'hasRole',
+      'hasResourcePermission',
+      'hasResourcePermissions',
+      'isUserAdmin'
+    ], {
+      userPermissions: jasmine.createSpy('userPermissions').and.returnValue(null)
+    });
+
+    // Set default return values
+    permissionsServiceSpy.hasRole.and.returnValue(true);
+    permissionsServiceSpy.hasResourcePermission.and.returnValue(true);
+    permissionsServiceSpy.hasResourcePermissions.and.returnValue(true);
+    permissionsServiceSpy.isUserAdmin.and.returnValue(false);
+
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
         MenuService,
-        { provide: AuthService, useValue: authServiceSpy }
+        { provide: AuthService, useValue: authServiceSpy },
+        { provide: PermissionsService, useValue: permissionsServiceSpy }
       ]
     });
     
     service = TestBed.inject(MenuService);
     mockAuthService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    mockPermissionsService = TestBed.inject(PermissionsService) as jasmine.SpyObj<PermissionsService>;
 
     // Clear sessionStorage before each test
     sessionStorage.clear();

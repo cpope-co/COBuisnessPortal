@@ -43,6 +43,8 @@ export class MenuService {
             const user = this.authService.user();
             const permissions = this.permissionsService.userPermissions();
             
+            // Debug logging removed for production. Use environment-based logging if needed.
+            
             // When user or permissions change, rebuild menu
             if (user) {
                 this.refreshMenu();
@@ -70,7 +72,6 @@ export class MenuService {
     buildMenu(): MenuItem[] {
         const user = this.authService.user();
         if (user) {
-            const userRole = user.role;
             const processRoutes = (routes: Route[], parentPath: string = ''): MenuItem[] => {
                 return routes.map(route => {
                     const fullPath = parentPath ? `${parentPath}/${route.path}` : route.path;
@@ -87,15 +88,11 @@ export class MenuService {
                         return false;
                     }
 
-                    // Admin users (role 1) can see everything
-                    if (userRole === 1) {
-                        return true;
-                    }
-
-                    // Check role-based access
+                    // Check role-based access (includes admin bypass)
+                    // Role-based access is now delegated to PermissionsService.hasRole(), replacing previous userRole logic.
+                    // Check role-based access (includes admin bypass)
                     const menuItemRole = menuItem.options?.role;
-                    const hasRoleAccess = !menuItemRole || menuItemRole === userRole;
-
+                    const hasRoleAccess = !menuItemRole || this.permissionsService.hasRole(menuItemRole);
                     // Check permissions-based access for routes with resource
                     let hasPermissionAccess = true;
                     const routeData = this.findRouteData(menuItem.route);
@@ -104,10 +101,9 @@ export class MenuService {
                         const resource = routeData.resource;
                         const requiredPermissions = routeData.requiredPermissions as Permission[];
                         
-                        // Check if user has at least one of the required permissions for this resource
-                        hasPermissionAccess = requiredPermissions.some(permission => 
-                            this.permissionsService.hasResourcePermission(resource, permission)
-                        );
+                        // Ensure user has ALL required permissions for the resource
+                        hasPermissionAccess = this.permissionsService.hasResourcePermissions(resource, requiredPermissions);
+                        hasPermissionAccess = this.permissionsService.hasResourcePermissions(resource, requiredPermissions);
                     }
 
                     // For parent routes with children, show if any child is accessible
@@ -116,13 +112,13 @@ export class MenuService {
                             const childRouteData = this.findRouteData(child.route);
                             if (childRouteData?.resource && childRouteData?.requiredPermissions) {
                                 const childRequiredPermissions = childRouteData.requiredPermissions as Permission[];
-                                return childRequiredPermissions.some(permission =>
-                                    this.permissionsService.hasResourcePermission(childRouteData.resource, permission)
-                                );
+                                // Ensure user has ALL required permissions for the resource
+                                return this.permissionsService.hasResourcePermissions(childRouteData.resource, childRequiredPermissions);
+                                
                             }
-                            // If no specific permissions required, check role access
+                            // If no specific permissions required, check role access (includes admin bypass)
                             const childRole = child.options?.role;
-                            return !childRole || childRole === userRole;
+                            return !childRole || this.permissionsService.hasRole(childRole);
                         });
                         return hasRoleAccess && hasAccessibleChildren;
                     }
@@ -135,13 +131,11 @@ export class MenuService {
                             const childRouteData = this.findRouteData(child.route);
                             if (childRouteData?.resource && childRouteData?.requiredPermissions) {
                                 const childRequiredPermissions = childRouteData.requiredPermissions as Permission[];
-                                return childRequiredPermissions.some(permission =>
-                                    this.permissionsService.hasResourcePermission(childRouteData.resource, permission)
-                                );
+                                return this.permissionsService.hasResourcePermissions(childRouteData.resource, childRequiredPermissions);
                             }
-                            // If no specific permissions required, check role access
+                            // If no specific permissions required, check role access (includes admin bypass)
                             const childRole = child.options?.role;
-                            return !childRole || childRole === userRole;
+                            return !childRole || this.permissionsService.hasRole(childRole);
                         });
                     }
                     return menuItem;

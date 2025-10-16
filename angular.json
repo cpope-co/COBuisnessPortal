@@ -64,7 +64,7 @@
             },
             "development": {
               "outputPath": {
-                "base": "\\\\10.1.0.251\\cnodevsrv",
+                "base": "\\\\owen400\\cnodevsrv",
                 "browser": ""
               },
               "optimization": false,

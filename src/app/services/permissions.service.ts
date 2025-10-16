@@ -6,15 +6,56 @@ import { UserPermissions, Permission, PermissionHelper } from '../models/permiss
 })
 export class PermissionsService {
   private static readonly PERMISSIONS_STORAGE_KEY = 'userPermissions';
+  private static readonly USER_STORAGE_KEY = 'user';
   
   private userPermissionsSignal = signal<UserPermissions | null>(null);
-  
+
+  private userSignal = signal<any | null>(null);
+
   // Computed signal for reactive access
   public userPermissions = this.userPermissionsSignal.asReadonly();
+  public user = this.userSignal.asReadonly();
 
   constructor() {
-    // Restore permissions from sessionStorage on service initialization
+    // Restore permissions and user from sessionStorage on service initialization
     this.restorePermissionsFromStorage();
+    this.restoreUserFromStorage();
+  }
+
+  /**
+   * Check if the current user is an admin (role = 1)
+   * Admin users have unrestricted access to all resources and routes
+   */
+  isUserAdmin(): boolean {
+    const user = this.userSignal();
+    return user?.role === 1;
+  }
+
+  /**
+   * Check if user has a specific role
+   * @param role - The role number to check (1=Admin, 2=Customer, 3=Vendor, 4=Employee, 5=API User)
+   */
+  hasRole(role: number): boolean {
+    // Admin can access everything
+    if (this.isUserAdmin()) {
+      return true;
+    }
+
+    const user = this.userSignal();
+    return user?.role === role;
+  }
+
+  /**
+   * Check if user has any of the specified roles
+   * @param roles - Array of role numbers to check against
+   */
+  hasAnyRole(roles: number[]): boolean {
+    // Admin can access everything
+    if (this.isUserAdmin()) {
+      return true;
+    }
+
+    return roles.some(role => this.hasRole(role));
   }
 
   private restorePermissionsFromStorage(): void {
@@ -27,6 +68,19 @@ export class PermissionsService {
     } catch (error) {
       console.warn('Failed to restore permissions from storage:', error);
       sessionStorage.removeItem(PermissionsService.PERMISSIONS_STORAGE_KEY);
+    }
+  }
+
+  private restoreUserFromStorage(): void {
+    try {
+      const userJson = sessionStorage.getItem(PermissionsService.USER_STORAGE_KEY);
+      if (userJson) {
+        const user = JSON.parse(userJson);
+        this.userSignal.set(user);
+      }
+    } catch (error) {
+      console.warn('Failed to restore user from storage:', error);
+      sessionStorage.removeItem(PermissionsService.USER_STORAGE_KEY);
     }
   }
 
@@ -46,6 +100,11 @@ export class PermissionsService {
   }
 
   hasResourcePermission(resource: string, requiredPermission: Permission): boolean {
+    // Admin users (role = 1) have access to all resources
+    if (this.isUserAdmin()) {
+      return true;
+    }
+
     const permissions = this.getUserPermissions();
     if (!permissions) {
       return false;
@@ -61,6 +120,11 @@ export class PermissionsService {
   }
 
   hasResourcePermissions(resource: string, requiredPermissions: Permission[]): boolean {
+    // Admin users (role = 1) have access to all resources
+    if (this.isUserAdmin()) {
+      return true;
+    }
+
     const permissions = this.getUserPermissions();
     if (!permissions) return false;
 

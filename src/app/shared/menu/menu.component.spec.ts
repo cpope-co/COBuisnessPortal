@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NavigationStart, Router } from '@angular/router';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 
 import { MenuComponent } from './menu.component';
 import { MenuService } from './menu.service';
@@ -9,16 +9,16 @@ import { MenuItem, MenuItemOptions } from './menu.model';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MatListModule } from '@angular/material/list';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 describe('MenuComponent', () => {
   let component: MenuComponent;
   let fixture: ComponentFixture<MenuComponent>;
-  let mockMenuService: jasmine.SpyObj<MenuService>;
-  let mockAuthService: jasmine.SpyObj<AuthService>;
+  let mockMenuService: any;
+  let mockAuthService: any;
   let mockRouter: jasmine.SpyObj<Router>;
   let mockLogoutEvent: Subject<void>;
-  let mockRouterEvents: Subject<any>;
+  let menuItemsSignal: any;
 
   const mockUser = {
     id: 1,
@@ -48,23 +48,31 @@ describe('MenuComponent', () => {
 
   beforeEach(async () => {
     mockLogoutEvent = new Subject<void>();
-    mockRouterEvents = new Subject<any>();
+    
+    // Create a writable signal for menu items
+    menuItemsSignal = signal<MenuItem[]>([]);
     
     mockMenuService = jasmine.createSpyObj('MenuService', [
       'clearMenuItems',
-      'buildMenu',
-      'setMenuItems',
-      'getMenuItems'
+      'refreshMenu'
     ]);
+    
+    // Add the menuItems signal property to the mock
+    Object.defineProperty(mockMenuService, 'menuItems', {
+      get: () => menuItemsSignal,
+      enumerable: true,
+      configurable: true
+    });
+    
+    // clearMenuItems should clear the signal
+    mockMenuService.clearMenuItems.and.callFake(() => {
+      menuItemsSignal.set([]);
+    });
     
     mockAuthService = jasmine.createSpyObj('AuthService', [], {
       logoutEvent: mockLogoutEvent.asObservable(),
-      user: jasmine.createSpy('user').and.returnValue(mockUser)
+      user: signal(mockUser)
     });
-    
-    // Set up default mock return values - start with empty menu for initial state
-    mockMenuService.buildMenu.and.returnValue(mockMenuItems);
-    mockMenuService.getMenuItems.and.returnValue([]);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -85,11 +93,7 @@ describe('MenuComponent', () => {
     })
     .compileComponents();
     
-    // Set up router events spy BEFORE creating the component
-    const router = TestBed.inject(Router);
-    spyOnProperty(router, 'events', 'get').and.returnValue(mockRouterEvents.asObservable());
-    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
-    spyOn(router, 'navigate').and.callFake(mockRouter.navigate);
+    mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     
     fixture = TestBed.createComponent(MenuComponent);
     component = fixture.componentInstance;
@@ -97,22 +101,29 @@ describe('MenuComponent', () => {
 
   describe('Component initialization', () => {
     it('should create', () => {
+      fixture.detectChanges();
       expect(component).toBeTruthy();
     });
 
     it('should inject required services', () => {
+      fixture.detectChanges();
       expect(component.menuService).toBe(mockMenuService);
       expect(component.authService).toBe(mockAuthService);
       expect(component.router).toBeDefined();
     });
 
-    it('should initialize menuItems signal as readonly', () => {
+    it('should initialize menuItems signal as readonly from MenuService', () => {
+      fixture.detectChanges();
       expect(component.menuItems).toBeDefined();
       expect(component.menuItems()).toEqual([]);
     });
 
     it('should set up logout event subscription in constructor', () => {
       fixture.detectChanges();
+      
+      // Set some menu items
+      menuItemsSignal.set(mockMenuItems);
+      expect(component.menuItems()).toEqual(mockMenuItems);
       
       // Trigger logout event
       mockLogoutEvent.next();
@@ -121,35 +132,108 @@ describe('MenuComponent', () => {
       expect(component.menuItems()).toEqual([]);
     });
 
-    it('should set up router events subscription in constructor', () => {
+    it('should call refreshMenu in ngOnInit when user exists and menu is empty', () => {
       fixture.detectChanges();
       
-      // Set up mock to return menu items when navigation event triggers
-      mockMenuService.getMenuItems.and.returnValue(mockMenuItems);
+      expect(mockMenuService.refreshMenu).toHaveBeenCalled();
+    });
+
+    it('should not call refreshMenu in ngOnInit when menu already has items', () => {
+      // Set menu items before initialization
+      menuItemsSignal.set(mockMenuItems);
+      mockMenuService.refreshMenu.calls.reset();
       
-      // Trigger navigation start event
-      const navigationEvent = new NavigationStart(1, '/test-route');
-      mockRouterEvents.next(navigationEvent);
+      fixture.detectChanges();
       
-      expect(mockMenuService.clearMenuItems).toHaveBeenCalled();
-      expect(mockMenuService.buildMenu).toHaveBeenCalled();
-      expect(mockMenuService.setMenuItems).toHaveBeenCalledWith(mockMenuItems);
-      expect(component.menuItems()).toEqual(mockMenuItems);
+      expect(mockMenuService.refreshMenu).not.toHaveBeenCalled();
+    });
+
+    it('should not call refreshMenu in ngOnInit when no user', () => {
+      // Create a new fixture with no user
+      TestBed.resetTestingModule();
+      
+      const noUserAuthService = jasmine.createSpyObj('AuthService', [], {
+        logoutEvent: mockLogoutEvent.asObservable(),
+        user: signal(null)
+      });
+      
+      const emptyMenuSignal = signal<MenuItem[]>([]);
+      const noUserMenuService = jasmine.createSpyObj('MenuService', ['clearMenuItems', 'refreshMenu']);
+      Object.defineProperty(noUserMenuService, 'menuItems', {
+        get: () => emptyMenuSignal,
+        enumerable: true,
+        configurable: true
+      });
+      noUserMenuService.clearMenuItems.and.callFake(() => {
+        emptyMenuSignal.set([]);
+      });
+      
+      TestBed.configureTestingModule({
+        imports: [
+          MenuComponent, 
+          HttpClientTestingModule, 
+          MatListModule, 
+          RouterTestingModule.withRoutes([]),
+          TestComponent
+        ],
+        providers: [
+          { provide: MenuService, useValue: noUserMenuService },
+          { provide: AuthService, useValue: noUserAuthService }
+        ]
+      }).compileComponents();
+      
+      const noUserFixture = TestBed.createComponent(MenuComponent);
+      noUserFixture.detectChanges();
+      
+      expect(noUserMenuService.refreshMenu).not.toHaveBeenCalled();
     });
   });
 
-  describe('Event handling', () => {
+  describe('Menu display', () => {
     beforeEach(() => {
       fixture.detectChanges();
     });
 
-    it('should handle logout event correctly', () => {
-      // Set initial menu items
-      mockMenuService.getMenuItems.and.returnValue(mockMenuItems.slice(0, 1));
-      const navigationEvent = new NavigationStart(1, '/dashboard');
-      mockRouterEvents.next(navigationEvent);
+    it('should display menu items from MenuService signal', () => {
+      // Initially empty
+      expect(component.menuItems()).toEqual([]);
       
-      expect(component.menuItems().length).toBeGreaterThan(0);
+      // Update via service
+      menuItemsSignal.set(mockMenuItems);
+      fixture.detectChanges();
+      
+      expect(component.menuItems()).toEqual(mockMenuItems);
+      expect(component.menuItems().length).toBe(2);
+    });
+
+    it('should reactively update when MenuService signal changes', () => {
+      const initialItems = [createMockMenuItem('Item 1', '/item1', { display: true, role: 1 })];
+      menuItemsSignal.set(initialItems);
+      fixture.detectChanges();
+      
+      expect(component.menuItems()).toEqual(initialItems);
+      
+      const updatedItems = [
+        createMockMenuItem('Item 2', '/item2', { display: true, role: 2 }),
+        createMockMenuItem('Item 3', '/item3', { display: true, role: 3 })
+      ];
+      menuItemsSignal.set(updatedItems);
+      fixture.detectChanges();
+      
+      expect(component.menuItems()).toEqual(updatedItems);
+      expect(component.menuItems().length).toBe(2);
+    });
+  });
+
+  describe('Logout handling', () => {
+    beforeEach(() => {
+      fixture.detectChanges();
+    });
+
+    it('should clear menu items on logout event', () => {
+      // Set initial menu items
+      menuItemsSignal.set(mockMenuItems);
+      expect(component.menuItems().length).toBe(2);
       
       // Trigger logout
       mockLogoutEvent.next();
@@ -167,216 +251,67 @@ describe('MenuComponent', () => {
       mockLogoutEvent.next();
       expect(mockMenuService.clearMenuItems).toHaveBeenCalledTimes(2);
     });
-
-    it('should handle NavigationStart events', () => {
-      // Set up mock to return menu items when navigation event triggers
-      mockMenuService.getMenuItems.and.returnValue(mockMenuItems);
-      
-      const navigationEvent = new NavigationStart(1, '/profile');
-      mockRouterEvents.next(navigationEvent);
-      
-      expect(mockMenuService.clearMenuItems).toHaveBeenCalled();
-      expect(mockMenuService.buildMenu).toHaveBeenCalled();
-      expect(mockMenuService.setMenuItems).toHaveBeenCalledWith(mockMenuItems);
-      expect(component.menuItems()).toEqual(mockMenuItems);
-    });
-
-    it('should ignore non-NavigationStart router events', () => {
-      const otherEvent = { type: 'NavigationEnd' };
-      
-      mockMenuService.clearMenuItems.calls.reset();
-      mockMenuService.buildMenu.calls.reset();
-      
-      mockRouterEvents.next(otherEvent);
-      
-      expect(mockMenuService.clearMenuItems).not.toHaveBeenCalled();
-      expect(mockMenuService.buildMenu).not.toHaveBeenCalled();
-    });
-
-    it('should handle multiple NavigationStart events', () => {
-      const firstNav = new NavigationStart(1, '/dashboard');
-      const secondNav = new NavigationStart(2, '/profile');
-      
-      mockRouterEvents.next(firstNav);
-      expect(mockMenuService.buildMenu).toHaveBeenCalledTimes(1);
-      
-      mockRouterEvents.next(secondNav);
-      expect(mockMenuService.buildMenu).toHaveBeenCalledTimes(2);
-    });
   });
 
-  describe('Service integration', () => {
+  describe('Route detection', () => {
     beforeEach(() => {
       fixture.detectChanges();
     });
 
-    it('should call MenuService methods in correct order during navigation', () => {
-      // Reset spy call counts to ignore ngOnInit calls
-      mockMenuService.clearMenuItems.calls.reset();
-      mockMenuService.buildMenu.calls.reset();
-      mockMenuService.setMenuItems.calls.reset();
-      mockMenuService.getMenuItems.calls.reset();
+    it('should correctly identify current route', () => {
+      spyOnProperty(component.router, 'url', 'get').and.returnValue('/dashboard');
       
-      const navigationEvent = new NavigationStart(1, '/test');
-      mockRouterEvents.next(navigationEvent);
-      
-      expect(mockMenuService.clearMenuItems).toHaveBeenCalledBefore(mockMenuService.buildMenu as jasmine.Spy);
-      expect(mockMenuService.buildMenu).toHaveBeenCalledBefore(mockMenuService.setMenuItems as jasmine.Spy);
-      expect(mockMenuService.setMenuItems).toHaveBeenCalledBefore(mockMenuService.getMenuItems as jasmine.Spy);
+      expect(component.isCurrentRoute('/dashboard')).toBe(true);
+      expect(component.isCurrentRoute('/profile')).toBe(false);
     });
 
-    it('should handle empty menu from service', () => {
-      mockMenuService.buildMenu.and.returnValue([]);
-      mockMenuService.getMenuItems.and.returnValue([]);
+    it('should handle routes with query parameters', () => {
+      spyOnProperty(component.router, 'url', 'get').and.returnValue('/dashboard?tab=overview');
       
-      const navigationEvent = new NavigationStart(1, '/empty');
-      mockRouterEvents.next(navigationEvent);
-      
-      expect(component.menuItems()).toEqual([]);
+      expect(component.isCurrentRoute('/dashboard')).toBe(true);
     });
 
-    it('should update signal when menu items change', () => {
-      const initialItems = [createMockMenuItem('Initial', '/initial', { display: true, role: 1 })];
-      const updatedItems = [createMockMenuItem('Updated', '/updated', { display: true, role: 1 })];
+    it('should handle routes with fragments', () => {
+      spyOnProperty(component.router, 'url', 'get').and.returnValue('/dashboard#section');
       
-      // First navigation
-      mockMenuService.buildMenu.and.returnValue(initialItems);
-      mockMenuService.getMenuItems.and.returnValue(initialItems);
-      
-      const firstNav = new NavigationStart(1, '/initial');
-      mockRouterEvents.next(firstNav);
-      
-      expect(component.menuItems()).toEqual(initialItems);
-      
-      // Second navigation with different menu
-      mockMenuService.buildMenu.and.returnValue(updatedItems);
-      mockMenuService.getMenuItems.and.returnValue(updatedItems);
-      
-      const secondNav = new NavigationStart(2, '/updated');
-      mockRouterEvents.next(secondNav);
-      
-      expect(component.menuItems()).toEqual(updatedItems);
-    });
-  });
-
-  describe('Error handling', () => {
-    beforeEach(() => {
-      fixture.detectChanges();
+      expect(component.isCurrentRoute('/dashboard')).toBe(true);
     });
 
-    it('should handle service method calls gracefully', () => {
-      const navigationEvent = new NavigationStart(1, '/test');
+    it('should match child routes', () => {
+      spyOnProperty(component.router, 'url', 'get').and.returnValue('/dashboard/details');
       
-      expect(() => {
-        mockRouterEvents.next(navigationEvent);
-      }).not.toThrow();
-      
-      // Component should still be functional
-      expect(component).toBeTruthy();
+      expect(component.isCurrentRoute('/dashboard')).toBe(true);
     });
 
-    it('should handle malformed menu items', () => {
-      const malformedItems = [
-        { title: '', route: '', options: undefined } as MenuItem,
-        { title: 'Valid', route: '/valid', options: { display: true, role: 1 } } as MenuItem
-      ];
+    it('should not match unrelated routes', () => {
+      spyOnProperty(component.router, 'url', 'get').and.returnValue('/profile');
       
-      mockMenuService.buildMenu.and.returnValue(malformedItems);
-      mockMenuService.getMenuItems.and.returnValue(malformedItems);
-      
-      const navigationEvent = new NavigationStart(1, '/test');
-      mockRouterEvents.next(navigationEvent);
-      
-      expect(component.menuItems()).toEqual(malformedItems);
-    });
-  });
-
-  describe('Menu signal functionality', () => {
-    beforeEach(() => {
-      fixture.detectChanges();
+      expect(component.isCurrentRoute('/dashboard')).toBe(false);
     });
 
-    it('should maintain signal state across multiple operations', () => {
-      const firstItems = [createMockMenuItem('First', '/first', { display: true, role: 1 })];
-      const secondItems = [createMockMenuItem('Second', '/second', { display: true, role: 2 })];
-      
-      // First navigation
-      mockMenuService.buildMenu.and.returnValue(firstItems);
-      mockMenuService.getMenuItems.and.returnValue(firstItems);
-      
-      const firstNav = new NavigationStart(1, '/first');
-      mockRouterEvents.next(firstNav);
-      
-      expect(component.menuItems()).toEqual(firstItems);
-      
-      // Second navigation
-      mockMenuService.buildMenu.and.returnValue(secondItems);
-      mockMenuService.getMenuItems.and.returnValue(secondItems);
-      
-      const secondNav = new NavigationStart(2, '/second');
-      mockRouterEvents.next(secondNav);
-      
-      expect(component.menuItems()).toEqual(secondItems);
-      expect(component.menuItems()).not.toEqual(firstItems);
-    });
-
-    it('should handle rapid navigation events', () => {
-      let callCount = 0;
-      mockMenuService.buildMenu.and.callFake(() => {
-        callCount++;
-        return [createMockMenuItem(`Item ${callCount}`, `/item${callCount}`, { display: true, role: 1 })];
-      });
-      
-      mockMenuService.getMenuItems.and.callFake(() => {
-        return [createMockMenuItem(`Item ${callCount}`, `/item${callCount}`, { display: true, role: 1 })];
-      });
-      
-      // Trigger multiple rapid navigations
-      for (let i = 1; i <= 3; i++) {
-        const navigationEvent = new NavigationStart(i, `/rapid${i}`);
-        mockRouterEvents.next(navigationEvent);
-      }
-      
-      expect(mockMenuService.buildMenu).toHaveBeenCalledTimes(3);
-      expect(component.menuItems().length).toBe(1);
-      expect(component.menuItems()[0].title).toBe('Item 3');
+    it('should handle empty or null routes', () => {
+      expect(component.isCurrentRoute('')).toBe(false);
+      expect(component.isCurrentRoute(null as any)).toBe(false);
     });
   });
 
   describe('Memory management', () => {
-    it('should handle component destruction gracefully', () => {
-      fixture.detectChanges();
-      
-      // Component should be created successfully
-      expect(component).toBeTruthy();
-      
-      // Destroy component
-      fixture.destroy();
-      
-      // Events should not cause errors after destruction
-      expect(() => {
-        mockLogoutEvent.next();
-        mockRouterEvents.next(new NavigationStart(1, '/test'));
-      }).not.toThrow();
-    });
-
-    it('should handle subscription cleanup', () => {
+    it('should unsubscribe on component destruction', () => {
       fixture.detectChanges();
       
       // Verify component is working
-      const navigationEvent = new NavigationStart(1, '/test');
-      mockRouterEvents.next(navigationEvent);
-      expect(mockMenuService.buildMenu).toHaveBeenCalled();
-      
-      // Reset call count
-      mockMenuService.buildMenu.calls.reset();
+      menuItemsSignal.set(mockMenuItems);
+      expect(component.menuItems().length).toBe(2);
       
       // Destroy component
       fixture.destroy();
       
+      // Reset spy call count
+      mockMenuService.clearMenuItems.calls.reset();
+      
       // Verify no more calls after destruction
-      mockRouterEvents.next(new NavigationStart(2, '/test2'));
-      expect(mockMenuService.buildMenu).not.toHaveBeenCalled();
+      mockLogoutEvent.next();
+      expect(mockMenuService.clearMenuItems).not.toHaveBeenCalled();
     });
   });
 });

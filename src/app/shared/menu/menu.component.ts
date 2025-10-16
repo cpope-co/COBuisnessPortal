@@ -25,40 +25,29 @@ export class MenuComponent implements OnInit, OnDestroy {
   router = inject(Router);
   private elementRef = inject(ElementRef);
 
-  #menuItemsSignal = signal<MenuItem[]>([]);
-  menuItems = this.#menuItemsSignal.asReadonly();
+  // Use the menu items signal directly from the service
+  menuItems = this.menuService.menuItems.asReadonly();
   
-
   private subscriptions = new Subscription();
 
   constructor() {
     this.subscriptions.add(
       this.authService.logoutEvent.subscribe(() => {
         this.menuService.clearMenuItems();
-        this.#menuItemsSignal.set([]);
       })
     );
     
-    this.subscriptions.add(
-      this.router.events.subscribe(event => {
-        if (event instanceof NavigationStart) {
-          this.menuService.clearMenuItems();
-          const menuItems = this.menuService.buildMenu();
-          this.menuService.setMenuItems(menuItems);
-          this.#menuItemsSignal.set(this.menuService.getMenuItems());
-        }
-      })
-    );
+    // Note: Menu rebuild is now handled by the MenuService effect
+    // No need to rebuild on navigation as the service watches for user/permission changes
   }
 
   ngOnInit(): void {
     // Set up initial focus management
     this.setupInitialFocus();
     
-    // Initialize menu items with tab indices
-    const initialMenuItems = this.menuService.getMenuItems();
-    if (initialMenuItems.length > 0) {
-      this.#menuItemsSignal.set(initialMenuItems);
+    // Ensure menu is built if not already (service effect handles this automatically)
+    if (this.menuItems().length === 0 && this.authService.user()) {
+      this.menuService.refreshMenu();
     }
   }
 

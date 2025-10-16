@@ -8,12 +8,8 @@ import { SetPasswordComponent } from './auth/set-password/set-password.component
 import { UsersListComponent } from './admin/users-list/users-list.component';
 import { UserDetailComponent } from './admin/user-detail/user-detail.component';
 import { ProfileComponent } from './profile/profile.component';
-import { isUserAdmin } from './guards/admin.guard';
 import { ProductCatalogComponent } from './vendors/product-catalog/product-catalog.component';
 import { TradeShowComponent } from './vendors/trade-show/trade-show.component';
-import { isUserVendor } from './guards/vendor.guard';
-import { isUserCustomer } from './guards/customer.guard';
-import { isUserApiUser } from './guards/api-user.guard';
 import { ForgotComponent } from './auth/forgot/forgot.component';
 import { UnauthorizedComponent } from './auth/unauthorized/unauthorized.component';
 import { ApiTokenManagementComponent } from './apiUser/api-token-management/api-token-management.component';
@@ -28,8 +24,10 @@ import { Api5Component } from './perm/api5/api5.component';
 import { Api6Component } from './perm/api6/api6.component';
 import { Api7Component } from './perm/api7/api7.component';
 import { Api8Component } from './perm/api8/api8.component';
-import { hasResourcePermission } from './guards/hasPermission.guard';
+import { hasResourcePermission } from './guards/permission.guard';
+import { hasRole } from './guards/role.guard';
 import { Permission } from './models/permissions.model';
+import { Roles } from './models/roles.model';
 
 export const routes: Routes = [
     {
@@ -106,28 +104,23 @@ export const routes: Routes = [
                 path: 'users',
                 title: 'Users',
                 component: UsersListComponent,
-                canActivate: [isUserAdmin],
-                data: { display: true, role: 1 }
-
+                data: { display: true }
             },
             {
                 path: 'user/:id',
                 title: 'User Detail',
                 component: UserDetailComponent,
-                canActivate: [isUserAdmin],
-                data: { display: false, role: 1 }
-
+                data: { display: false }
             },
             {
                 path: 'api-settings',
                 title: 'API Settings',
                 component: ApiSettingsComponent,
-                canActivate: [isUserAdmin],
-                data: { display: true, role: 1 }
+                data: { display: true }
             }
         ],
-        data: { display: true, heading: true, role: 1 },
-        canActivate: [isUserAuthenticated, isUserAdmin]
+        data: { display: true, heading: true, role: Roles.ADMIN },
+        canActivate: [isUserAuthenticated, hasRole]
 
     },
     {
@@ -145,47 +138,47 @@ export const routes: Routes = [
                 path: 'pricebook',
                 title: 'Pricebook',
                 component: PriceBookComponent,
-                data: { display: true, role: 2 }
+                data: { display: true }
             },
             {
                 path: 'accruals',
                 title: 'Accruals',
                 component: HomeComponent,
-                data: { display: true, role: 2 }
+                data: { display: true }
             },
             {
                 path: 'retail-management',
                 title: 'Retail Management',
                 component: HomeComponent,
-                data: { display: true, role: 2 }
+                data: { display: true }
             },
             {
                 path: 'accounts-receivable',
                 title: 'Accounts Receivable',
                 component: HomeComponent,
-                data: { display: true, role: 2 }
+                data: { display: true }
             },
             {
                 path: 'sales-orders',
                 title: 'Sales Orders',
                 component: HomeComponent,
-                data: { display: true, role: 2 }
+                data: { display: true }
             },
             {
                 path: 'data-archive',
                 title: 'Data Archive',
                 component: HomeComponent,
-                data: { display: true, role: 2 }
+                data: { display: true }
             },
             {
                 path: 'ct114data',
                 title: 'CT114 Data',
                 component: HomeComponent,
-                data: { display: true, role: 2 }
+                data: { display: true }
             }
         ],
-        data: { display: true, heading: true, role: 2 },
-        // canActivate: [isUserAuthenticated]
+        data: { display: true, heading: true, role: Roles.CUSTOMER },
+        canActivate: [isUserAuthenticated, hasRole]
     },
     {
         path: 'vendor',
@@ -195,16 +188,17 @@ export const routes: Routes = [
                 path: 'product-catalog',
                 title: 'Product Catalog',
                 component: ProductCatalogComponent,
-                data: { display: true, role: 3 },
+                data: { display: true }
             },
             {
                 path: 'tradeshow',
                 title: 'Tradeshow',
                 component: TradeShowComponent,
-                data: { display: true, role: 3 }
+                data: { display: true }
             }
         ],
-        data: { display: true, heading: true, role: 3 },
+        data: { display: true, heading: true, role: Roles.VENDOR },
+        canActivate: [isUserAuthenticated, hasRole]
     },
     {
         path: 'apiuser',
@@ -214,11 +208,11 @@ export const routes: Routes = [
                 path: 'api-token-management',
                 title: 'Api Token Management',
                 component: ApiTokenManagementComponent,
-                data: { display: true, role: 5 }
+                data: { display: true }
             }
         ],
-        data: { display: true, heading: true, role: 5 },
-        canActivate: [isUserAuthenticated, isUserApiUser]
+        data: { display: true, heading: true, role: Roles.API_CUSTOMER },
+        canActivate: [isUserAuthenticated, hasRole]
     },
     {
         path: 'perm',
