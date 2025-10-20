@@ -18,6 +18,7 @@ export class SessionService {
     constructor() {
         // Save session state on login
         effect(() => {
+            // 'loginTrigger' is a counter incremented on each login event; when it increases, this effect runs.
             const loginTrigger = this.authService.loginTrigger();
             if (loginTrigger > 0) {
                 this.saveSessionState();
@@ -26,6 +27,7 @@ export class SessionService {
         
         // Stop session check on logout
         effect(() => {
+            // logoutTrigger is a counter incremented on logout events; effect runs when it changes
             const logoutTrigger = this.authService.logoutTrigger();
             if (logoutTrigger > 0) {
                 this.stopSessionCheck();

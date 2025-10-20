@@ -245,6 +245,9 @@ export class AuthService {
             throw new Error('Failed to decode authentication token');
         }
 
+        // Clear any cached menu items from previous user session
+        sessionStorage.removeItem('menuItems');
+        
         // Handle permissions from response body
         if (response.body?.permissions) {
             const userPermissions: UserPermissions = {
@@ -289,6 +292,9 @@ export class AuthService {
 
         // Handle permissions from refresh response if provided
         if (response.body?.permissions) {
+            // Clear cached menu items when permissions change
+            sessionStorage.removeItem('menuItems');
+            
             const userPermissions: UserPermissions = {
                 resources: response.body.permissions.map(p => ({
                     resource: p.resource,

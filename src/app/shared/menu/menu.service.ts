@@ -56,6 +56,7 @@ export class MenuService {
         // Rebuild menu when permissions are loaded (e.g., after login)
         effect(() => {
             const permissionsLoaded = this.permissionsService.permissionsLoaded();
+            // permissionsLoaded returns a count; menu is refreshed only if at least one permission is loaded
             if (permissionsLoaded > 0 && this.authService.user()) {
                 this.refreshMenu();
             }

@@ -1,4 +1,10 @@
-import { Component, inject, input, signal, HostListener, ElementRef, OnInit, effect } from '@angular/core';
+import {
+  Component,
+  inject,
+  ElementRef,
+  OnInit,
+  effect
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatListModule } from '@angular/material/list';
 import { NavigationStart, Router, RouterLink, RouterModule } from '@angular/router';
@@ -24,12 +30,12 @@ export class MenuComponent implements OnInit {
   router = inject(Router);
   private elementRef = inject(ElementRef);
 
-  // Use the menu items signal directly from the service
-  menuItems = this.menuService.menuItems.asReadonly();
+  menuItems = this.menuService.menuItems;
 
   constructor() {
     // Clear menu items on logout
     effect(() => {
+      // logoutTrigger is a counter that increments on each logout event; when > 0, a logout has occurred.
       const logoutTrigger = this.authService.logoutTrigger();
       if (logoutTrigger > 0) {
         this.menuService.clearMenuItems();
