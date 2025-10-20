@@ -249,11 +249,11 @@ describe('AuthService', () => {
       expect(typeof service.isApiUser).toBe('function');
     });
 
-    it('should have event emitters', () => {
-      expect(service.loginEvent).toBeDefined();
-      expect(service.logoutEvent).toBeDefined();
-      expect(typeof service.loginEvent.emit).toBe('function');
-      expect(typeof service.logoutEvent.emit).toBe('function');
+    it('should have trigger signals', () => {
+      expect(service.logoutTrigger).toBeDefined();
+      expect(service.loginTrigger).toBeDefined();
+      expect(typeof service.logoutTrigger()).toBe('number');
+      expect(typeof service.loginTrigger()).toBe('number');
     });
   });
 
@@ -278,7 +278,7 @@ describe('AuthService', () => {
       });
 
       mockHttpClient.post.and.returnValue(of(mockResponse));
-      spyOn(service.loginEvent, 'emit');
+      const initialLoginTrigger = service.loginTrigger();
 
       const result = await service.login('test@example.com', 'password');
 
@@ -294,7 +294,7 @@ describe('AuthService', () => {
       );
       expect(service.token()).toBeTruthy();
       expect(service.user()).toBeTruthy();
-      expect(service.loginEvent.emit).toHaveBeenCalled();
+      expect(service.loginTrigger()).toBeGreaterThan(initialLoginTrigger);
       expect(result).toBeTruthy();
     });
 
@@ -621,7 +621,7 @@ describe('AuthService', () => {
       });
 
       mockHttpClient.post.and.returnValue(of(mockLoginResponse));
-      spyOn(service.loginEvent, 'emit');
+      const initialLoginTrigger = service.loginTrigger();
 
       // Initial state
       expect(service.isLoggedIn()).toBeFalsy();
@@ -635,7 +635,7 @@ describe('AuthService', () => {
       expect(service.isLoggedIn()).toBeTruthy();
       expect(service.user()).toBeTruthy();
       expect(service.token()).toBeTruthy();
-      expect(service.loginEvent.emit).toHaveBeenCalled();
+      expect(service.loginTrigger()).toBeGreaterThan(initialLoginTrigger);
       expect(service.isAdmin()).toBeTruthy(); // Role should be set
     });
 

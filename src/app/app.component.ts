@@ -1,6 +1,6 @@
 import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { NavigationStart, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatSidenavModule, MatSidenavContainer } from '@angular/material/sidenav';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,6 +14,7 @@ import { MenuComponent } from './shared/menu/menu.component';
 import { MenuService } from './shared/menu/menu.service';
 import { MenuItem } from './shared/menu/menu.model';
 import { SessionService } from './services/session.service';
+
 @Component({
     selector: 'app-root',
     imports: [
@@ -42,11 +43,13 @@ export class AppComponent {
   isLoggedIn = this.authService.isLoggedIn;
   
   constructor() {
+    // Clear messages on navigation
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         this.messageService.clear();
       }
     });
+    
     if(this.isLoggedIn()) {
       this.sessionService.stopSessionCheck();
       this.sessionService.startSessionCheck();

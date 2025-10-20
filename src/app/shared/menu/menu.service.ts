@@ -52,6 +52,14 @@ export class MenuService {
                 this.clearMenuItems();
             }
         });
+        
+        // Rebuild menu when permissions are loaded (e.g., after login)
+        effect(() => {
+            const permissionsLoaded = this.permissionsService.permissionsLoaded();
+            if (permissionsLoaded > 0 && this.authService.user()) {
+                this.refreshMenu();
+            }
+        });
     }
 
     clearMenuItems() {

@@ -9,12 +9,13 @@ export class PermissionsService {
   private static readonly USER_STORAGE_KEY = 'user';
   
   private userPermissionsSignal = signal<UserPermissions | null>(null);
-
   private userSignal = signal<any | null>(null);
+  private permissionsLoadedSignal = signal<number>(0);
 
   // Computed signal for reactive access
   public userPermissions = this.userPermissionsSignal.asReadonly();
   public user = this.userSignal.asReadonly();
+  public permissionsLoaded = this.permissionsLoadedSignal.asReadonly();
 
   constructor() {
     // Restore permissions and user from sessionStorage on service initialization
@@ -92,6 +93,8 @@ export class PermissionsService {
     } catch (error) {
       console.warn('Failed to store permissions in sessionStorage:', error);
     }
+    // Increment the loaded counter to trigger effects
+    this.permissionsLoadedSignal.update(v => v + 1);
   }
 
   getUserPermissions(): UserPermissions | null {
@@ -150,5 +153,7 @@ export class PermissionsService {
   clearPermissions(): void {
     this.userPermissionsSignal.set(null);
     sessionStorage.removeItem(PermissionsService.PERMISSIONS_STORAGE_KEY);
+    // Reset the loaded counter
+    this.permissionsLoadedSignal.set(0);
   }
 }

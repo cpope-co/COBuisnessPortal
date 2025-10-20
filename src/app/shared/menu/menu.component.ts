@@ -1,11 +1,10 @@
-import { Component, inject, input, signal, OnDestroy, HostListener, ElementRef, OnInit } from '@angular/core';
+import { Component, inject, input, signal, HostListener, ElementRef, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatListModule } from '@angular/material/list';
 import { NavigationStart, Router, RouterLink, RouterModule } from '@angular/router';
 import { MenuItem } from './menu.model';
 import { MenuService } from './menu.service';
 import { AuthService } from '../../auth/auth.service';
-import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'co-menu',
@@ -19,7 +18,7 @@ import { Subscription } from 'rxjs';
     templateUrl: './menu.component.html',
     styleUrl: './menu.component.scss'
 })
-export class MenuComponent implements OnInit, OnDestroy {
+export class MenuComponent implements OnInit {
   menuService = inject(MenuService);
   authService = inject(AuthService);
   router = inject(Router);
@@ -27,15 +26,15 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   // Use the menu items signal directly from the service
   menuItems = this.menuService.menuItems.asReadonly();
-  
-  private subscriptions = new Subscription();
 
   constructor() {
-    this.subscriptions.add(
-      this.authService.logoutEvent.subscribe(() => {
+    // Clear menu items on logout
+    effect(() => {
+      const logoutTrigger = this.authService.logoutTrigger();
+      if (logoutTrigger > 0) {
         this.menuService.clearMenuItems();
-      })
-    );
+      }
+    });
     
     // Note: Menu rebuild is now handled by the MenuService effect
     // No need to rebuild on navigation as the service watches for user/permission changes
@@ -49,10 +48,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (this.menuItems().length === 0 && this.authService.user()) {
       this.menuService.refreshMenu();
     }
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
   }
 
   onKeyDown(event: KeyboardEvent) {

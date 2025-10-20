@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, effect } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { openRefreshSessionDialog } from '../shared/refresh-session-dialog/refresh-session-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -16,11 +16,20 @@ export class SessionService {
     messagesService = inject(MessagesService);
 
     constructor() {
-        this.authService.loginEvent.subscribe(() => {
-            this.saveSessionState();
+        // Save session state on login
+        effect(() => {
+            const loginTrigger = this.authService.loginTrigger();
+            if (loginTrigger > 0) {
+                this.saveSessionState();
+            }
         });
-        this.authService.logoutEvent.subscribe(() => {
-            this.stopSessionCheck();
+        
+        // Stop session check on logout
+        effect(() => {
+            const logoutTrigger = this.authService.logoutTrigger();
+            if (logoutTrigger > 0) {
+                this.stopSessionCheck();
+            }
         });
     }
 

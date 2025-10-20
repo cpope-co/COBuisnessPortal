@@ -21,19 +21,22 @@ describe('AppComponent', () => {
   let sessionService: jasmine.SpyObj<SessionService>;
   let router: jasmine.SpyObj<Router>;
   let routerEventsSubject: Subject<any>;
-  let authLogoutSubject: Subject<any>;
+  let logoutTriggerSignal: any;
+  let loginTriggerSignal: any;
   let menuItemsSignal: any;
 
   beforeEach(async () => {
     routerEventsSubject = new Subject();
-    authLogoutSubject = new Subject();
+    logoutTriggerSignal = signal<number>(0);
+    loginTriggerSignal = signal<number>(0);
     
     // Create a writable signal for menu items
     menuItemsSignal = signal<MenuItem[]>([]);
     
     const authServiceSpy = jasmine.createSpyObj('AuthService', ['logout'], {
       isLoggedIn: signal(false),
-      logoutEvent: authLogoutSubject.asObservable(),
+      logoutTrigger: logoutTriggerSignal.asReadonly(),
+      loginTrigger: loginTriggerSignal.asReadonly(),
       user: signal(null)
     });
     const messagesServiceSpy = jasmine.createSpyObj('MessagesService', ['clear'], {
@@ -151,7 +154,8 @@ describe('AppComponent', () => {
       
       const loggedInAuthService = jasmine.createSpyObj('AuthService', ['logout'], {
         isLoggedIn: signal(true),
-        logoutEvent: authLogoutSubject.asObservable(),
+        logoutTrigger: signal(0).asReadonly(),
+        loginTrigger: signal(0).asReadonly(),
         user: signal({ id: 1, email: 'test@example.com', role: 1, firstName: 'Test', lastName: 'User' })
       });
       loggedInSessionService = jasmine.createSpyObj('SessionService', ['startSessionCheck', 'stopSessionCheck']);
@@ -219,7 +223,8 @@ describe('AppComponent', () => {
       
       const loggedOutAuthService = jasmine.createSpyObj('AuthService', ['logout'], {
         isLoggedIn: signal(false),
-        logoutEvent: authLogoutSubject.asObservable(),
+        logoutTrigger: signal(0).asReadonly(),
+        loginTrigger: signal(0).asReadonly(),
         user: signal(null)
       });
       loggedOutSessionService = jasmine.createSpyObj('SessionService', ['startSessionCheck', 'stopSessionCheck']);

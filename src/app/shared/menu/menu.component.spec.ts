@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
 
 import { MenuComponent } from './menu.component';
 import { MenuService } from './menu.service';
@@ -17,7 +16,8 @@ describe('MenuComponent', () => {
   let mockMenuService: any;
   let mockAuthService: any;
   let mockRouter: jasmine.SpyObj<Router>;
-  let mockLogoutEvent: Subject<void>;
+  let logoutTriggerSignal: any;
+  let loginTriggerSignal: any;
   let menuItemsSignal: any;
 
   const mockUser = {
@@ -47,7 +47,8 @@ describe('MenuComponent', () => {
   class TestComponent { }
 
   beforeEach(async () => {
-    mockLogoutEvent = new Subject<void>();
+    logoutTriggerSignal = signal<number>(0);
+    loginTriggerSignal = signal<number>(0);
     
     // Create a writable signal for menu items
     menuItemsSignal = signal<MenuItem[]>([]);
@@ -70,7 +71,8 @@ describe('MenuComponent', () => {
     });
     
     mockAuthService = jasmine.createSpyObj('AuthService', [], {
-      logoutEvent: mockLogoutEvent.asObservable(),
+      logoutTrigger: logoutTriggerSignal.asReadonly(),
+      loginTrigger: loginTriggerSignal.asReadonly(),
       user: signal(mockUser)
     });
 
@@ -125,8 +127,9 @@ describe('MenuComponent', () => {
       menuItemsSignal.set(mockMenuItems);
       expect(component.menuItems()).toEqual(mockMenuItems);
       
-      // Trigger logout event
-      mockLogoutEvent.next();
+      // Trigger logout by updating the signal
+      logoutTriggerSignal.set(1);
+      fixture.detectChanges();
       
       expect(mockMenuService.clearMenuItems).toHaveBeenCalled();
       expect(component.menuItems()).toEqual([]);
@@ -153,7 +156,8 @@ describe('MenuComponent', () => {
       TestBed.resetTestingModule();
       
       const noUserAuthService = jasmine.createSpyObj('AuthService', [], {
-        logoutEvent: mockLogoutEvent.asObservable(),
+        logoutTrigger: signal(0).asReadonly(),
+        loginTrigger: signal(0).asReadonly(),
         user: signal(null)
       });
       
@@ -235,8 +239,9 @@ describe('MenuComponent', () => {
       menuItemsSignal.set(mockMenuItems);
       expect(component.menuItems().length).toBe(2);
       
-      // Trigger logout
-      mockLogoutEvent.next();
+      // Trigger logout by updating the signal
+      logoutTriggerSignal.set(1);
+      fixture.detectChanges();
       
       expect(mockMenuService.clearMenuItems).toHaveBeenCalled();
       expect(component.menuItems()).toEqual([]);
@@ -244,11 +249,13 @@ describe('MenuComponent', () => {
 
     it('should handle multiple logout events', () => {
       // First logout
-      mockLogoutEvent.next();
+      logoutTriggerSignal.set(1);
+      fixture.detectChanges();
       expect(mockMenuService.clearMenuItems).toHaveBeenCalledTimes(1);
       
       // Second logout
-      mockLogoutEvent.next();
+      logoutTriggerSignal.set(2);
+      fixture.detectChanges();
       expect(mockMenuService.clearMenuItems).toHaveBeenCalledTimes(2);
     });
   });
@@ -309,8 +316,9 @@ describe('MenuComponent', () => {
       // Reset spy call count
       mockMenuService.clearMenuItems.calls.reset();
       
-      // Verify no more calls after destruction
-      mockLogoutEvent.next();
+      // Verify no more calls after destruction (effect should be cleaned up)
+      logoutTriggerSignal.set(1);
+      fixture.detectChanges();
       expect(mockMenuService.clearMenuItems).not.toHaveBeenCalled();
     });
   });

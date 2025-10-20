@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, computed, effect, inject, signal } from "@angular/core";
+import { Injectable, computed, effect, inject, signal } from "@angular/core";
 import { Router } from "@angular/router";
 import { User } from "../models/user.model";
 import { environment } from "../../environments/environment";
@@ -48,8 +48,12 @@ export class AuthService {
     isApiUserSIgnal = signal<boolean>(false);
     isApiUser = this.isApiUserSIgnal.asReadonly();
 
-    logoutEvent = new EventEmitter<void>();
-    loginEvent = new EventEmitter<void>();
+    // Use signals instead of EventEmitters
+    #logoutTrigger = signal<number>(0);
+    logoutTrigger = this.#logoutTrigger.asReadonly();
+    
+    #loginTrigger = signal<number>(0);
+    loginTrigger = this.#loginTrigger.asReadonly();
 
     constructor() {
         this.loadUserFromStorage();
@@ -253,7 +257,7 @@ export class AuthService {
         }
 
         this.#userSignal.set(user);
-        this.loginEvent.emit();
+        this.#loginTrigger.update(v => v + 1);
         this.setRoles();
         return user;
     }
@@ -348,7 +352,7 @@ export class AuthService {
             localStorage.clear();
             this.#userSignal.set(null);
             this.#tokenSignal.set(null);
-            this.logoutEvent.emit();
+            this.#logoutTrigger.update(v => v + 1);
             this.messageService.showMessage('You have been logged out.', 'info', 30000);
             this.router.navigate(['auth/login']);
         }
