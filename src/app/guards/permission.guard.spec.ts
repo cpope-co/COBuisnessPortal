@@ -81,7 +81,7 @@ describe('hasResourcePermission Guard', () => {
         hasResourcePermission(mockRoute, {} as any)
       );
 
-      expect(console.warn).toHaveBeenCalledWith('Route missing resource or requiredPermissions in data');
+      expect(console.warn).toHaveBeenCalledWith('❌ [hasResourcePermission] Route missing resource or requiredPermissions in data');
     });
   });
 
@@ -268,7 +268,7 @@ describe('hasResourcePermission Guard', () => {
         hasResourcePermission(mockRoute, {} as any)
       );
 
-      expect(console.warn).toHaveBeenCalledWith('Route missing resource or requiredPermissions in data');
+      expect(console.warn).toHaveBeenCalledWith('❌ [hasResourcePermission] Route missing resource or requiredPermissions in data');
       expect(router.createUrlTree).toHaveBeenCalledWith(['/auth/unauthorized']);
       expect(result).toBe(unauthorizedTree);
     });
@@ -283,7 +283,7 @@ describe('hasResourcePermission Guard', () => {
         hasResourcePermission(mockRoute, {} as any)
       );
 
-      expect(console.warn).toHaveBeenCalledWith('Route data is missing');
+      expect(console.warn).toHaveBeenCalledWith('❌ [hasResourcePermission] Route data is missing');
       expect(router.createUrlTree).toHaveBeenCalledWith(['/auth/unauthorized']);
       expect(result).toBe(unauthorizedTree);
     });
@@ -298,7 +298,7 @@ describe('hasResourcePermission Guard', () => {
         hasResourcePermission(mockRoute, {} as any)
       );
 
-      expect(console.warn).toHaveBeenCalledWith('Route data is missing');
+      expect(console.warn).toHaveBeenCalledWith('❌ [hasResourcePermission] Route data is missing');
       expect(router.createUrlTree).toHaveBeenCalledWith(['/auth/unauthorized']);
       expect(result).toBe(unauthorizedTree);
     });

@@ -16,6 +16,7 @@
                                [attr.tabindex]="-1"
                                [class.current-page]="isCurrentRoute(child.route)"
                                (keydown)="onKeyDown($event)"
+                               (click)="onMenuItemClick()"
                                class="nav-item">
                                 <span matListItemTitle>{{ child.title }}</span>
                             </a>
@@ -28,6 +29,7 @@
                        [attr.tabindex]="-1"
                        [class.current-page]="isCurrentRoute(menuItem.route)"
                        (keydown)="onKeyDown($event)"
+                       (click)="onMenuItemClick()"
                        class="nav-item">
                         <span matListItemTitle>{{ menuItem.title }}</span>
                     </a>

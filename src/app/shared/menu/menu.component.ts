@@ -3,10 +3,12 @@ import {
   inject,
   ElementRef,
   OnInit,
-  effect
+  effect,
+  input
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatListModule } from '@angular/material/list';
+import { MatDrawer } from '@angular/material/sidenav';
 import { NavigationStart, Router, RouterLink, RouterModule } from '@angular/router';
 import { MenuItem } from './menu.model';
 import { MenuService } from './menu.service';
@@ -29,6 +31,9 @@ export class MenuComponent implements OnInit {
   authService = inject(AuthService);
   router = inject(Router);
   private elementRef = inject(ElementRef);
+  
+  // Input to receive the drawer reference from parent
+  drawer = input<MatDrawer>();
 
   menuItems = this.menuService.menuItems;
 
@@ -98,23 +103,34 @@ export class MenuComponent implements OnInit {
     }
   }
 
+  onMenuItemClick(): void {
+    const drawerRef = this.drawer();
+    if (drawerRef) {
+      drawerRef.close();
+    }
+  }
+
   isCurrentRoute(route: string): boolean {
     if (!route) return false;
     
-    const currentUrl = this.router.url;
-    const currentPath = currentUrl.split('?')[0].split('#')[0]; // Remove query params and fragments
-    
-    // Normalize paths - router.url always starts with '/', route from menu might not
-    const normalizedCurrentPath = currentPath;
-    const normalizedRoute = route.startsWith('/') ? route : '/' + route;
-    
-    // Exact match
-    if (normalizedCurrentPath === normalizedRoute) return true;
-    
-    // Check if current path starts with route (for child routes)
-    if (normalizedRoute !== '/' && normalizedCurrentPath.startsWith(normalizedRoute + '/')) return true;
-    
-    return false;
+    try {
+      const currentUrl = this.router.url;
+      const currentPath = currentUrl.split('?')[0].split('#')[0]; // Remove query params and fragments
+      
+      // Normalize paths - router.url always starts with '/', route from menu might not
+      const normalizedCurrentPath = currentPath;
+      const normalizedRoute = route.startsWith('/') ? route : '/' + route;
+      
+      // Exact match
+      if (normalizedCurrentPath === normalizedRoute) return true;
+      
+      // Check if current path starts with route (for child routes)
+      if (normalizedRoute !== '/' && normalizedCurrentPath.startsWith(normalizedRoute + '/')) return true;
+      
+      return false;
+    } catch (error) {
+      return false;
+    }
   }
 
   private setupInitialFocus(): void {

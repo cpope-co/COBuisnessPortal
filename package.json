@@ -49,7 +49,7 @@
     "@angular/compiler": "^20.3.2",
     "@angular/core": "^20.3.2",
     "@angular/forms": "^20.3.2",
-    "@angular/material": "^20.1.2",
+    "@angular/material": "^20.2.9",
     "@angular/platform-browser": "^20.3.2",
     "@angular/platform-browser-dynamic": "^20.3.2",
     "@angular/router": "^20.3.2",
@@ -82,6 +82,6 @@
     "typescript": "5.8.3"
   },
   "engines": {
-    "node": ">=18.0.0 <=20.15.0"
+    "node": ">=18.0.0 <=22.20.0"
   }
 }

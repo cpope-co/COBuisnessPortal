@@ -7,11 +7,19 @@ export const hasResourcePermission: CanActivateFn = (route: ActivatedRouteSnapsh
   const permissionsService = inject(PermissionsService);
   const router = inject(Router);
 
-  const resource = route.data['resource'] as string;
-  const requiredPermissions = route.data['requiredPermissions'] as Permission[];
+  let resource: string;
+  let requiredPermissions: Permission[];
+  
+  try {
+    resource = route.data['resource'] as string;
+    requiredPermissions = route.data['requiredPermissions'] as Permission[];
+  } catch (error) {
+    console.error('❌ [hasPermission.guard] Error accessing route.data:', error);
+    return router.createUrlTree(['/auth/unauthorized']);
+  }
 
   if (!resource || !requiredPermissions) {
-    console.warn('Route missing resource or requiredPermissions in data');
+    console.warn('❌ [hasPermission.guard] Route missing resource or requiredPermissions in data');
     return router.createUrlTree(['/auth/unauthorized']);
   }
 
@@ -23,6 +31,5 @@ export const hasResourcePermission: CanActivateFn = (route: ActivatedRouteSnapsh
   if (!hasPermission) {
     return router.createUrlTree(['/auth/unauthorized']);
   }
-
   return true;
 };

@@ -1,7 +1,7 @@
 <mat-drawer-container fullscreen>
   <mat-drawer mode="over" #start (backdropClick)="start.close()">
     <mat-list>
-      <co-menu />
+      <co-menu [drawer]="start" />
     </mat-list>
   </mat-drawer>
   <mat-toolbar color="primary">

@@ -13,20 +13,29 @@ import { Permission } from '../models/permissions.model';
  * - Multiple permissions: data: { resource: 'API1', requiredPermissions: [Permission.READ, Permission.UPDATE] }
  */
 export const hasResourcePermission: CanActivateFn = (route: ActivatedRouteSnapshot) => {
+  
   const permissionsService = inject(PermissionsService);
   const router = inject(Router);
 
   // Guard against null or undefined route data
   if (!route.data) {
-    console.warn('Route data is missing');
+    console.warn('❌ [hasResourcePermission] Route data is missing');
     return router.createUrlTree(['/auth/unauthorized']);
   }
 
-  const resource = route.data['resource'] as string;
-  const requiredPermissions = route.data['requiredPermissions'] as Permission[];
+  let resource: string;
+  let requiredPermissions: Permission[];
+  
+  try {
+    resource = route.data['resource'] as string;
+    requiredPermissions = route.data['requiredPermissions'] as Permission[];
+  } catch (error) {
+    console.error('❌ [hasResourcePermission] Error accessing route.data:', error);
+    return router.createUrlTree(['/auth/unauthorized']);
+  }
 
   if (!resource || !requiredPermissions || requiredPermissions.length === 0) {
-    console.warn('Route missing resource or requiredPermissions in data');
+    console.warn('❌ [hasResourcePermission] Route missing resource or requiredPermissions in data');
     return router.createUrlTree(['/auth/unauthorized']);
   }
 
@@ -34,6 +43,8 @@ export const hasResourcePermission: CanActivateFn = (route: ActivatedRouteSnapsh
   const hasPermission = requiredPermissions.length === 1
     ? permissionsService.hasResourcePermission(resource, requiredPermissions[0])
     : permissionsService.hasResourcePermissions(resource, requiredPermissions);
+
+  console.log('Has permission:', hasPermission);
 
   if (!hasPermission) {
     return router.createUrlTree(['/auth/unauthorized']);

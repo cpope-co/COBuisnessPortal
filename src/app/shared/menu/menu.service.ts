@@ -23,7 +23,7 @@ import { routes } from '../../app.routes';
 import { AuthService } from "../../auth/auth.service";
 import { PermissionsService } from "../../services/permissions.service";
 import { Permission } from "../../models/permissions.model";
-import { Route } from "@angular/router";
+import { Data, Route, Router } from "@angular/router";
 
 @Injectable({
     providedIn: 'root'
@@ -33,32 +33,22 @@ export class MenuService {
 
     authService = inject(AuthService);
     permissionsService = inject(PermissionsService);
+    router = inject(Router);
 
     menuItems = signal<MenuItem[]>([]);
     routes = signal<Route[]>(routes);
 
     constructor() {
-        // React to user and permission changes without causing circular dependency
+        // Single effect to handle all menu refresh scenarios
         effect(() => {
             const user = this.authService.user();
-            const permissions = this.permissionsService.userPermissions();
-            
-            // Debug logging removed for production. Use environment-based logging if needed.
-            
-            // When user or permissions change, rebuild menu
-            if (user) {
-                this.refreshMenu();
-            } else {
-                this.clearMenuItems();
-            }
-        });
-        
-        // Rebuild menu when permissions are loaded (e.g., after login)
-        effect(() => {
             const permissionsLoaded = this.permissionsService.permissionsLoaded();
-            // permissionsLoaded returns a count; menu is refreshed only if at least one permission is loaded
-            if (permissionsLoaded > 0 && this.authService.user()) {
+
+            // Only rebuild menu if we have a user AND permissions are loaded
+            if (user && permissionsLoaded > 0) {
                 this.refreshMenu();
+            } else if (!user) {
+                this.clearMenuItems();
             }
         });
     }
@@ -80,15 +70,18 @@ export class MenuService {
 
     buildMenu(): MenuItem[] {
         const user = this.authService.user();
+        
         if (user) {
             const processRoutes = (routes: Route[], parentPath: string = ''): MenuItem[] => {
                 return routes.map(route => {
                     const fullPath = parentPath ? `${parentPath}/${route.path}` : route.path;
+                    const children = route.children ? processRoutes(route.children, fullPath) : undefined;
+                    
                     const menuItem: MenuItem = {
                         title: route.title?.toString() || '',
                         route: fullPath || '',
                         options: route.data ? { display: route.data['display'], heading: route.data['heading'], role: route.data['role'] } : undefined,
-                        children: route.children ? processRoutes(route.children, fullPath) : undefined // Recursively process children with full path
+                        children: children
                     };
                     return menuItem;
                 }).filter(menuItem => {
@@ -98,18 +91,17 @@ export class MenuService {
                     }
 
                     // Check role-based access (includes admin bypass)
-                    // Role-based access is now delegated to PermissionsService.hasRole(), replacing previous userRole logic.
-                    // Check role-based access (includes admin bypass)
                     const menuItemRole = menuItem.options?.role;
                     const hasRoleAccess = !menuItemRole || this.permissionsService.hasRole(menuItemRole);
+                    
                     // Check permissions-based access for routes with resource
                     let hasPermissionAccess = true;
                     const routeData = this.findRouteData(menuItem.route);
-                    
-                    if (routeData?.resource && routeData?.requiredPermissions) {
-                        const resource = routeData.resource;
-                        const requiredPermissions = routeData.requiredPermissions as Permission[];
-                        
+
+                    if (routeData?.['resource'] && routeData?.['requiredPermissions']) {
+                        const resource = routeData['resource'];
+                        const requiredPermissions = routeData['requiredPermissions'] as Permission[];
+
                         // Ensure user has ALL required permissions for the resource
                         hasPermissionAccess = this.permissionsService.hasResourcePermissions(resource, requiredPermissions);
                         hasPermissionAccess = this.permissionsService.hasResourcePermissions(resource, requiredPermissions);
@@ -119,11 +111,11 @@ export class MenuService {
                     if (menuItem.children && menuItem.children.length > 0) {
                         const hasAccessibleChildren = menuItem.children.some(child => {
                             const childRouteData = this.findRouteData(child.route);
-                            if (childRouteData?.resource && childRouteData?.requiredPermissions) {
-                                const childRequiredPermissions = childRouteData.requiredPermissions as Permission[];
+                            if (childRouteData?.['resource'] && childRouteData?.['requiredPermissions']) {
+                                const childRequiredPermissions = childRouteData['requiredPermissions'] as Permission[];
                                 // Ensure user has ALL required permissions for the resource
-                                return this.permissionsService.hasResourcePermissions(childRouteData.resource, childRequiredPermissions);
-                                
+                                return this.permissionsService.hasResourcePermissions(childRouteData['resource'], childRequiredPermissions);
+
                             }
                             // If no specific permissions required, check role access (includes admin bypass)
                             const childRole = child.options?.role;
@@ -138,9 +130,10 @@ export class MenuService {
                     if (menuItem.children) {
                         menuItem.children = menuItem.children.filter(child => {
                             const childRouteData = this.findRouteData(child.route);
-                            if (childRouteData?.resource && childRouteData?.requiredPermissions) {
-                                const childRequiredPermissions = childRouteData.requiredPermissions as Permission[];
-                                return this.permissionsService.hasResourcePermissions(childRouteData.resource, childRequiredPermissions);
+                            
+                            if (childRouteData?.['resource'] && childRouteData?.['requiredPermissions']) {
+                                const childRequiredPermissions = childRouteData['requiredPermissions'] as Permission[];
+                                return this.permissionsService.hasResourcePermissions(childRouteData['resource'], childRequiredPermissions);
                             }
                             // If no specific permissions required, check role access (includes admin bypass)
                             const childRole = child.options?.role;
@@ -162,20 +155,55 @@ export class MenuService {
     /**
      * Helper method to find route data by path
      */
-    private findRouteData(path: string): any {
-        const findInRoutes = (routes: Route[], targetPath: string): any => {
-            for (const route of routes) {
-                if (route.path === targetPath.split('/').pop()) {
-                    return route.data;
+    private findRouteData(routePath: string): Data | undefined {
+        // Don't try to find route data for routes with parameters
+        if (!routePath || routePath.includes(':')) {
+            return undefined;
+        }
+
+        try {
+            // Split the route path to handle nested routes
+            const segments = routePath.split('/').filter(s => s.length > 0);
+
+            if (segments.length === 0) {
+                return undefined;
+            }
+
+            // Try to find the route in the routes signal
+            let currentRoutes = this.routes();
+            let routeData: Data | undefined;
+
+            for (let i = 0; i < segments.length; i++) {
+                const segment = segments[i];
+                
+                // Find the route, but be defensive about it
+                if (!currentRoutes || !Array.isArray(currentRoutes)) {
+                    return undefined;
                 }
-                if (route.children) {
-                    const found = findInRoutes(route.children, targetPath);
-                    if (found) return found;
+                
+                const route = currentRoutes.find(r => r && r.path === segment);
+
+                if (!route) {
+                    return undefined;
+                }
+
+                // Access data directly from the route object
+                routeData = route.data;
+
+                // If this is not the last segment and route has children, search in them
+                if (i < segments.length - 1) {
+                    if (route.children && Array.isArray(route.children)) {
+                        currentRoutes = route.children;
+                    } else {
+                        return undefined;
+                    }
                 }
             }
-            return null;
-        };
-        return findInRoutes(this.routes(), path);
+
+            return routeData;
+        } catch (error) {
+            return undefined;
+        }
     }
 
     setMenuItems(menuItems: MenuItem[]) {
