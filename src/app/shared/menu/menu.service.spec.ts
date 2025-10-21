@@ -141,15 +141,14 @@ describe('MenuService', () => {
       createMockMenuItem('Test Item 2', '/test2', { display: true, role: 2 })
     ];
 
-    it('should set menu items in session storage', () => {
+    it('should set menu items in signal', () => {
       service.setMenuItems(testMenuItems);
       
-      const stored = sessionStorage.getItem('menuItems');
-      expect(stored).toBeTruthy();
-      
-      const parsed = JSON.parse(stored!);
-      // Use toMatchObject to ignore properties that become undefined and are stripped by JSON
-      expect(parsed).toEqual(jasmine.arrayContaining([
+      // Check the signal value directly
+      const items = service.menuItems();
+      expect(items).toBeTruthy();
+      expect(items.length).toBe(2);
+      expect(items).toEqual(jasmine.arrayContaining([
         jasmine.objectContaining({
           title: 'Test Item 1',
           route: '/test1',
@@ -163,58 +162,65 @@ describe('MenuService', () => {
       ]));
     });
 
-    it('should get menu items from session storage', () => {
-      // Temporarily set user to null to test pure sessionStorage behavior
-      (mockAuthService.user as jasmine.Spy).and.returnValue(null);
+    it('should get menu items from signal', () => {
+      // Set menu items first
+      service.setMenuItems(testMenuItems);
       
-      sessionStorage.setItem('menuItems', JSON.stringify(testMenuItems));
+      const result = service.getMenuItems();
+      expect(result).toEqual(jasmine.arrayContaining([
+        jasmine.objectContaining({
+          title: 'Test Item 1',
+          route: '/test1'
+        }),
+        jasmine.objectContaining({
+          title: 'Test Item 2',
+          route: '/test2'
+        })
+      ]));
+    });
+
+    it('should return empty array when no menu items exist', () => {
+      // Clear first
+      service.clearMenuItems();
       
       const result = service.getMenuItems();
       expect(result).toEqual([]);
     });
 
-    it('should return empty array when no menu items in storage', () => {
-      // Temporarily set user to null to test pure sessionStorage behavior
-      (mockAuthService.user as jasmine.Spy).and.returnValue(null);
+    it('should handle refreshing menu items', () => {
+      // Initial build
+      const result1 = service.buildMenu();
+      expect(Array.isArray(result1)).toBe(true);
       
-      const result = service.getMenuItems();
-      expect(result).toEqual([]);
+      // Refresh should rebuild
+      service.refreshMenu();
+      const result2 = service.getMenuItems();
+      expect(Array.isArray(result2)).toBe(true);
     });
 
-    it('should handle invalid JSON in session storage', () => {
-      // Temporarily set user to null to test pure sessionStorage behavior
-      (mockAuthService.user as jasmine.Spy).and.returnValue(null);
-      
-      sessionStorage.setItem('menuItems', 'invalid json');
-      
-      const result = service.getMenuItems();
-      expect(result).toEqual([]);
-    });
-
-    it('should clear menu items from session storage', () => {
-      sessionStorage.setItem('menuItems', JSON.stringify(testMenuItems));
+    it('should clear menu items from signal', () => {
+      service.setMenuItems(testMenuItems);
+      expect(service.menuItems().length).toBe(2);
       
       service.clearMenuItems();
       
-      const stored = sessionStorage.getItem('menuItems');
-      expect(stored).toBeNull();
+      const items = service.menuItems();
+      expect(items).toEqual([]);
     });
 
     it('should handle clearing when no items exist', () => {
       expect(() => service.clearMenuItems()).not.toThrow();
       
-      const stored = sessionStorage.getItem('menuItems');
-      expect(stored).toBeNull();
+      const items = service.menuItems();
+      expect(items).toEqual([]);
     });
 
     it('should handle setting empty menu items', () => {
       service.setMenuItems([]);
       
-      const stored = sessionStorage.getItem('menuItems');
-      expect(stored).toBeTruthy();
-      
-      const parsed = JSON.parse(stored!);
-      expect(parsed).toEqual([]);
+      const items = service.menuItems();
+      expect(items).toBeTruthy();
+      expect(items).toEqual([]);
     });
 
     it('should handle setting menu items with children', () => {
@@ -322,30 +328,23 @@ describe('MenuService', () => {
   });
 
   describe('Error handling', () => {
-    it('should handle sessionStorage errors gracefully', () => {
-      // Mock sessionStorage to throw an error
-      const originalSetItem = sessionStorage.setItem;
-      sessionStorage.setItem = jasmine.createSpy('setItem').and.throwError('Storage error');
-      
+    it('should handle signal updates gracefully', () => {
       const testItems = [createMockMenuItem('Test', '/test', { display: true, role: 1 })];
       
-      expect(() => service.setMenuItems(testItems)).toThrow();
+      // Setting menu items should not throw
+      expect(() => service.setMenuItems(testItems)).not.toThrow();
       
-      // Restore original method
-      sessionStorage.setItem = originalSetItem;
+      // Should successfully set the items
+      expect(service.menuItems().length).toBe(1);
     });
 
-    it('should handle sessionStorage getItem errors gracefully', () => {
-      // Mock sessionStorage to throw an error
-      const originalGetItem = sessionStorage.getItem;
-      sessionStorage.getItem = jasmine.createSpy('getItem').and.throwError('Storage error');
+    it('should handle getMenuItems when signal is empty', () => {
+      // Clear items first
+      service.clearMenuItems();
       
-      // Since the service doesn't actually read from sessionStorage when user exists,
-      // this won't throw in the current implementation
+      // Getting items should not throw and should return empty array
       expect(() => service.getMenuItems()).not.toThrow();
-      
-      // Restore original method
-      sessionStorage.getItem = originalGetItem;
+      expect(service.getMenuItems()).toEqual([]);
     });
 
     it('should handle malformed data in storage', () => {
