@@ -55,7 +55,7 @@ export class MenuService {
 
     clearMenuItems() {
         this.menuItems.set([]);
-        sessionStorage.removeItem('menuItems');
+        // Remove sessionStorage
     }
 
     /**
@@ -64,8 +64,7 @@ export class MenuService {
     refreshMenu() {
         this.clearMenuItems();
         const newMenuItems = this.buildMenu();
-        this.setMenuItems(newMenuItems);
-        this.menuItems.set(newMenuItems);
+        this.menuItems.set(newMenuItems); // Only update signal
     }
 
     buildMenu(): MenuItem[] {
@@ -207,22 +206,11 @@ export class MenuService {
     }
 
     setMenuItems(menuItems: MenuItem[]) {
-        sessionStorage.setItem('menuItems', JSON.stringify(menuItems));
+        this.menuItems.set(menuItems); // Only signal
     }
 
     getMenuItems(): MenuItem[] {
-        // Always rebuild menu if we have a user, don't trust stale sessionStorage
-        if (this.authService.user()) {
-            if (this.menuItems().length === 0) {
-                const newMenuItems = this.buildMenu();
-                this.setMenuItems(newMenuItems);
-                this.menuItems.set(newMenuItems);
-            }
-        } else {
-            // No user, clear everything
-            this.clearMenuItems();
-        }
-        return this.menuItems();
+        return this.menuItems(); // Just return signal value
     }
 
 

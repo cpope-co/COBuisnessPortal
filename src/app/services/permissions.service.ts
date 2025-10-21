@@ -97,6 +97,16 @@ export class PermissionsService {
     this.permissionsLoadedSignal.update(v => v + 1);
   }
 
+  setUser(user: any): void {
+    this.userSignal.set(user);
+    // Store user in sessionStorage
+    try {
+      sessionStorage.setItem(PermissionsService.USER_STORAGE_KEY, JSON.stringify(user));
+    } catch (error) {
+      console.warn('Failed to store user in sessionStorage:', error);
+    }
+  }
+
   getUserPermissions(): UserPermissions | null {
     const permissions = this.userPermissionsSignal();
     return permissions;
@@ -152,7 +162,9 @@ export class PermissionsService {
 
   clearPermissions(): void {
     this.userPermissionsSignal.set(null);
+    this.userSignal.set(null);
     sessionStorage.removeItem(PermissionsService.PERMISSIONS_STORAGE_KEY);
+    sessionStorage.removeItem(PermissionsService.USER_STORAGE_KEY);
     // Reset the loaded counter
     this.permissionsLoadedSignal.set(0);
   }

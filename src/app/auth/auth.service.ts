@@ -260,6 +260,7 @@ export class AuthService {
         }
 
         this.#userSignal.set(user);
+        this.permissionsService.setUser(user);
         this.#loginTrigger.update(v => v + 1);
         this.setRoles();
         return user;
@@ -305,6 +306,7 @@ export class AuthService {
         }
 
         this.#userSignal.set(user);
+        this.permissionsService.setUser(user);
         return user;
     }
 
@@ -330,6 +332,7 @@ export class AuthService {
             throw new Error('Failed to decode verification token');
         }
         this.#userSignal.set(user);
+        this.permissionsService.setUser(user);
         return user;
     }
 
