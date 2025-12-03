@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { MatCardHeader, MatCardModule } from "@angular/material/card";
-import { MatCard } from "../../../../node_modules/@angular/material/card/index";
 
 @Component({
   selector: 'app-api-settings',

@@ -1,0 +1,36 @@
+<div class="form-group mt-1">
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>{{ label() }}</mat-label>
+
+    <input 
+      matInput
+      [placeholder]="placeholder()"
+      [field]="field()"
+      [attr.aria-label]="placeholder() || label()"
+      [attr.aria-describedby]="isInvalid() ? 'error-' + type() + '-' + label() : null"
+    />
+
+    @if (type() === 'search' && hasValue()) {
+      <button 
+        mat-icon-button
+        matSuffix
+        (click)="clearInput()"
+        type="button"
+        aria-label="Clear search"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    } @else if (type() === 'search') {
+      <mat-icon matSuffix>search</mat-icon>
+    }
+
+    @if(isInvalid()) {
+      <mat-error 
+        [id]="'error-' + type() + '-' + label()"
+        aria-live="polite"
+      >
+        {{ getErrorMessage() }}
+      </mat-error>
+    }
+  </mat-form-field>
+</div>
