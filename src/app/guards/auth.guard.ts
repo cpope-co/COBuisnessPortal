@@ -31,7 +31,6 @@ export const isUserNotAuthenticated: CanActivateFn =
       return true;
     } else {
       messageService.showMessage("You are already logged in.", "info");
-      router.navigate(["/home"]);
-      return false;
+      return router.createUrlTree(["/home"]);
     }
   }

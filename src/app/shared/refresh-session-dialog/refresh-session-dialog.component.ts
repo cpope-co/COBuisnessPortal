@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogModule, MatDialog
 import { RefreshSessionDialogData } from './refresh-session-dialog.data.model';
 import { AuthService } from '../../auth/auth.service';
 import { SessionService } from '../../services/session.service';
+import { MessagesService } from '../../messages/messages.service';
 
 @Component({
     selector: 'app-refresh-session-dialog',
@@ -18,18 +19,25 @@ export class RefreshSessionDialogComponent {
   dialogRef = inject(MatDialogRef<RefreshSessionDialogComponent>);
   authService = inject(AuthService);
   sessionService = inject(SessionService);
+  messageService = inject(MessagesService);
 
   data: RefreshSessionDialogData = inject(MAT_DIALOG_DATA);
 
   async onLogout() {
-    await this.authService.logout();
+    await this.authService.logout('manual');
     this.dialogRef.close();
   }
 
   async onRefresh() {
-    // Refresh the session
-    await this.sessionService.resetSession();
-    this.dialogRef.close();
+    try {
+      // Refresh the session
+      await this.sessionService.resetSession();
+      this.dialogRef.close();
+    } catch (error) {
+      this.messageService.showMessage('Session refresh failed. Please log in again.', 'danger');
+      await this.authService.logout('token-expired');
+      this.dialogRef.close();
+    }
   }
 }
 

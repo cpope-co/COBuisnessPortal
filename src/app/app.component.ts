@@ -43,10 +43,13 @@ export class AppComponent {
   isLoggedIn = this.authService.isLoggedIn;
   
   constructor() {
-    // Clear messages on navigation
+    // Clear messages on navigation, except when navigating to login with query params (logout messages)
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
-        this.messageService.clear();
+        // Don't clear messages if navigating to login with msg query param
+        if (!event.url.includes('/auth/login?msg=')) {
+          this.messageService.clear();
+        } 
       }
     });
     
@@ -58,7 +61,7 @@ export class AppComponent {
 
   onLogout() {
     this.sessionService.stopSessionCheck();
-    this.authService.logout();
+    this.authService.logout('manual');
   }
 
 }
