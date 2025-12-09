@@ -1,5 +1,5 @@
-import { Component, inject, computed } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component, inject, computed, OnInit } from '@angular/core';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -20,13 +20,26 @@ import { LoginData, loginSignal } from '../../models/login-signal.model';
     templateUrl: './login.component.html',
     styleUrl: './login.component.scss'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
 
   authService = inject(AuthService);
   sessionService = inject(SessionService);
   messageService = inject(MessagesService);
   router = inject(Router);
+  route = inject(ActivatedRoute);
   signalFormHandler = inject(SignalFormHandlerService);
+
+  ngOnInit() {
+    // Check for logout message in query parameters
+    const msg = this.route.snapshot.queryParams['msg'];
+    const severity = this.route.snapshot.queryParams['severity'] || 'info';
+    
+    
+    if (msg) {
+      this.messageService.showMessage(msg, severity as 'success' | 'warning' | 'danger' | 'info');
+      // Don't clear query params - let them stay in URL, they're harmless and informative
+    }
+  }
 
   // Signal form configuration
   loginConfig = loginSignal;

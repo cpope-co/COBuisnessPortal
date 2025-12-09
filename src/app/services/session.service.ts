@@ -87,7 +87,7 @@ export class SessionService {
 
     private async handleSessionTimeout() {
         this.dialog.closeAll();
-        await this.authService.logout();
+        await this.authService.logout('timeout');
     }
 
     stopSessionCheck() {
@@ -113,7 +113,7 @@ export class SessionService {
         const user = this.authService.user();
         if (user) {
             sessionStorage.setItem('sessionTimeout', `${user.exp}`);
-            sessionStorage.setItem('warningTimeout', `${user.exp - 120}`);
+            sessionStorage.setItem('warningTimeout', `${user.exp - 180}`);
         } else {
             // Clear session storage when user is null
             sessionStorage.removeItem('sessionTimeout');
@@ -138,7 +138,8 @@ export class SessionService {
         if (!user) {
             return false; // Don't call logout here, let the caller handle it
         }
-        if (user?.refexp && user.refexp * 1000 < Date.now()) {
+        // Return true if refresh token is STILL VALID (not expired)
+        if (user?.refexp && user.refexp * 1000 > Date.now()) {
             return true;
         }
         return false;

@@ -35,15 +35,15 @@ export class RefreshInterceptor implements HttpInterceptor {
             this.sessionService.startSessionCheck();
             // Optionally, reattempt the request here
           } else if (!isActive) {
-            // Session is not active and cannot be refreshed - logout
+            // Session is not active and cannot be refreshed - logout with token-expired reason
             this.isLoggingOut = true;
-            this.authService.logout().finally(() => {
+            this.authService.logout('token-expired').finally(() => {
               this.isLoggingOut = false;
             });
           }
         }
         // Re-throw the error if it's not handled above
-        return throwError(error);
+        return throwError(() => error);
       }),
       finalize(() => {
         // Any final operations after the request completes

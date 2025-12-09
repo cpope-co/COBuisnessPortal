@@ -55,6 +55,8 @@ export class AuthService {
     #loginTrigger = signal<number>(0);
     loginTrigger = this.#loginTrigger.asReadonly();
 
+    #isLoggingOut = signal(false);
+
     constructor() {
         this.loadUserFromStorage();
         this.loadTokenFromStorage();
@@ -336,7 +338,14 @@ export class AuthService {
         return user;
     }
 
-    async logout(): Promise<void> {
+    async logout(reason: 'manual' | 'timeout' | 'token-expired' = 'manual'): Promise<void> {
+        // Prevent multiple simultaneous logout calls
+        if (this.#isLoggingOut()) {
+            return;
+        }
+        
+        this.#isLoggingOut.set(true);
+        
         try {
             const headers = new HttpHeaders({
                 'Authorization': `Bearer ${this.token()}`
@@ -362,8 +371,21 @@ export class AuthService {
             this.#userSignal.set(null);
             this.#tokenSignal.set(null);
             this.#logoutTrigger.update(v => v + 1);
-            this.messageService.showMessage('You have been logged out.', 'info', 30000);
-            this.router.navigate(['auth/login']);
+            
+            // Set message based on logout reason via query parameters
+            const messages = {
+                'manual': { text: 'You have been logged out.', severity: 'info' },
+                'timeout': { text: 'Your session has expired due to inactivity.', severity: 'warning' },
+                'token-expired': { text: 'Your session has expired. Please log in again.', severity: 'warning' }
+            };
+            
+            const message = messages[reason];
+            this.#isLoggingOut.set(false);
+            
+            
+            this.router.navigate(['auth/login'], { 
+                queryParams: { msg: message.text, severity: message.severity }
+            });
         }
     }
 }
