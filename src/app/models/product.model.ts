@@ -84,7 +84,7 @@ export const PRODUCT_CATALOG_COLUMN_CONFIG: ProductColumnConfig[] = [
 
 // Table configuration for product catalog
 export const PRODUCT_CATALOG_TABLE_CONFIG: TableConfig = {
-    showSearch: true,
+    showSearch: false,
     showAdvancedFilters: false,
     showPagination: true,
     pageSize: 10,

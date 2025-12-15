@@ -1,5 +1,6 @@
+@if (formGroup()) {
 <div class="form-group mt-1"
-     [formGroup]="formGroup()!">
+     [formGroup]="formGroup()">
   <mat-form-field appearance="outline"
                   class="w-100">
     <mat-label>{{ label() }}</mat-label>
@@ -38,3 +39,4 @@
     }
   </mat-form-field>
 </div>
+}

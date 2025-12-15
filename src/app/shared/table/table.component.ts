@@ -118,9 +118,7 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit, OnDestroy
   private dataUpdateEffect?: EffectRef;
 
   constructor(@Inject(ChangeDetectorRef) private cdr: ChangeDetectorRef) {
-    // Temporarily disable effect to test if this is causing the afterAll RxJS error
-    // TODO: Re-enable once the root cause is identified
-    /*
+    // Re-enabled effect to watch for data changes
     this.dataUpdateEffect = effect(() => {
       const currentData = this.data();
       if (currentData && Array.isArray(currentData)) {
@@ -128,7 +126,6 @@ export class TableComponent<T = any> implements OnInit, AfterViewInit, OnDestroy
         this.dataSource.data = currentData;
       }
     });
-    */
   }
 
   ngOnDestroy() {

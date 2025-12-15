@@ -5,8 +5,11 @@
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <co-table 
-      [data]="products()" 
+    <!-- Debug: Show product count -->
+    <p>Products loaded: {{ products().length }}</p>
+    
+    <co-table
+      [data]="products()"
       [columns]="tableColumns"
       [config]="tableConfig"
       (rowClick)="onViewProduct($event)"
