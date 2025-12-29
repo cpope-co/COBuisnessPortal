@@ -1,3 +1,5 @@
+import { mockLoginSuccess, mockLoginError, mockLogout, setupMockSession, UserRole } from '../support/auth-mocks';
+
 describe('Authentication E2E Tests - Production Ready', () => {
   beforeEach(() => {
     // Clear any existing session data
@@ -50,10 +52,7 @@ describe('Authentication E2E Tests - Production Ready', () => {
 
     it('should handle login errors gracefully', () => {
       // Mock failed login response
-      cy.intercept('POST', '**/api/usraut/login', {
-        statusCode: 401,
-        body: { error: 'Unauthorized' }
-      }).as('loginError');
+      mockLoginError('invalid');
 
       cy.visit('/auth/login');
       
@@ -62,7 +61,7 @@ describe('Authentication E2E Tests - Production Ready', () => {
       cy.get('input[type="password"]').type('wrongpassword');
       cy.get('button').contains('Login').click();
 
-      cy.wait('@loginError');
+      cy.wait('@loginRequest');
 
       // Should show error message and stay on login page
       cy.contains('Invalid email or password').should('be.visible');
@@ -71,9 +70,7 @@ describe('Authentication E2E Tests - Production Ready', () => {
 
     it('should handle network errors during login', () => {
       // Mock network error
-      cy.intercept('POST', '**/api/usraut/login', {
-        forceNetworkError: true
-      }).as('loginNetworkError');
+      mockLoginError('network');
 
       cy.visit('/auth/login');
       
@@ -81,7 +78,7 @@ describe('Authentication E2E Tests - Production Ready', () => {
       cy.get('input[type="password"]').type('password123');
       cy.get('button').contains('Login').click();
 
-      cy.wait('@loginNetworkError');
+      cy.wait('@loginRequest');
 
       // Should show error message
       cy.contains('Invalid email or password').should('be.visible');
@@ -111,18 +108,7 @@ describe('Authentication E2E Tests - Production Ready', () => {
   describe('Session Management', () => {
     it('should maintain login state across page refreshes', () => {
       // Setup logged-in state
-      cy.window().then((win) => {
-        const mockUser = {
-          sub: '1',
-          email: 'test@example.com',
-          role: 1,
-          exp: Math.floor(Date.now() / 1000) + 3600,
-          iat: Math.floor(Date.now() / 1000)
-        };
-        
-        win.sessionStorage.setItem('user', JSON.stringify(mockUser));
-        win.sessionStorage.setItem('token', 'mock-jwt-token');
-      });
+      setupMockSession(UserRole.Admin);
 
       cy.visit('/home');
       
@@ -139,18 +125,7 @@ describe('Authentication E2E Tests - Production Ready', () => {
 
     it('should handle expired tokens by redirecting to login', () => {
       // Setup expired token
-      cy.window().then((win) => {
-        const expiredUser = {
-          sub: '1',
-          email: 'test@example.com',
-          role: 1,
-          exp: Math.floor(Date.now() / 1000) - 3600, // Expired 1 hour ago
-          iat: Math.floor(Date.now() / 1000) - 7200
-        };
-        
-        win.sessionStorage.setItem('user', JSON.stringify(expiredUser));
-        win.sessionStorage.setItem('token', 'expired-mock-jwt-token');
-      });
+      setupMockSession(UserRole.Admin, true);
 
       cy.visit('/home');
       
@@ -162,18 +137,7 @@ describe('Authentication E2E Tests - Production Ready', () => {
   describe('Logout Functionality', () => {
     beforeEach(() => {
       // Setup logged-in state for logout tests
-      cy.window().then((win) => {
-        const mockUser = {
-          sub: '1',
-          email: 'test@example.com',
-          role: 1,
-          exp: Math.floor(Date.now() / 1000) + 3600,
-          iat: Math.floor(Date.now() / 1000)
-        };
-        
-        win.sessionStorage.setItem('user', JSON.stringify(mockUser));
-        win.sessionStorage.setItem('token', 'mock-jwt-token');
-      });
+      setupMockSession(UserRole.Admin);
     });
 
     it('should show profile menu with logout option when logged in', () => {
@@ -192,10 +156,7 @@ describe('Authentication E2E Tests - Production Ready', () => {
 
     it('should successfully logout and clear session', () => {
       // Mock logout response
-      cy.intercept('POST', '**/api/usraut/logout', {
-        statusCode: 200,
-        body: { success: true }
-      }).as('logoutRequest');
+      mockLogout();
 
       cy.visit('/home');
       
@@ -216,7 +177,7 @@ describe('Authentication E2E Tests - Production Ready', () => {
     });
 
     it('should handle logout network errors gracefully', () => {
-      // Mock logout network error
+      // Mock logout network error - override any previous mock
       cy.intercept('POST', '**/api/usraut/logout', {
         forceNetworkError: true
       }).as('logoutNetworkError');
@@ -251,18 +212,7 @@ describe('Authentication E2E Tests - Production Ready', () => {
 
     it('should maintain authentication state across different pages', () => {
       // Setup logged-in state
-      cy.window().then((win) => {
-        const mockUser = {
-          sub: '1',
-          email: 'test@example.com',
-          role: 1,
-          exp: Math.floor(Date.now() / 1000) + 3600,
-          iat: Math.floor(Date.now() / 1000)
-        };
-        
-        win.sessionStorage.setItem('user', JSON.stringify(mockUser));
-        win.sessionStorage.setItem('token', 'mock-jwt-token');
-      });
+      setupMockSession(UserRole.Admin);
 
       // Visit different pages and verify authentication state
       cy.visit('/home');

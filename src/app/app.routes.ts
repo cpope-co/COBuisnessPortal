@@ -28,6 +28,9 @@ import { hasResourcePermission } from './guards/permission.guard';
 import { hasRole } from './guards/role.guard';
 import { Permission } from './models/permissions.model';
 import { Roles } from './models/roles.model';
+import { Customers } from './customers/customers/customers';
+import { Customer } from './customers/customers/customer/customer';
+import { EditCustomer } from './customers/customers/edit-customer/edit-customer';
 
 export const routes: Routes = [
     {
@@ -48,6 +51,31 @@ export const routes: Routes = [
         path: 'test',
         title: 'Test',
         component: UnsecuredTestComponent,
+    },
+    {
+        path: 'sample',
+        title: 'Sample',
+        data: { display: false, heading: true },
+        children: [
+            {
+                path: 'customers',
+                title: 'Customers',
+                component: Customers,
+                data: { display: true }
+            },
+            {
+                path: 'customer/:id',
+                title: 'Customer Detail',
+                component: Customer,
+                data: { display: false }
+            },
+            {
+                path: 'customer/:id/edit',
+                title: 'Edit Customer',
+                component: EditCustomer,
+                data: { display: false }
+            }
+        ]
     },
     {
         path: 'auth',
@@ -97,6 +125,36 @@ export const routes: Routes = [
 
     },
     {
+        path: 'sample',
+        title: 'Sample applications',
+        children: [
+            {
+                path: 'customers',
+                title: 'Customers',
+                component: Customers,                
+                data: { display: true  }
+            },
+            {
+                path: 'customer/:id',
+                title: 'Customer Detail',
+                component: Customer,
+                data: { display: false  }
+            },
+            {
+                path: 'customer/:id/edit',
+                title: 'Edit Customer',
+                component: Customer,
+                data: { display: false  }
+            },
+            {
+                path: 'customer/new',
+                title: 'New Customer',
+                component: Customer,
+                data: { display: false  }
+            }
+        ]
+    },
+    {
         path: 'admin',
         title: 'Admin',
         children: [
@@ -136,6 +194,7 @@ export const routes: Routes = [
         path: 'customer',
         title: 'Customer',
         children: [
+            
             {
                 path: 'pricebook',
                 title: 'Pricebook',

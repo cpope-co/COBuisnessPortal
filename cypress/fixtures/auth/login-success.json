@@ -1,0 +1,7 @@
+{
+  "success": true,
+  "permissions": [
+    { "resource": "admin", "per": 3 },
+    { "resource": "config", "per": 3 }
+  ]
+}

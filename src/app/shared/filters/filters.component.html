@@ -1,10 +1,10 @@
 <div class="filters-container d-flex align-items-center gap-3">
   <!-- Search Input - Show when showSearch is true -->
   @if (showSearch() && searchForm) {
-  <div class="search-field">
+  <div class="search-field" [formGroup]="searchForm">
     <co-input
       [formGroup]="searchForm"
-      [formControlName]="'search'"
+      formControlName="search"
       [label]="'Search'"
       [type]="'search'"
       [placeholder]="'Search all fields'"

@@ -24,6 +24,7 @@
     "e2e:open": "cypress open",
     "e2e:watch": "cypress run",
     "e2e:force": "npm run e2e || echo 'E2E tests failed but continuing...'",
+    "validate:fixtures": "jsonlint cypress/fixtures/**/*.json -q && cypress run --spec 'cypress/e2e/fixture-validation.cy.ts' --headless",
     "// Testing - Combined": "",
     "test:all": "npm run test:ci:consolidate && npm run e2e",
     "test:all:force": "npm run test:ci:force && npm run e2e:force",
@@ -39,7 +40,8 @@
     "deploy:dev:quick": "npm run build:dev && npm run reports:copy && npm run deploy:copy",
     "// Deployment - Production": "",
     "deploy:prod": "npm run build:prod && npm run test:all",
-    "deploy:prod:force": "npm run build:prod && npm run test:all:force"
+    "deploy:prod:force": "npm run build:prod && npm run test:all:force",
+    "prepare": "husky"
   },
   "private": true,
   "dependencies": {
@@ -70,7 +72,9 @@
     "@web/test-runner": "^0.20.2",
     "cypress": "^15.5.0",
     "cypress-mochawesome-reporter": "^3.8.4",
+    "husky": "^9.1.7",
     "jasmine-core": "^5.9.0",
+    "jsonlint": "^1.6.3",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",

@@ -1,0 +1,7 @@
+{
+  "success": true,
+  "data": [
+    { "id": 1, "name": "John Manager", "email": "john@example.com" },
+    { "id": 2, "name": "Jane Supervisor", "email": "jane@example.com" }
+  ]
+}

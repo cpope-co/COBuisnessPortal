@@ -1,3 +1,5 @@
+import { mockLoginSuccess, mockLoginError, mockLogout, setupMockSession, UserRole } from '../support/auth-mocks';
+
 describe('Authentication Flow - Basic Tests', () => {
   beforeEach(() => {
     // Clear any existing session data
@@ -66,24 +68,8 @@ describe('Authentication Flow - Basic Tests', () => {
 
   describe('Mock Login/Logout Flow', () => {
     it('should handle successful login with mocked response', () => {
-      // Create a valid mock JWT token that can be decoded
-      const mockJwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwicm9sZSI6MSwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjE3MzM2OTI5NzAsIm5hbWUiOiJUZXN0IFVzZXIifQ.signature';
-      
-      // Mock successful login response with proper structure
-      cy.intercept('POST', '**/api/usraut/login', (req) => {
-        req.reply({
-          statusCode: 200,
-          headers: {
-            'x-id': mockJwtToken
-          },
-          body: { 
-            success: true,
-            permissions: [
-              { resource: 'test', per: 1 }
-            ]
-          }
-        });
-      }).as('loginRequest');
+      // Mock successful login response
+      mockLoginSuccess(UserRole.Admin);
 
       cy.visit('/auth/login');
       
@@ -114,10 +100,7 @@ describe('Authentication Flow - Basic Tests', () => {
 
     it('should handle login error', () => {
       // Mock login error response
-      cy.intercept('POST', '**/api/usraut/login', {
-        statusCode: 401,
-        body: { error: 'Unauthorized' }
-      }).as('loginError');
+      mockLoginError('invalid');
 
       cy.visit('/auth/login');
       
@@ -126,7 +109,7 @@ describe('Authentication Flow - Basic Tests', () => {
       cy.get('input[type="password"]').type('wrongpassword');
       cy.get('button').contains('Login').click();
 
-      cy.wait('@loginError');
+      cy.wait('@loginRequest');
 
       // Should show error message
       cy.contains('Invalid email or password').should('be.visible');
@@ -136,25 +119,11 @@ describe('Authentication Flow - Basic Tests', () => {
     });
 
     it('should handle logout flow', () => {
-      // First setup a logged-in state
-      cy.window().then((win) => {
-        const mockUser = {
-          sub: '1',
-          email: 'test@example.com',
-          role: 1,
-          exp: Math.floor(Date.now() / 1000) + 3600,
-          iat: Math.floor(Date.now() / 1000)
-        };
-        
-        win.sessionStorage.setItem('user', JSON.stringify(mockUser));
-        win.sessionStorage.setItem('token', 'mock-jwt-token');
-      });
+      // Setup a logged-in state
+      setupMockSession(UserRole.Admin);
 
       // Mock logout response
-      cy.intercept('POST', '**/api/usraut/logout', {
-        statusCode: 200,
-        body: { success: true }
-      }).as('logoutRequest');
+      mockLogout();
 
       // Visit home page
       cy.visit('/home');
@@ -186,18 +155,7 @@ describe('Authentication Flow - Basic Tests', () => {
   describe('Session Persistence', () => {
     it('should maintain login state after page refresh', () => {
       // Setup logged-in state
-      cy.window().then((win) => {
-        const mockUser = {
-          sub: '1',
-          email: 'test@example.com',
-          role: 1,
-          exp: Math.floor(Date.now() / 1000) + 3600,
-          iat: Math.floor(Date.now() / 1000)
-        };
-        
-        win.sessionStorage.setItem('user', JSON.stringify(mockUser));
-        win.sessionStorage.setItem('token', 'mock-jwt-token');
-      });
+      setupMockSession(UserRole.Admin);
 
       cy.visit('/home');
       
@@ -214,18 +172,7 @@ describe('Authentication Flow - Basic Tests', () => {
 
     it('should redirect to login for expired tokens', () => {
       // Setup expired token
-      cy.window().then((win) => {
-        const expiredUser = {
-          sub: '1',
-          email: 'test@example.com',
-          role: 1,
-          exp: Math.floor(Date.now() / 1000) - 3600, // Expired 1 hour ago
-          iat: Math.floor(Date.now() / 1000) - 7200
-        };
-        
-        win.sessionStorage.setItem('user', JSON.stringify(expiredUser));
-        win.sessionStorage.setItem('token', 'expired-mock-jwt-token');
-      });
+      setupMockSession(UserRole.Admin, true);
 
       cy.visit('/home');
       

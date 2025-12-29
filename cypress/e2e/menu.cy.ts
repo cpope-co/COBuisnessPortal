@@ -1,3 +1,5 @@
+import { mockLoginSuccess, mockLogout, setupMockSession, UserRole } from '../support/auth-mocks';
+
 describe('Menu Component E2E Tests', () => {
     beforeEach(() => {
         // Clear any existing session data
@@ -130,7 +132,8 @@ describe('Menu Component E2E Tests', () => {
         });
 
         it('should display menu after successful login', () => {
-
+            // Mock successful login
+            mockLoginSuccess(UserRole.Admin);
 
             // Visit login and authenticate
             cy.visit('/auth/login');
@@ -274,10 +277,7 @@ describe('Menu Component E2E Tests', () => {
             cy.verifyMenuStructure();
 
             // Mock logout
-            cy.intercept('POST', '**/auth/logout', {
-                statusCode: 200,
-                body: { success: true }
-            }).as('logoutRequest');
+            mockLogout();
 
             // Trigger logout (this would typically be done through a logout button)
             cy.window().then((win) => {

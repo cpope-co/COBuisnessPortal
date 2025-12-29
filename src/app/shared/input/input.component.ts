@@ -26,11 +26,11 @@ import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
   styleUrl: './input.component.scss'
 })
 export class InputComponent implements ControlValueAccessor {
-  private _hostId: string = '';
-  
   @HostBinding('id')
   get hostId(): string {
-    return this._hostId;
+    const controlName = this.formControlName();
+    const typeValue = this.type();
+    return controlName && typeValue ? `${typeValue}-${controlName}` : '';
   }  
   
   control = new FormControl();
@@ -43,15 +43,6 @@ export class InputComponent implements ControlValueAccessor {
   formGroup = input.required<FormGroup>();
   model = input.required<{ [key: string]: any }>();
   mask = input<string>();
-
-  constructor() {
-    // Set the ID in the constructor to avoid change detection issues
-    setTimeout(() => {
-      const controlName = this.formControlName();
-      const typeValue = this.type();
-      this._hostId = controlName && typeValue ? `${typeValue}-${controlName}` : '';
-    });
-  }
 
   writeValue(obj: any): void {
     this.control.setValue(obj);

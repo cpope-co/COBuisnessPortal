@@ -1,3 +1,5 @@
+import { mockLoginSuccess, mockLoginError, mockLogout, setupMockSession, UserRole } from '../support/auth-mocks';
+
 describe('Login and Logout Functionality', () => {
   beforeEach(() => {
     // Clear any existing session data
@@ -61,14 +63,8 @@ describe('Login and Logout Functionality', () => {
     });
 
     it('should successfully login with valid credentials', () => {
-      // Intercept the login API call
-      cy.intercept('POST', '**/api/usraut/login', {
-        statusCode: 200,
-        headers: {
-          'x-id': 'mock-jwt-token'
-        },
-        body: { success: true }
-      }).as('loginRequest');
+      // Mock successful login
+      mockLoginSuccess(UserRole.Admin);
 
       // Enter valid credentials
       cy.get('input[type="email"]').type(Cypress.env('testEmail'));
@@ -79,19 +75,8 @@ describe('Login and Logout Functionality', () => {
       // Wait for login request
       cy.wait('@loginRequest');
 
-      // Manually setup the authenticated state after successful API call
-      cy.window().then((win) => {
-        const mockUser = {
-          sub: '1',
-          email: Cypress.env('testEmail'),
-          role: 1,
-          exp: Math.floor(Date.now() / 1000) + 3600,
-          iat: Math.floor(Date.now() / 1000)
-        };
-        
-        win.sessionStorage.setItem('user', JSON.stringify(mockUser));
-        win.sessionStorage.setItem('token', 'mock-jwt-token');
-      });
+      // Setup the authenticated state after successful API call
+      setupMockSession(UserRole.Admin);
 
       // Navigate to home manually to simulate successful login redirect
       cy.visit('/home');
@@ -102,16 +87,14 @@ describe('Login and Logout Functionality', () => {
     });
 
     it('should handle network errors gracefully', () => {
-      // Intercept login request to simulate network error
-      cy.intercept('POST', '**/api/usraut/login', {
-        forceNetworkError: true
-      }).as('loginNetworkError');
+      // Mock network error
+      mockLoginError('network');
 
       cy.get('input[type="email"]').type(Cypress.env('testEmail'));
       cy.get('input[type="password"]').type(Cypress.env('testPassword'));
       cy.get('button[type="submit"]').click();
 
-      cy.wait('@loginNetworkError');
+      cy.wait('@loginRequest');
 
       // Should show error message
       cy.contains('Invalid email or password').should('be.visible');
@@ -133,24 +116,10 @@ describe('Login and Logout Functionality', () => {
   describe('Logout Functionality', () => {
     beforeEach(() => {
       // Setup logged-in state
-      cy.window().then((win) => {
-        const mockUser = {
-          sub: '1',
-          email: Cypress.env('testEmail'),
-          role: 1,
-          exp: Math.floor(Date.now() / 1000) + 3600,
-          iat: Math.floor(Date.now() / 1000)
-        };
-        
-        win.sessionStorage.setItem('user', JSON.stringify(mockUser));
-        win.sessionStorage.setItem('token', 'mock-jwt-token');
-      });
+      setupMockSession(UserRole.Admin);
 
-      // Intercept logout API call
-      cy.intercept('POST', '**/api/usraut/logout', {
-        statusCode: 200,
-        body: { success: true }
-      }).as('logoutRequest');
+      // Mock logout API call
+      mockLogout();
 
       // Visit home page as logged-in user
       cy.visit('/home');
@@ -188,7 +157,7 @@ describe('Login and Logout Functionality', () => {
     });
 
     it('should handle logout network errors gracefully', () => {
-      // Intercept logout to simulate network error
+      // Mock logout to simulate network error - override the beforeEach mock
       cy.intercept('POST', '**/api/usraut/logout', {
         forceNetworkError: true
       }).as('logoutNetworkError');
@@ -228,18 +197,7 @@ describe('Login and Logout Functionality', () => {
   describe('Session Management', () => {
     it('should persist login state across page refreshes', () => {
       // Setup logged-in state
-      cy.window().then((win) => {
-        const mockUser = {
-          sub: '1',
-          email: Cypress.env('testEmail'),
-          role: 1,
-          exp: Math.floor(Date.now() / 1000) + 3600,
-          iat: Math.floor(Date.now() / 1000)
-        };
-        
-        win.sessionStorage.setItem('user', JSON.stringify(mockUser));
-        win.sessionStorage.setItem('token', 'mock-jwt-token');
-      });
+      setupMockSession(UserRole.Admin);
 
       cy.visit('/home');
       
@@ -256,18 +214,7 @@ describe('Login and Logout Functionality', () => {
 
     it('should handle expired tokens by redirecting to login', () => {
       // Setup expired token
-      cy.window().then((win) => {
-        const expiredUser = {
-          sub: '1',
-          email: Cypress.env('testEmail'),
-          role: 1,
-          exp: Math.floor(Date.now() / 1000) - 3600, // Expired 1 hour ago
-          iat: Math.floor(Date.now() / 1000) - 7200
-        };
-        
-        win.sessionStorage.setItem('user', JSON.stringify(expiredUser));
-        win.sessionStorage.setItem('token', 'expired-mock-jwt-token');
-      });
+      setupMockSession(UserRole.Admin, true);
 
       cy.visit('/home');
       

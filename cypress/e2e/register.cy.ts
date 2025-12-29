@@ -1,6 +1,9 @@
+import { mockRegister, mockCategoryManagers, mockRecaptcha, UserRole } from '../support/auth-mocks';
+
 describe('Registration Component E2E Tests', () => {
   beforeEach(() => {
     // Mock category managers API for all tests (service calls GET .../api/register)
+    // Note: This endpoint differs from the auth-mocks endpoint, so we keep custom mock here
     cy.intercept('GET', '**/api/register', {
       statusCode: 200,
       body: {
@@ -232,11 +235,7 @@ describe('Registration Component E2E Tests', () => {
       }).as('registerSupplier');
 
       // Mock reCAPTCHA
-      cy.window().then((win: any) => {
-        win.grecaptcha = {
-          execute: cy.stub().resolves('mock-recaptcha-token')
-        };
-      });
+      mockRecaptcha();
 
       cy.get('mat-radio-button').contains('Supplier').click();
       cy.fillSupplierForm();
@@ -259,11 +258,7 @@ describe('Registration Component E2E Tests', () => {
       }).as('registerRetailer');
 
       // Mock reCAPTCHA
-      cy.window().then((win: any) => {
-        win.grecaptcha = {
-          execute: cy.stub().resolves('mock-recaptcha-token')
-        };
-      });
+      mockRecaptcha();
 
       cy.get('mat-radio-button').contains('Retailer').click();
       cy.fillRetailerForm();
@@ -296,11 +291,7 @@ describe('Registration Component E2E Tests', () => {
       }).as('registerError');
 
       // Mock reCAPTCHA
-      cy.window().then((win: any) => {
-        win.grecaptcha = {
-          execute: cy.stub().resolves('mock-recaptcha-token')
-        };
-      });
+      mockRecaptcha();
 
       cy.get('mat-radio-button').contains('Supplier').click();
       cy.fillSupplierWithInUseEmail();
@@ -342,11 +333,7 @@ describe('Registration Component E2E Tests', () => {
       }).as('emailInUseError');
 
       // Mock reCAPTCHA
-      cy.window().then((win: any) => {
-        win.grecaptcha = {
-          execute: cy.stub().resolves('mock-recaptcha-token')
-        };
-      });
+      mockRecaptcha();
 
       cy.get('mat-radio-button').contains('Supplier').click();
       cy.fillSupplierWithInUseEmail();
@@ -374,11 +361,7 @@ describe('Registration Component E2E Tests', () => {
       }).as('userExistsError');
 
       // Mock reCAPTCHA
-      cy.window().then((win: any) => {
-        win.grecaptcha = {
-          execute: cy.stub().resolves('mock-recaptcha-token')
-        };
-      });
+      mockRecaptcha();
 
       cy.get('mat-radio-button').contains('Supplier').click();
       cy.fillSupplierWithInUseEmail();
@@ -432,11 +415,7 @@ describe('Registration Component E2E Tests', () => {
       }).as('registerSuccess');
 
       // Mock reCAPTCHA
-      cy.window().then((win: any) => {
-        win.grecaptcha = {
-          execute: cy.stub().resolves('mock-recaptcha-token')
-        };
-      });
+      mockRecaptcha();
 
       cy.fillSupplierForm();
       cy.get('button').contains('Submit').click();
@@ -582,32 +561,4 @@ describe('Registration Component E2E Tests', () => {
     });
   });
 
-  xdescribe('reCAPTCHA Integration', () => {
-    it('should include reCAPTCHA token in registration request', () => {
-      let requestBody = {};
-
-      cy.intercept('POST', '**/api/register', (req) => {
-        requestBody = req.body;
-        req.reply({
-          statusCode: 200,
-          body: { success: true, data: {}, validationErrors: [] }
-        });
-      }).as('registerWithRecaptcha');
-
-      // Mock reCAPTCHA
-      cy.window().then((win: any) => {
-        win.grecaptcha = {
-          execute: cy.stub().resolves('test-recaptcha-token-123')
-        };
-      });
-
-      cy.get('mat-radio-button').contains('Supplier').click();
-      cy.fillSupplierForm();
-      cy.get('button').contains('Submit').click();
-
-      cy.wait('@registerWithRecaptcha').then(() => {
-        expect(requestBody).to.have.property('wrecaptchatoken', 'test-recaptcha-token-123');
-      });
-    });
-  });
 });

@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Validate JSON syntax only (lightweight check)
+echo "Validating fixture JSON syntax..."
+npx jsonlint cypress/fixtures/auth/*.json -q || {
+  echo "❌ JSON validation failed! Fix fixture syntax before committing."
+  echo "Run 'npm run validate:fixtures' for detailed validation."
+  exit 1
+}
+echo "✅ JSON fixtures valid"
+

@@ -1,0 +1,63 @@
+@if(customer() && form) {
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>
+            <h1>Edit Customer</h1>
+        </mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="mt-4">
+        <!-- Read-only Customer Info -->
+        <div class="mb-4 p-3 bg-light rounded">
+            <h5 class="mb-3">Customer Information</h5>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="mb-2">
+                        <strong>Customer Number:</strong> {{ customer()?.CustNumber }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Customer Name:</strong> {{ customer()?.CustName }}
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="mb-2">
+                        <strong>Address:</strong> {{ customer()?.CustAddress }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Current Type:</strong> {{ customer()?.CustTypeDesc }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Editable Form Fields -->
+        <form [formGroup]="form">
+            <div class="row justify-content-xl-start justify-content-xxl-center">
+                <div class="col-12 col-xl-6 col-xxl-4">
+                    <co-select
+                        [formGroup]="form"
+                        [label]="'Customer Type'"
+                        [formControlName]="'CustTypeCode'"
+                        [options]="custTypeOptions"
+                        [placeholder]="'Select customer type'"
+                        [model]="customerForm"
+                    />
+                    <app-checkbox
+                        [formGroup]="form"
+                        [label]="'Likes Candy'"
+                        [formControlName]="'CandyLiker'"
+                        [options]="[]"
+                        [placeholder]="'Customer likes candy'"
+                        [model]="customerForm"
+                    />
+                </div>
+            </div>
+        </form>
+    </mat-card-content>
+    <mat-card-actions align="end">
+        <button mat-button color="warn" (click)="onCancel($event)">Cancel</button>
+        <button mat-raised-button color="primary" (click)="onSave()">
+            Save
+        </button>
+    </mat-card-actions>
+</mat-card>
+}

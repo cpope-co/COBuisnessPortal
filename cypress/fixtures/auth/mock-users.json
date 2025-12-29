@@ -1,0 +1,44 @@
+{
+  "admin": {
+    "sub": "1",
+    "email": "testuser@chambers-owen.com",
+    "role": 1,
+    "exp": 0,
+    "iat": 0
+  },
+  "customer": {
+    "sub": "2",
+    "email": "cstore@draxlers.com",
+    "role": 2,
+    "exp": 0,
+    "iat": 0
+  },
+  "vendor": {
+    "sub": "3",
+    "email": "jvigna@swisher.com",
+    "role": 3,
+    "exp": 0,
+    "iat": 0
+  },
+  "employee": {
+    "sub": "4",
+    "email": "bart@bart.com",
+    "role": 4,
+    "exp": 0,
+    "iat": 0
+  },
+  "apiUser": {
+    "sub": "5",
+    "email": "apiuser@example.com",
+    "role": 5,
+    "exp": 0,
+    "iat": 0
+  },
+  "employeeSales": {
+    "sub": "6",
+    "email": "ryan@blackbuffalo.com",
+    "role": 6,
+    "exp": 0,
+    "iat": 0
+  }
+}

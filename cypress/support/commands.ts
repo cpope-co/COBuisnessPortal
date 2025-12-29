@@ -1,9 +1,18 @@
 /// <reference types="cypress" />
 
+// Import auth-mocks for centralized authentication mocking
+import { 
+  mockLoginSuccess, 
+  mockLogout, 
+  setupMockSession, 
+  clearAuthSession,
+  UserRole 
+} from './auth-mocks';
+
 // Custom commands for the COBusiness Portal e2e tests
 
 /**
- * Custom command to login a user
+ * Custom command to login a user (uses mock authentication)
  */
 // @ts-ignore
 Cypress.Commands.add('login', (email: string, password: string) => {
@@ -12,14 +21,8 @@ Cypress.Commands.add('login', (email: string, password: string) => {
   cy.clearAllLocalStorage();
   cy.clearAllSessionStorage();
 
-  // Mock the login API response
-  cy.intercept('POST', '**/api/usraut/login', {
-    statusCode: 200,
-    headers: {
-      'x-id': 'mock-jwt-token'
-    },
-    body: { success: true }
-  }).as('loginRequest');
+  // Setup mock login response
+  mockLoginSuccess(UserRole.Admin);
 
   // Visit login page
   cy.visit('/auth/login');
@@ -29,33 +32,17 @@ Cypress.Commands.add('login', (email: string, password: string) => {
   cy.get('input[type="password"]').type(password);
   cy.get('button[type="submit"]').click();
 
-  // Wait for the request and setup session storage
-  cy.wait('@loginRequest').then(() => {
-    cy.window().then((win) => {
-      const mockUser = {
-        sub: '1',
-        email: email,
-        role: 1,
-        exp: Math.floor(Date.now() / 1000) + 3600,
-        iat: Math.floor(Date.now() / 1000)
-      };
-
-      win.sessionStorage.setItem('user', JSON.stringify(mockUser));
-      win.sessionStorage.setItem('token', 'mock-jwt-token');
-    });
-  });
+  // Wait for the request and setup session will happen automatically via auth-mocks
+  cy.wait('@loginRequest');
 });
 
 /**
- * Custom command to logout a user
+ * Custom command to logout a user (uses mock authentication)
  */
 // @ts-ignore
 Cypress.Commands.add('logout', () => {
-  // Mock the logout API response
-  cy.intercept('POST', '**/api/usraut/logout', {
-    statusCode: 200,
-    body: { success: true }
-  }).as('logoutRequest');
+  // Setup mock logout response
+  mockLogout();
 
   // Click profile menu and logout
   cy.get('button').contains('Profile').click();
@@ -67,21 +54,11 @@ Cypress.Commands.add('logout', () => {
 
 /**
  * Custom command to setup a logged-in user session without going through the UI
+ * Now uses centralized auth-mocks for consistency
  */
 // @ts-ignore
 Cypress.Commands.add('setupLoggedInUser', (userRole: number = 1) => {
-  cy.window().then((win) => {
-    const mockUser = {
-      sub: '1',
-      email: Cypress.env('testEmail'),
-      role: userRole,
-      exp: Math.floor(Date.now() / 1000) + 3600,
-      iat: Math.floor(Date.now() / 1000)
-    };
-
-    win.sessionStorage.setItem('user', JSON.stringify(mockUser));
-    win.sessionStorage.setItem('token', 'mock-jwt-token');
-  });
+  setupMockSession(userRole as UserRole);
 });
 
 /**
@@ -92,6 +69,7 @@ Cypress.Commands.add('clearSession', () => {
   cy.clearAllCookies();
   cy.clearAllLocalStorage();
   cy.clearAllSessionStorage();
+  clearAuthSession();
 });
 
 /**
@@ -230,6 +208,7 @@ Cypress.Commands.add('tab', { prevSubject: true }, (subject) => {
 
 /**
  * Custom command to setup authenticated user for menu testing
+ * Now uses mock sessions instead of real credentials
  */
 // @ts-ignore
 Cypress.Commands.add('setupAuthenticatedUser', (userRole: number = 2) => {
@@ -238,44 +217,25 @@ Cypress.Commands.add('setupAuthenticatedUser', (userRole: number = 2) => {
   cy.clearAllLocalStorage();
   cy.clearAllSessionStorage();
 
-  // Define real test users by role
-  const testUsers: {
-    [key in 1 | 2 | 3 | 4 | 6]: { email: string; password: string; type: string }
-  } = {
-    1: { email: 'testuser@chambers-owen.com', password: 'it2T*&gf', type: 'Admin' },
-    2: { email: 'cstore@draxlers.com', password: 'HeavenHill17!', type: 'Customer' },
-    3: { email: 'jvigna@swisher.com', password: 'HeavenHill17!', type: 'Vendor' },
-    4: { email: 'bart@bart.com', password: 'HeavenHill17!', type: 'Employee' },
-    6: { email: 'ryan@blackbuffalo.com', password: 'HeavenHill17!', type: 'Employee-Sales' }
-  };
-
-  const user = testUsers[userRole as 1 | 2 | 3 | 4 | 6];
-  if (!user) {
-    throw new Error(`No test user defined for role ID: ${userRole}. Available roles: ${Object.keys(testUsers).join(', ')}`);
-  }
-
-  // Visit login page and authenticate with real credentials
-  cy.visit('/auth/login');
-
-  // Wait for the login form to be ready
-  cy.get('input[type="email"]').should('be.visible');
-  cy.get('input[type="password"]').should('be.visible');
-
-  // Fill in the real credentials for the specified role
-  cy.get('input[type="email"]').type(user.email);
-  cy.get('input[type="password"]').type(user.password);
-
-  // Submit the form
-  cy.get('button').contains('Login').click();
-
-  // Wait for successful login by checking we're redirected away from login page
-  cy.url().should('not.include', '/auth/login');
-
+  // Setup mock authenticated session
+  setupMockSession(userRole as UserRole);
+  
+  // Visit home page (will be authenticated)
+  cy.visit('/');
+  
   // Wait for the application to be ready
-  cy.get('co-menu').should('exist');
+  cy.get('co-menu', { timeout: 10000 }).should('exist');
   
   // Log which user we're testing with
-  cy.log(`Authenticated as ${user.type} (Role ${userRole}): ${user.email}`);
+  const roleNames: {[key: number]: string} = {
+    1: 'Admin',
+    2: 'Customer', 
+    3: 'Vendor',
+    4: 'Employee',
+    5: 'API User',
+    6: 'Employee-Sales'
+  };
+  cy.log(`Authenticated as ${roleNames[userRole]} (Role ${userRole})`);
 });
 
 /**

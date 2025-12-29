@@ -1,11 +1,17 @@
 /// <reference types="cypress" />
 
+// Import auth-mocks types
+import { UserRole, ErrorType, MockUser, MockLoginResponse } from './auth-mocks';
+
 declare global {
   interface Window {
     grecaptcha?: {
       execute: (action: string) => Promise<string>;
     };
   }
+
+  // Export auth-mocks types globally
+  export { UserRole, ErrorType, MockUser, MockLoginResponse };
 }
 
 declare namespace Cypress {

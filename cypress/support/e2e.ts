@@ -15,3 +15,6 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+
+// Import auth-mocks to make it available globally in all tests
+import './auth-mocks'

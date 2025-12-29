@@ -24,13 +24,6 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       require('cypress-mochawesome-reporter/plugin')(on);
       return config;
-    },
-    env: {
-      // Test user credentials (these should be valid test accounts)
-      testEmail: 'testuser@chambers-owen.com',
-      testPassword: 'it2T*&gf',
-      invalidEmail: 'invalid@example.com',
-      invalidPassword: 'wrongpassword'
     }
   },
 });

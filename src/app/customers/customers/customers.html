@@ -1,0 +1,16 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>
+            <h1>Sample Application - Customer List</h1>
+        </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <co-table
+            [data]="sampleData()"
+            [columns]="tableColumns"
+            [config]="tableConfig"
+            (rowClick)="onRowClick($event)"
+        >
+        </co-table>
+    </mat-card-content>
+</mat-card>

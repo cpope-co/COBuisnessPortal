@@ -1,0 +1,82 @@
+
+> cobusiness-portal@0.0.0 test:ci
+> ng test --watch=false  --code-coverage
+
+[1m[33m[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`[39m[22m
+[33m❯[39m Building...
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[32m✔[39m Building...
+Application bundle generation failed. [9.361 seconds] - 2025-12-23T20:17:54.499Z
+
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'formHandlerService' does not exist on type 'LoginComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/auth/login/login.component.spec.ts:137:23:
+[37m      137 │       expect(component.[32mformHandlerService[37m).toBeTruthy();
+          ╵                        [32m~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'form' does not exist on type 'LoginComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/auth/login/login.component.spec.ts:143:23:
+[37m      143 │       expect(component.[32mform[37m).toBeTruthy();
+          ╵                        [32m~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2551: Property 'login' does not exist on type 'LoginComponent'. Did you mean 'onLogin'?[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/auth/login/login.component.spec.ts:148:23:
+[37m      148 │       expect(component.[32mlogin[37m).toBe(login);
+          ╵                        [32m~~~~~[0m
+
+  'onLogin' is declared here.
+
+    src/app/auth/login/login.component.ts:57:8:
+[37m      57 │   async [32monLogin[37m(event?: Event) {
+         ╵         [32m~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'form' does not exist on type 'LoginComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/auth/login/login.component.spec.ts:285:38:
+[37m      285 │ ...ect.defineProperty(component.[32mform[37m, 'value', { get: () => formV...
+          ╵                                 [32m~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'form' does not exist on type 'LoginComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/auth/login/login.component.spec.ts:300:38:
+[37m      300 │ ...ect.defineProperty(component.[32mform[37m, 'invalid', { get: () => tru...
+          ╵                                 [32m~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'form' does not exist on type 'LoginComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/auth/login/login.component.spec.ts:310:38:
+[37m      310 │ ...ect.defineProperty(component.[32mform[37m, 'invalid', { get: () => tru...
+          ╵                                 [32m~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'form' does not exist on type 'LoginComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/auth/login/login.component.spec.ts:320:38:
+[37m      320 │ ...ect.defineProperty(component.[32mform[37m, 'invalid', { get: () => fal...
+          ╵                                 [32m~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'form' does not exist on type 'LoginComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/auth/login/login.component.spec.ts:339:38:
+[37m      339 │       Object.defineProperty(component.[32mform[37m, 'value', {
+          ╵                                       [32m~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'form' does not exist on type 'LoginComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/auth/login/login.component.spec.ts:699:38:
+[37m      699 │ ...ect.defineProperty(component.[32mform[37m, 'invalid', { get: () => tru...
+          ╵                                 [32m~~~~[0m
+
+[39m[22m
