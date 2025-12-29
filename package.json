@@ -57,10 +57,11 @@
     "@angular/router": "^21.0.2",
     "bootstrap": "^5.3.7",
     "jwt-decode": "^4.0.0",
-    "ng-recaptcha-2": "^16.0.1",
+    "ng-recaptcha-2": "^21.0.1",
     "ngx-mask": "^20.0.3",
     "rxjs": "~7.8.2",
     "tslib": "^2.3.0",
+    "underscore": "^1.12.1",
     "vite": "^7.2.6",
     "zone.js": "~0.15.1"
   },

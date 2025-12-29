@@ -8,20 +8,22 @@
         <mat-card-subtitle class="mt-2"><h2>Login</h2></mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <form (submit)="onLogin($event)">
-          <co-signal-input
+        <form [formGroup]="loginForm" (submit)="onLogin($event)">
+          <co-input
             [label]="'Email'"
             [type]="'email'"
-            [field]="loginForm.email"
-            [fieldConfig]="loginConfig.email"
-            placeholder="Enter your email address"
+            [formControlName]="'email'"
+            [formGroup]="loginForm"
+            [model]="loginModel"
+            [placeholder]="'Enter your email address'"
           />
-          <co-signal-input
+          <co-input
             [label]="'Password'"
             [type]="'password'"
-            [field]="loginForm.password"
-            [fieldConfig]="loginConfig.password"
-            placeholder="Enter your password"
+            [formControlName]="'password'"
+            [formGroup]="loginForm"
+            [model]="loginModel"
+            [placeholder]="'Enter your password'"
           />
 
           <button

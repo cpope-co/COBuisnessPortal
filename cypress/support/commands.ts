@@ -32,8 +32,11 @@ Cypress.Commands.add('login', (email: string, password: string) => {
   cy.get('input[type="password"]').type(password);
   cy.get('button[type="submit"]').click();
 
-  // Wait for the request and setup session will happen automatically via auth-mocks
+  // Wait for the request - the app should handle session storage
   cy.wait('@loginRequest');
+  
+  // Give the app time to process the response and set session
+  cy.wait(100);
 });
 
 /**

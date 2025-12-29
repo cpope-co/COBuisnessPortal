@@ -140,12 +140,12 @@ describe('LoginComponent', () => {
     it('should initialize form with login model', () => {
       fixture.detectChanges();
       expect(mockFormHandlingService.createFormGroup).toHaveBeenCalledWith(login);
-      expect(component.form).toBeTruthy();
+      expect(component.loginForm).toBeTruthy();
     });
 
     it('should set login model reference', () => {
       fixture.detectChanges();
-      expect(component.login).toBe(login);
+      expect(component.loginConfig).toBe(login);
     });
   });
 
@@ -282,11 +282,32 @@ describe('LoginComponent', () => {
     it('should extract email and password from form value', async () => {
       mockAuthService.login.and.returnValue(Promise.resolve(mockUser));
       const formValue = { email: 'user@test.com', password: 'testpass' };
-      Object.defineProperty(component.form, 'value', { get: () => formValue });
+      Object.defineProperty(component.loginForm, 'value', { get: () => formValue, configurable: true });
 
       await component.onLogin();
 
       expect(mockAuthService.login).toHaveBeenCalledWith('user@test.com', 'testpass');
+    });
+
+    it('should pass actual form values to authService, not loginModel', async () => {
+      // Verify the fix: form values (not loginModel) are passed to authService
+      mockAuthService.login.and.returnValue(Promise.resolve(mockUser));
+      mockRouter.navigate.and.returnValue(Promise.resolve(true));
+      
+      // Set form values directly
+      component.loginForm.patchValue({
+        email: 'actual@form.com',
+        password: 'formPassword123'
+      });
+      
+      // Ensure loginModel is different (should NOT be used)
+      component.loginModel = { email: 'wrong@model.com', password: 'wrongPassword' };
+
+      await component.onLogin();
+
+      // Verify authService was called with form values, not loginModel values
+      expect(mockAuthService.login).toHaveBeenCalledWith('actual@form.com', 'formPassword123');
+      expect(mockAuthService.login).not.toHaveBeenCalledWith('wrong@model.com', 'wrongPassword');
     });
   });
 
@@ -297,7 +318,7 @@ describe('LoginComponent', () => {
     });
 
     it('should show error message when form is invalid', async () => {
-      Object.defineProperty(component.form, 'invalid', { get: () => true });
+      Object.defineProperty(component.loginForm, 'invalid', { get: () => true, configurable: true });
 
       await component.onLogin();
 
@@ -307,7 +328,7 @@ describe('LoginComponent', () => {
     });
 
     it('should not proceed with login when form is invalid', async () => {
-      Object.defineProperty(component.form, 'invalid', { get: () => true });
+      Object.defineProperty(component.loginForm, 'invalid', { get: () => true, configurable: true });
 
       await component.onLogin();
 
@@ -317,7 +338,7 @@ describe('LoginComponent', () => {
     });
 
     it('should validate form before attempting login', async () => {
-      Object.defineProperty(component.form, 'invalid', { get: () => false });
+      Object.defineProperty(component.loginForm, 'invalid', { get: () => false, configurable: true });
       mockAuthService.login.and.returnValue(Promise.resolve(mockUser));
 
       await component.onLogin();
@@ -336,8 +357,9 @@ describe('LoginComponent', () => {
       mockAuthService.login.and.returnValue(Promise.resolve(mockUser));
       const testEmail = 'test@example.com';
       const testPassword = 'password123';
-      Object.defineProperty(component.form, 'value', { 
-        get: () => ({ email: testEmail, password: testPassword }) 
+      Object.defineProperty(component.loginForm, 'value', { 
+        get: () => ({ email: testEmail, password: testPassword }),
+        configurable: true
       });
 
       await component.onLogin();
@@ -696,7 +718,7 @@ describe('LoginComponent', () => {
     });
 
     it('should maintain Material component integrity during form validation errors', async () => {
-      Object.defineProperty(component.form, 'invalid', { get: () => true });
+      Object.defineProperty(component.loginForm, 'invalid', { get: () => true, configurable: true });
       
       const loginButton = await loader.getHarness(MatButtonHarness.with({ text: 'Login' }));
       await loginButton.click();

@@ -5,9 +5,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { SessionService } from '../../services/session.service';
 import { MessagesService } from '../../messages/messages.service';
-import { SignalInputComponent } from '../../shared/signal-input/signal-input.component';
-import { SignalFormHandlerService } from '../../services/signal-form-handler.service';
-import { LoginData, loginSignal } from '../../models/login-signal.model';
+import { InputComponent } from '../../shared/input/input.component';
+import { FormHandlingService } from '../../services/form-handling.service';
+import { login, Login } from '../../models/login.model';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-login',
@@ -15,7 +16,8 @@ import { LoginData, loginSignal } from '../../models/login-signal.model';
         RouterLink,
         MatButtonModule,
         MatCardModule,
-        SignalInputComponent
+        InputComponent,
+        ReactiveFormsModule
     ],
     templateUrl: './login.component.html',
     styleUrl: './login.component.scss'
@@ -27,7 +29,7 @@ export class LoginComponent implements OnInit {
   messageService = inject(MessagesService);
   router = inject(Router);
   route = inject(ActivatedRoute);
-  signalFormHandler = inject(SignalFormHandlerService);
+  formHandlerService = inject(FormHandlingService);
 
   ngOnInit() {
     // Check for logout message in query parameters
@@ -41,32 +43,27 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  // Signal form configuration
-  loginConfig = loginSignal;
+  // Form configuration
+  loginConfig = login;
   
-  // Create signal form with validation
-  private _loginForm = this.signalFormHandler.createSignalForm<LoginData>(
-    loginSignal,
-    { email: '', password: '' }
-  );
-  
-  // Expose form and model separately
-  loginForm = this._loginForm.form;
-  loginModel = this._loginForm.model;
+  // Create form with validation
+  loginForm: FormGroup = this.formHandlerService.createFormGroup(login);
+  loginModel = { email: '', password: '' };
 
   async onLogin(event?: Event) {
     if (event) {
       event.preventDefault();
     }
     try {
-      // Use the service helper to check form validity
-      if(!this.signalFormHandler.isFormValid(this.loginForm)) {
+      // Check form validity
+      if(!this.loginForm.valid) {
+        this.loginForm.markAllAsTouched();
         this.messageService.showMessage('Please correct the errors on the form.', 'danger');
         return;
       }
 
-      // Get values from the model signal
-      const { email, password } = this.loginModel();
+      // Get values from the form
+      const { email, password } = this.loginForm.value;
 
       await this.authService.login(email, password);
       this.sessionService.startSessionCheck();
