@@ -102,7 +102,7 @@ describe('SessionService', () => {
       service.saveSessionState();
 
       expect(sessionStorage.getItem('sessionTimeout')).toBe(`${mockUserData.exp}`);
-      expect(sessionStorage.getItem('warningTimeout')).toBe(`${mockUserData.exp - 120}`);
+      expect(sessionStorage.getItem('warningTimeout')).toBe(`${mockUserData.exp - 180}`);
     });
 
     it('should not save session state when user is null', () => {
@@ -352,32 +352,30 @@ describe('SessionService', () => {
   });
 
   describe('canRefresh Method', () => {
-    it('should return true when refresh token is not expired', () => {
-      const futureRefExp = Math.floor(Date.now() / 1000) + 7200; // 2 hours from now
+    it('should return true when token expires soon (within 3 minutes)', () => {
+      const currentTime = Math.floor(Date.now() / 1000);
       mockUser.set({
         id: 1,
         username: 'testuser',
-        exp: Math.floor(Date.now() / 1000) + 3600,
-        refexp: futureRefExp
+        exp: currentTime + 120 // Expires in 2 minutes (within 3 minute window)
       });
 
       const result = service.canRefresh();
 
-      expect(result).toBe(false); // Returns false when refresh token is still valid
+      expect(result).toBe(true); // Can refresh when token expires soon
     });
 
-    it('should return false when refresh token is expired', () => {
-      const pastRefExp = Math.floor(Date.now() / 1000) - 3600; // 1 hour ago
+    it('should return false when token has not yet entered refresh window', () => {
+      const currentTime = Math.floor(Date.now() / 1000);
       mockUser.set({
         id: 1,
         username: 'testuser',
-        exp: Math.floor(Date.now() / 1000) + 3600,
-        refexp: pastRefExp
+        exp: currentTime + 3600 // Expires in 1 hour (outside 3 minute window)
       });
 
       const result = service.canRefresh();
 
-      expect(result).toBe(true); // Returns true when refresh token is expired
+      expect(result).toBe(false); // Cannot refresh yet - token is still fresh
     });
 
     it('should logout and return false when user is null', () => {
@@ -388,17 +386,17 @@ describe('SessionService', () => {
       expect(result).toBe(false);
     });
 
-    it('should handle user without refexp property', () => {
+    it('should return true when token recently expired (within grace period)', () => {
+      const currentTime = Math.floor(Date.now() / 1000);
       mockUser.set({
         id: 1,
         username: 'testuser',
-        exp: Math.floor(Date.now() / 1000) + 3600
-        // No refexp property
+        exp: currentTime - 30 // Expired 30 seconds ago (within 60 second grace period)
       });
 
       const result = service.canRefresh();
 
-      expect(result).toBe(false); // Should return false when refexp is undefined
+      expect(result).toBe(true); // Can refresh within grace period
     });
   });
 

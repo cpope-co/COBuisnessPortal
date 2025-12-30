@@ -8,6 +8,7 @@ import { RefreshSessionDialogComponent, openRefreshSessionDialog } from './refre
 import { RefreshSessionDialogData } from './refresh-session-dialog.data.model';
 import { AuthService } from '../../auth/auth.service';
 import { SessionService } from '../../services/session.service';
+import { MessagesService } from '../../messages/messages.service';
 
 describe('RefreshSessionDialogComponent', () => {
   let component: RefreshSessionDialogComponent;
@@ -15,6 +16,7 @@ describe('RefreshSessionDialogComponent', () => {
   let mockDialogRef: jasmine.SpyObj<MatDialogRef<RefreshSessionDialogComponent>>;
   let mockAuthService: jasmine.SpyObj<AuthService>;
   let mockSessionService: jasmine.SpyObj<SessionService>;
+  let mockMessagesService: jasmine.SpyObj<MessagesService>;
   let mockDialog: jasmine.SpyObj<MatDialog>;
   let mockDialogData: RefreshSessionDialogData;
 
@@ -23,6 +25,7 @@ describe('RefreshSessionDialogComponent', () => {
     mockDialogRef = jasmine.createSpyObj('MatDialogRef', ['close', 'afterClosed']);
     mockAuthService = jasmine.createSpyObj('AuthService', ['logout', 'refreshToken']);
     mockSessionService = jasmine.createSpyObj('SessionService', ['resetSession', 'clearSession']);
+    mockMessagesService = jasmine.createSpyObj('MessagesService', ['showMessage']);
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
 
     // Mock dialog data
@@ -46,7 +49,8 @@ describe('RefreshSessionDialogComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: AuthService, useValue: mockAuthService },
-        { provide: SessionService, useValue: mockSessionService }
+        { provide: SessionService, useValue: mockSessionService },
+        { provide: MessagesService, useValue: mockMessagesService }
       ]
     })
     .compileComponents();
@@ -168,12 +172,15 @@ describe('RefreshSessionDialogComponent', () => {
     });
 
     it('should propagate refresh errors', async () => {
-      const error = new Error('Refresh failed');
-      mockSessionService.resetSession.and.throwError(error);
+      const error = { status: 401, message: 'Unauthorized' };
+      mockSessionService.resetSession.and.returnValue(Promise.reject(error));
       
-      await expectAsync(component.onRefresh()).toBeRejected();
+      await component.onRefresh();
       
       expect(mockSessionService.resetSession).toHaveBeenCalled();
+      expect(mockMessagesService.showMessage).toHaveBeenCalled();
+      expect(mockAuthService.logout).toHaveBeenCalledWith('token-expired');
+      expect(mockDialogRef.close).toHaveBeenCalled();
     });
   });
 

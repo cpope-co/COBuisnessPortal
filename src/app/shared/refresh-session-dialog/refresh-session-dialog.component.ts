@@ -33,8 +33,13 @@ export class RefreshSessionDialogComponent {
       // Refresh the session
       await this.sessionService.resetSession();
       this.dialogRef.close();
-    } catch (error) {
-      this.messageService.showMessage('Session refresh failed. Please log in again.', 'danger');
+    } catch (error: any) {
+      // Differentiate between expired refresh token (401) and other errors
+      if (error?.status === 401) {
+        this.messageService.showMessage('Your session has expired. Please log in again.', 'danger');
+      } else {
+        this.messageService.showMessage('Session refresh failed due to a network error. Please try again or log in.', 'danger');
+      }
       await this.authService.logout('token-expired');
       this.dialogRef.close();
     }

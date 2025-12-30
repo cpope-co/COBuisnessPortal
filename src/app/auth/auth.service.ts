@@ -269,17 +269,13 @@ export class AuthService {
     }
     
     async refresh(): Promise<User> {
-        const headers = new HttpHeaders({
-            'Authorization': `Bearer ${this.token()}`
-        });
-
         const context = new HttpContext().set(SKIP_REFRESH_KEY, true).set(SKIP_AUTH_KEY, true);
         const response = await firstValueFrom(this.http.get<{
             success?: boolean;
             permissions?: Array<{ resource: string; per: number }>;
         }>(
             `${this.env.apiBaseUrl}usraut/refresh`,
-            { headers, observe: 'response', withCredentials: true, context }
+            { observe: 'response', withCredentials: true, context }
         ));
 
         const token = response.headers.get('x-id');

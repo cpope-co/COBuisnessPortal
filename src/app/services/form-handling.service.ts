@@ -82,7 +82,12 @@ export class FormHandlingService {
       }
       // Fallback to existing error handling logic
       const errorKey = Object.keys(control.errors)[0];
-      return model[controlName].ErrorMessages[errorKey];
+      const modelField = model[controlName];
+      if (modelField?.ErrorMessages?.[errorKey]) {
+        return modelField.ErrorMessages[errorKey];
+      }
+      // Return a generic error message if model field or error message is missing
+      return `${controlName} ${errorKey}`;
     }
     return '';
   }

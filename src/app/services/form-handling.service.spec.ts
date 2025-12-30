@@ -305,7 +305,7 @@ describe('FormHandlingService', () => {
 
       const errorMessage = service.getErrorMessages(incompleteFormGroup, 'username', incompleteModel);
 
-      expect(errorMessage).toBeUndefined();
+      expect(errorMessage).toBe('username required');
     });
   });
 

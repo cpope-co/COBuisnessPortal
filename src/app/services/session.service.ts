@@ -136,12 +136,14 @@ export class SessionService {
     canRefresh(): boolean {
         const user = this.authService.user();
         if (!user) {
-            return false; // Don't call logout here, let the caller handle it
+            return false;
         }
-        // Return true if refresh token is STILL VALID (not expired)
-        if (user?.refexp && user.refexp * 1000 > Date.now()) {
-            return true;
-        }
-        return false;
+        // Since refexp is not in the access token JWT, we assume the refresh token
+        // is valid for ~1 minute after the access token expires (based on backend behavior)
+        const currentTime = Math.floor(Date.now() / 1000);
+        const timeUntilExpiry = user.exp - currentTime;
+        
+        // Can refresh if token expires within next 3 minutes but hasn't been expired for more than 60 seconds
+        return timeUntilExpiry <= 180 && timeUntilExpiry > -60;
     }
 }

@@ -8,14 +8,13 @@ export const tokenInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, n
     }
     // Add the token to the request
     const token = sessionStorage.getItem('token');
-    req = req.clone({
+    const clonedReq = req.clone({
         setHeaders: {
             'Authorization': `Bearer ${token}`
-        },
-        withCredentials: true
+        }
     });
 
-    return next(req).pipe(
+    return next(clonedReq).pipe(
         finalize(() => {
         })
     );

@@ -338,7 +338,6 @@ describe('AuthService', () => {
       expect(mockHttpClient.get).toHaveBeenCalledWith(
         `${environment.apiBaseUrl}usraut/refresh`,
         jasmine.objectContaining({
-          headers: jasmine.any(HttpHeaders),
           observe: 'response',
           withCredentials: true,
           context: jasmine.any(Object)

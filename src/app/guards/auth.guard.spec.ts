@@ -21,7 +21,9 @@ describe('Auth Guards', () => {
       isLoggedIn: isLoggedInSignal
     });
     const messagesServiceSpy = jasmine.createSpyObj('MessagesService', ['showMessage']);
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    const routerSpy = jasmine.createSpyObj('Router', ['navigate', 'createUrlTree']);
+    // Make createUrlTree return a mock UrlTree object
+    routerSpy.createUrlTree.and.returnValue({ toString: () => '/home' } as any);
 
     TestBed.configureTestingModule({
       providers: [
@@ -159,8 +161,9 @@ describe('Auth Guards', () => {
         isUserNotAuthenticated(mockRoute, mockState)
       );
 
-      // Assert
-      expect(result).toBe(false);
+      // Assert - should return UrlTree, not false
+      expect(result).toBeTruthy();
+      expect(mockRouter.createUrlTree).toHaveBeenCalledWith(['/home']);
     });
 
     it('should show info message when user is already logged in', () => {
@@ -184,12 +187,13 @@ describe('Auth Guards', () => {
       isLoggedInSignal.set(true);
 
       // Act
-      TestBed.runInInjectionContext(() => 
+      const result = TestBed.runInInjectionContext(() => 
         isUserNotAuthenticated(mockRoute, mockState)
       );
 
-      // Assert
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
+      // Assert - should return UrlTree, router will navigate based on that
+      expect(mockRouter.createUrlTree).toHaveBeenCalledWith(['/home']);
+      expect(result).toBeTruthy();
     });
 
     it('should call all required services when user is already authenticated', () => {
@@ -203,7 +207,7 @@ describe('Auth Guards', () => {
 
       // Assert
       expect(mockMessagesService.showMessage).toHaveBeenCalledTimes(1);
-      expect(mockRouter.navigate).toHaveBeenCalledTimes(1);
+      expect(mockRouter.createUrlTree).toHaveBeenCalledTimes(1);
     });
 
     it('should not call messages or router when user is not authenticated', () => {
@@ -234,11 +238,12 @@ describe('Auth Guards', () => {
       );
 
       expect(authenticatedResult).toBe(true);
-      expect(notAuthenticatedResult).toBe(false);
+      expect(notAuthenticatedResult).toBeTruthy(); // Returns UrlTree, not false
 
       // Reset calls
       mockMessagesService.showMessage.calls.reset();
       mockRouter.navigate.calls.reset();
+      mockRouter.createUrlTree.calls.reset();
 
       // Test when user is not logged in
       isLoggedInSignal.set(false);
@@ -266,11 +271,12 @@ describe('Auth Guards', () => {
         'You are already logged in.',
         'info'
       );
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
+      expect(mockRouter.createUrlTree).toHaveBeenCalledWith(['/home']);
 
       // Reset calls
       mockMessagesService.showMessage.calls.reset();
       mockRouter.navigate.calls.reset();
+      mockRouter.createUrlTree.calls.reset();
 
       // Test non-authenticated user trying to access authenticated route
       isLoggedInSignal.set(false);
