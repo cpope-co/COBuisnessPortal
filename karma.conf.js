@@ -11,8 +11,7 @@ module.exports = function (config) {
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
       require('karma-spec-reporter'),
-      require('karma-junit-reporter'),
-      require('karma-html-reporter')
+      require('karma-junit-reporter')
     ],
     client: {
       jasmine: {
@@ -46,13 +45,6 @@ module.exports = function (config) {
         },
       },
     },
-    htmlReporter: {
-      outputFile: 'reports/unit-tests/index.html',
-      pageTitle: 'CO Business Portal Unit Tests',
-      subPageTitle: 'Test Results',
-      groupSuites: true,
-      useCompactStyle: true
-    },
     junitReporter: {
       outputDir: 'reports/unit-tests',
       outputFile: 'results.xml',
@@ -62,7 +54,7 @@ module.exports = function (config) {
       classNameFormatter: undefined,
       properties: {}
     },
-    reporters: ['progress', 'kjhtml', 'spec', 'coverage', 'html'],
+    reporters: ['progress', 'kjhtml', 'spec', 'coverage'],
     specReporter: {
       maxLogLines: 5,         // limit number of lines logged per test
       suppressErrorSummary: true,  // do not print error summary

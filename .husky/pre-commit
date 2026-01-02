@@ -1,12 +1,11 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-# Validate JSON syntax only (lightweight check)
+# Validate JSON syntax using Node.js (no external dependencies)
 echo "Validating fixture JSON syntax..."
-npx jsonlint cypress/fixtures/auth/*.json -q || {
-  echo "❌ JSON validation failed! Fix fixture syntax before committing."
-  echo "Run 'npm run validate:fixtures' for detailed validation."
-  exit 1
-}
+for file in cypress/fixtures/auth/*.json; do
+  node -e "try { JSON.parse(require('fs').readFileSync('$file', 'utf8')); } catch(e) { console.error('Invalid JSON in $file:', e.message); process.exit(1); }" || {
+    echo "❌ JSON validation failed! Fix fixture syntax before committing."
+    echo "Run 'npm run validate:fixtures' for detailed validation."
+    exit 1
+  }
+done
 echo "✅ JSON fixtures valid"
 

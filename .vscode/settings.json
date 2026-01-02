@@ -23,5 +23,9 @@
     "prettier.htmlWhitespaceSensitivity": "ignore",
     "prettier.printWidth": 80,
     "prettier.bracketSameLine": false,
-    "prettier.singleAttributePerLine": true
+    "prettier.singleAttributePerLine": true,
+    "json.validate.enable": true,
+    "files.associations": {
+        "cypress/fixtures/**/*.json": "json"
+    }
 }
