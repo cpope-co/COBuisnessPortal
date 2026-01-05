@@ -36,6 +36,7 @@ export class MenuComponent implements OnInit {
   drawer = input<MatDrawer>();
 
   menuItems = this.menuService.menuItems;
+  menuLoaded = this.menuService.menuLoaded;
 
   constructor() {
     // Clear menu items on logout

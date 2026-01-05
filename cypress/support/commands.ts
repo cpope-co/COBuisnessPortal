@@ -9,12 +9,35 @@ import {
   UserRole 
 } from './auth-mocks';
 
+// Type declarations for custom commands
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      login(email: string, password: string): Chainable<Element>;
+      logout(): Chainable<Element>;
+      setupLoggedInUser(userRole?: number): Chainable<Element>;
+      clearSession(): Chainable<Element>;
+      shouldBeLoggedIn(): Chainable<Element>;
+      shouldBeLoggedOut(): Chainable<Element>;
+      fillSupplierForm(): Chainable<Element>;
+      fillSupplierWithInUseEmail(): Chainable<Element>;
+      fillRetailerForm(): Chainable<Element>;
+      fillReailerWithInUseEmail(): Chainable<Element>;
+      setupAuthenticatedUser(userRole?: number): Chainable<Element>;
+      verifyMenuStructure(): Chainable<Element>;
+      testMenuNavigation(menuItemText: string, expectedRoute: string): Chainable<Element>;
+      checkMenuAccessibility(): Chainable<Element>;
+      verifyMenuAccessibility(): Chainable<Element>;
+      testMenuKeyboardNavigation(): Chainable<Element>;
+    }
+  }
+}
+
 // Custom commands for the COBusiness Portal e2e tests
 
 /**
  * Custom command to login a user (uses mock authentication)
  */
-// @ts-ignore
 Cypress.Commands.add('login', (email: string, password: string) => {
   // Clear any existing session data
   cy.clearAllCookies();
@@ -42,7 +65,7 @@ Cypress.Commands.add('login', (email: string, password: string) => {
 /**
  * Custom command to logout a user (uses mock authentication)
  */
-// @ts-ignore
+
 Cypress.Commands.add('logout', () => {
   // Setup mock logout response
   mockLogout();
@@ -59,7 +82,7 @@ Cypress.Commands.add('logout', () => {
  * Custom command to setup a logged-in user session without going through the UI
  * Now uses centralized auth-mocks for consistency
  */
-// @ts-ignore
+
 Cypress.Commands.add('setupLoggedInUser', (userRole: number = 1) => {
   setupMockSession(userRole as UserRole);
 });
@@ -67,7 +90,7 @@ Cypress.Commands.add('setupLoggedInUser', (userRole: number = 1) => {
 /**
  * Custom command to clear all storage
  */
-// @ts-ignore
+
 Cypress.Commands.add('clearSession', () => {
   cy.clearAllCookies();
   cy.clearAllLocalStorage();
@@ -78,7 +101,7 @@ Cypress.Commands.add('clearSession', () => {
 /**
  * Custom command to check if user is logged in
  */
-// @ts-ignore
+
 Cypress.Commands.add('shouldBeLoggedIn', () => {
   cy.get('button').contains('Profile').should('be.visible');
   cy.get('mat-toolbar').should('contain', 'Chambers & Owen');
@@ -87,7 +110,7 @@ Cypress.Commands.add('shouldBeLoggedIn', () => {
 /**
  * Custom command to check if user is logged out
  */
-// @ts-ignore
+
 Cypress.Commands.add('shouldBeLoggedOut', () => {
   cy.url().should('include', '/auth/login');
   cy.contains('h2', 'Login').should('be.visible');
@@ -96,7 +119,7 @@ Cypress.Commands.add('shouldBeLoggedOut', () => {
 /**
  * Custom command to fill supplier registration form
  */
-// @ts-ignore
+
 Cypress.Commands.add('fillSupplierForm', () => {
   const testData = {
     email: 'supplier@example.com',
@@ -124,7 +147,7 @@ Cypress.Commands.add('fillSupplierForm', () => {
 /**
  * Custom command to fill supplier registration form
  */
-// @ts-ignore
+
 Cypress.Commands.add('fillSupplierWithInUseEmail', () => {
   const testData = {
     email: 'cstore@draxlers.com',
@@ -152,7 +175,7 @@ Cypress.Commands.add('fillSupplierWithInUseEmail', () => {
 /**
  * Custom command to fill retailer registration form
  */
-// @ts-ignore
+
 Cypress.Commands.add('fillRetailerForm', () => {
   const testData = {
     email: 'retailer@example.com',
@@ -178,7 +201,7 @@ Cypress.Commands.add('fillRetailerForm', () => {
 /**
  * Custom command to fill retailer registration form with an in use email
  */
-// @ts-ignore
+
 Cypress.Commands.add('fillReailerWithInUseEmail', () => {
   const testData = {
     email: 'cstore@draxlers.comm',
@@ -203,17 +226,20 @@ Cypress.Commands.add('fillReailerWithInUseEmail', () => {
 });
 /**
  * Custom command for keyboard tab navigation
+ * Note: Currently disabled due to TypeScript typing complexity with prevSubject
  */
-// @ts-ignore
-Cypress.Commands.add('tab', { prevSubject: true }, (subject) => {
+/*
+Cypress.Commands.add('tab', { prevSubject: 'element' } as any, (subject: any) => {
   return cy.wrap(subject).trigger('keydown', { key: 'Tab' });
 });
+*/
+
 
 /**
  * Custom command to setup authenticated user for menu testing
  * Now uses mock sessions instead of real credentials
  */
-// @ts-ignore
+
 Cypress.Commands.add('setupAuthenticatedUser', (userRole: number = 2) => {
   // Clear any existing session data first
   cy.clearAllCookies();
@@ -244,11 +270,12 @@ Cypress.Commands.add('setupAuthenticatedUser', (userRole: number = 2) => {
 /**
  * Custom command to verify menu structure
  */
-// @ts-ignore
+
 Cypress.Commands.add('verifyMenuStructure', () => {
   cy.get('co-menu').should('exist');
   cy.get('button[id="co-menu-button"]').should('exist').click({ force: true });
-  cy.get('nav[role="navigation"]').should('be.visible');
+  cy.get('nav[role="navigation"]').should('be.visible')
+    .and('have.attr', 'data-menu-loaded', 'true');
   cy.get('mat-nav-list[role="menubar"]').should('be.visible');
   cy.get('a[mat-list-item][role="menuitem"]').should('exist');
 });
@@ -256,7 +283,7 @@ Cypress.Commands.add('verifyMenuStructure', () => {
 /**
  * Custom command to test menu navigation
  */
-// @ts-ignore
+
 Cypress.Commands.add('testMenuNavigation', (menuItemText: string, expectedRoute: string) => {
   // Open the navigation drawer first if not already open
   cy.get('body').then(($body) => {
@@ -266,6 +293,9 @@ Cypress.Commands.add('testMenuNavigation', (menuItemText: string, expectedRoute:
     }
   });
   
+  // Wait for menu to be fully loaded
+  cy.get('nav[role="navigation"]').should('have.attr', 'data-menu-loaded', 'true');
+  
   cy.contains('mat-nav-list a[mat-list-item]', menuItemText).click();
   cy.url().should('include', expectedRoute);
 });
@@ -273,13 +303,16 @@ Cypress.Commands.add('testMenuNavigation', (menuItemText: string, expectedRoute:
 /**
  * Custom command to check menu accessibility features
  */
-// @ts-ignore
+
 Cypress.Commands.add('checkMenuAccessibility', () => {
   // Open the navigation drawer first
   cy.get('#co-menu-button').should('exist').click({ force: true });
   
   // Wait for drawer to open and menu to be visible
   cy.get('mat-drawer').should('have.class', 'mat-drawer-opened');
+  
+  // Wait for menu to be fully loaded
+  cy.get('nav[role="navigation"]').should('have.attr', 'data-menu-loaded', 'true');
   
   // Check for proper ARIA attributes
   cy.get('mat-nav-list').should('have.attr', 'role', 'menubar');
@@ -299,13 +332,16 @@ Cypress.Commands.add('checkMenuAccessibility', () => {
 /**
  * Custom command to verify menu accessibility compliance with WCAG 2.1 AA
  */
-// @ts-ignore
+
 Cypress.Commands.add('verifyMenuAccessibility', () => {
   // Open the navigation drawer first
   cy.get('#co-menu-button').should('exist').click({ force: true });
   
   // Wait for drawer to open
   cy.get('mat-drawer').should('have.class', 'mat-drawer-opened');
+  
+  // Wait for menu to be fully loaded
+  cy.get('nav[role="navigation"]').should('have.attr', 'data-menu-loaded', 'true');
   
   // Check semantic structure
   cy.get('nav[role="navigation"][aria-label="Main navigation"]').should('exist');
@@ -347,13 +383,16 @@ Cypress.Commands.add('verifyMenuAccessibility', () => {
 /**
  * Custom command to test menu keyboard navigation
  */
-// @ts-ignore
+
 Cypress.Commands.add('testMenuKeyboardNavigation', () => {
   // Open the navigation drawer first
   cy.get('#co-menu-button').should('exist').click({ force: true });
   
   // Wait for drawer to open
   cy.get('mat-drawer').should('have.class', 'mat-drawer-opened');
+  
+  // Wait for menu to be fully loaded
+  cy.get('nav[role="navigation"]').should('have.attr', 'data-menu-loaded', 'true');
   
   // Focus first menu item
   cy.get('a[mat-list-item][role="menuitem"]').first().focus();

@@ -180,7 +180,8 @@ describe('EditCustomer', () => {
       
       await component.loadCustomer();
       
-      expect(component.customer()).toBeNull();
+      expect(mockMessagesService.showMessage).toHaveBeenCalledWith('Customer not found.', 'danger');
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/sample/customers']);
     });
 
     it('should handle 500 server error', async () => {
@@ -336,6 +337,22 @@ describe('EditCustomer', () => {
       expect(component.form.markAllAsTouched).toHaveBeenCalled();
     });
 
+    it('should return early if customer is null', async () => {
+      // Create new component with service returning null
+      mockService.getSampleDataById.and.returnValue(Promise.resolve(null as any));
+      const nullFixture = TestBed.createComponent(EditCustomer);
+      const nullComponent = nullFixture.componentInstance;
+      await nullFixture.whenStable();
+      
+      // Navigation was already called during init/loadCustomer, reset spy
+      mockRouter.navigate.calls.reset();
+      
+      await nullComponent.onSave();
+      
+      expect(mockService.updateSampleData).not.toHaveBeenCalled();
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+    });
+
     it('should handle 404 error (customer not found)', async () => {
       const error = new ApiResponseError('Not found', [{ errDesc: 'Customer record not found' }]);
       mockService.updateSampleData.and.returnValue(Promise.reject(error));
@@ -467,6 +484,74 @@ describe('EditCustomer', () => {
         expect(mockRouter.navigate).not.toHaveBeenCalled();
         done();
       }, 10);
+    });
+
+    it('should not navigate when dialog is dismissed (undefined)', (done) => {
+      component.form.markAsDirty();
+      const event = new MouseEvent('click');
+      const dialogRefMock = createDialogRefMock<boolean>();
+      mockDialog.open.and.returnValue(dialogRefMock.ref);
+      
+      component.onCancel(event);
+      
+      // Emit undefined (dialog dismissed without clicking button)
+      dialogRefMock.subject.next(undefined as any);
+      dialogRefMock.subject.complete();
+      
+      setTimeout(() => {
+        expect(mockRouter.navigate).not.toHaveBeenCalled();
+        done();
+      }, 10);
+    });
+
+    it('should not navigate when user clicks No/Cancel in dialog (false)', (done) => {
+      component.form.markAsDirty();
+      const event = new MouseEvent('click');
+      const dialogRefMock = createDialogRefMock<boolean>();
+      mockDialog.open.and.returnValue(dialogRefMock.ref);
+      
+      component.onCancel(event);
+      
+      // Emit false (user clicked No/Cancel button)
+      dialogRefMock.subject.next(false);
+      dialogRefMock.subject.complete();
+      
+      setTimeout(() => {
+        expect(mockRouter.navigate).not.toHaveBeenCalled();
+        done();
+      }, 10);
+    });
+
+    it('should return early if customer is null', async () => {
+      // Create new component with service returning null
+      mockService.getSampleDataById.and.returnValue(Promise.resolve(null as any));
+      const nullFixture = TestBed.createComponent(EditCustomer);
+      const nullComponent = nullFixture.componentInstance;
+      await nullFixture.whenStable();
+      
+      // Navigation was already called during init/loadCustomer, reset spy
+      mockRouter.navigate.calls.reset();
+      
+      const event = new MouseEvent('click');
+      spyOn(event, 'stopPropagation');
+      
+      nullComponent.onCancel(event);
+      
+      expect(event.stopPropagation).toHaveBeenCalled();
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+      expect(mockDialog.open).not.toHaveBeenCalled();
+    });
+
+    it('should open dialog if form is both dirty AND touched', () => {
+      component.form.markAsDirty();
+      component.form.markAsTouched();
+      const event = new MouseEvent('click');
+      const dialogRefMock = createDialogRefMock<boolean>();
+      mockDialog.open.and.returnValue(dialogRefMock.ref);
+      
+      component.onCancel(event);
+      
+      expect(mockDialog.open).toHaveBeenCalled();
     });
 
     it('should mark all fields as touched when opening dialog', async () => {

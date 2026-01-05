@@ -1,14 +1,15 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "allowJs": true,
     "types": [
       "cypress",
       "node"
     ],
     "esModuleInterop": true,
-    "isolatedModules": false
+    "isolatedModules": false,
+    "moduleResolution": "node"
   },
   "include": [
     "**/*.ts",

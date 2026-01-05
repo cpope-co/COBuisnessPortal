@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { SampleApplicationService } from './customers.service';
 import { environment } from '../../../environments/environment';
 import { ApiResponseError } from '../../shared/api-response-error';
@@ -11,6 +12,7 @@ describe('SampleApplicationService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       providers: [SampleApplicationService]
     });
     service = TestBed.inject(SampleApplicationService);
@@ -601,6 +603,472 @@ describe('SampleApplicationService', () => {
       expect((service as any).mockErrorConfig.simulateConflict).toBe(false);
       expect((service as any).mockErrorConfig.simulateBadRequest).toBe(false);
       expect((service as any).mockErrorConfig.simulateServerError).toBe(false);
+    });
+  });
+
+  describe('Real API Mode', () => {
+    let httpMock: HttpTestingController;
+    const apiBaseUrl = environment.apiBaseUrl;
+
+    beforeEach(() => {
+      httpMock = TestBed.inject(HttpTestingController);
+      // Switch to real API mode
+      environment.useMockSampleData = false;
+    });
+
+    afterEach(() => {
+      httpMock.verify(); // Verify no outstanding requests
+      environment.useMockSampleData = true;
+    });
+
+    describe('loadAllSampleData', () => {
+      it('should load all customers via HTTP GET', async () => {
+        const mockResponse = {
+          success: true,
+          data: MOCK_CUSTOMERS
+        };
+
+        const promise = service.loadAllSampleData();
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData`);
+        expect(req.request.method).toBe('GET');
+        req.flush(mockResponse);
+
+        const result = await promise;
+        expect(result).toEqual(MOCK_CUSTOMERS);
+      });
+
+      it('should throw ApiResponseError when response has validation errors', async () => {
+        const mockResponse = {
+          success: false,
+          validationErrors: [{ errDesc: 'Failed to load data' }]
+        };
+
+        const promise = service.loadAllSampleData();
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData`);
+        req.flush(mockResponse);
+
+        try {
+          await promise;
+          fail('Expected error to be thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ApiResponseError);
+          expect((error as ApiResponseError).validationErrors[0].errDesc).toBe('Failed to load data');
+        }
+      });
+
+      it('should throw generic error when response fails without validation errors', async () => {
+        const mockResponse = {
+          success: false
+        };
+
+        const promise = service.loadAllSampleData();
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData`);
+        req.flush(mockResponse);
+
+        try {
+          await promise;
+          fail('Expected error to be thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(Error);
+          expect((error as Error).message).toContain('Failed to load sample data');
+        }
+      });
+    });
+
+    describe('getSampleDataById', () => {
+      it('should load customer by ID via HTTP GET', async () => {
+        const mockCustomer = MOCK_CUSTOMERS[0];
+        const mockResponse = {
+          success: true,
+          data: mockCustomer
+        };
+
+        const promise = service.getSampleDataById(1001);
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData/1001`);
+        expect(req.request.method).toBe('GET');
+        req.flush(mockResponse);
+
+        const result = await promise;
+        expect(result).toEqual(mockCustomer);
+      });
+
+      it('should throw ApiResponseError when customer not found with validation errors', async () => {
+        const mockResponse = {
+          success: false,
+          validationErrors: [{ errDesc: 'Customer not found' }]
+        };
+
+        const promise = service.getSampleDataById(9999);
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData/9999`);
+        req.flush(mockResponse);
+
+        try {
+          await promise;
+          fail('Expected error to be thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ApiResponseError);
+          expect((error as ApiResponseError).validationErrors[0].errDesc).toBe('Customer not found');
+        }
+      });
+
+      it('should throw generic error when fails without validation errors', async () => {
+        const mockResponse = {
+          success: false
+        };
+
+        const promise = service.getSampleDataById(1001);
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData/1001`);
+        req.flush(mockResponse);
+
+        try {
+          await promise;
+          fail('Expected error to be thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(Error);
+          expect((error as Error).message).toContain('Failed to retrieve customer data');
+        }
+      });
+    });
+
+    describe('loadUDCOptions', () => {
+      it('should load UDC options via HTTP GET when not cached', async () => {
+        const mockResponse = {
+          success: true,
+          data: MOCK_UDC_OPTIONS
+        };
+
+        const promise = service.loadUDCOptions('55', 'SP');
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData/udc/55/SP`);
+        expect(req.request.method).toBe('GET');
+        req.flush(mockResponse);
+
+        const result = await promise;
+        expect(result).toEqual(MOCK_UDC_OPTIONS);
+        expect(service.udcOptions()).toEqual(MOCK_UDC_OPTIONS);
+        
+        // Verify cached to localStorage
+        const cached = JSON.parse(localStorage.getItem('sampleData_udcOptions')!);
+        expect(cached).toEqual(MOCK_UDC_OPTIONS);
+      });
+
+      it('should use cached UDC options from localStorage', async () => {
+        const cachedOptions: UDCOption[] = [
+          { TypeCodeList: 'X', TypeDescList: 'Cached Type' }
+        ];
+        localStorage.setItem('sampleData_udcOptions', JSON.stringify(cachedOptions));
+
+        const result = await service.loadUDCOptions();
+
+        // No HTTP request should be made
+        httpMock.expectNone(`${apiBaseUrl}SampleData/udc/55/SP`);
+        
+        expect(result).toEqual(cachedOptions);
+        expect(service.udcOptions()).toEqual(cachedOptions);
+      });
+
+      it('should fetch from API when cached value is empty array', async () => {
+        localStorage.setItem('sampleData_udcOptions', '[]');
+        
+        const mockResponse = {
+          success: true,
+          data: MOCK_UDC_OPTIONS
+        };
+
+        const promise = service.loadUDCOptions();
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData/udc/55/SP`);
+        req.flush(mockResponse);
+
+        const result = await promise;
+        expect(result).toEqual(MOCK_UDC_OPTIONS);
+      });
+
+      it('should throw ApiResponseError when loading UDC options fails with validation errors', async () => {
+        const mockResponse = {
+          success: false,
+          validationErrors: [{ errDesc: 'UDC options not available' }]
+        };
+
+        const promise = service.loadUDCOptions();
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData/udc/55/SP`);
+        req.flush(mockResponse);
+
+        try {
+          await promise;
+          fail('Expected error to be thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ApiResponseError);
+          expect((error as ApiResponseError).validationErrors[0].errDesc).toBe('UDC options not available');
+        }
+      });
+
+      it('should throw generic error when fails without validation errors', async () => {
+        const mockResponse = {
+          success: false
+        };
+
+        const promise = service.loadUDCOptions();
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData/udc/55/SP`);
+        req.flush(mockResponse);
+
+        try {
+          await promise;
+          fail('Expected error to be thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(Error);
+          expect((error as Error).message).toContain('Failed to load UDC options');
+        }
+      });
+    });
+
+    describe('createSampleData', () => {
+      it('should create customer via HTTP POST', async () => {
+        const payload: SampleDataPayload = {
+          CustNum: null,
+          CustTypeCode: 'A',
+          CandyLiker: true
+        };
+        const newCustomer: SampleData = {
+          CustNumber: 1009,
+          CustName: 'New Customer',
+          CustAddress: '123 New St',
+          CustTypeCode: 'A',
+          CustTypeDesc: 'Premium Customer',
+          CandyLiker: true
+        };
+        const mockResponse = {
+          success: true,
+          data: newCustomer
+        };
+
+        const promise = service.createSampleData(payload);
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData`);
+        expect(req.request.method).toBe('POST');
+        expect(req.request.body).toEqual(payload);
+        req.flush(mockResponse);
+
+        const result = await promise;
+        expect(result).toEqual(newCustomer);
+      });
+
+      it('should throw ApiResponseError when create fails with validation errors', async () => {
+        const payload: SampleDataPayload = {
+          CustNum: null,
+          CustTypeCode: 'INVALID',
+          CandyLiker: true
+        };
+        const mockResponse = {
+          success: false,
+          validationErrors: [
+            { field: 'CustTypeCode', errDesc: 'Invalid customer type code' }
+          ]
+        };
+
+        const promise = service.createSampleData(payload);
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData`);
+        req.flush(mockResponse);
+
+        try {
+          await promise;
+          fail('Expected error to be thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ApiResponseError);
+          expect((error as ApiResponseError).validationErrors[0].errDesc).toBe('Invalid customer type code');
+        }
+      });
+
+      it('should throw generic error when fails without validation errors', async () => {
+        const payload: SampleDataPayload = {
+          CustNum: null,
+          CustTypeCode: 'A',
+          CandyLiker: true
+        };
+        const mockResponse = {
+          success: false
+        };
+
+        const promise = service.createSampleData(payload);
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData`);
+        req.flush(mockResponse);
+
+        try {
+          await promise;
+          fail('Expected error to be thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(Error);
+          expect((error as Error).message).toContain('Failed to create customer record');
+        }
+      });
+    });
+
+    describe('updateSampleData', () => {
+      it('should update customer via HTTP PUT', async () => {
+        const payload: SampleDataPayload = {
+          CustNum: 1001,
+          CustTypeCode: 'B',
+          CandyLiker: false
+        };
+        const updatedCustomer: SampleData = {
+          ...MOCK_CUSTOMERS[0],
+          CustTypeCode: 'B',
+          CustTypeDesc: 'Standard Customer',
+          CandyLiker: false
+        };
+        const mockResponse = {
+          success: true,
+          data: updatedCustomer
+        };
+
+        const promise = service.updateSampleData(payload);
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData`);
+        expect(req.request.method).toBe('PUT');
+        expect(req.request.body).toEqual(payload);
+        req.flush(mockResponse);
+
+        const result = await promise;
+        expect(result).toEqual(updatedCustomer);
+      });
+
+      it('should throw ApiResponseError when update fails with validation errors', async () => {
+        const payload: SampleDataPayload = {
+          CustNum: 1001,
+          CustTypeCode: 'INVALID',
+          CandyLiker: true
+        };
+        const mockResponse = {
+          success: false,
+          validationErrors: [
+            { field: 'CustTypeCode', errDesc: 'Invalid customer type code' }
+          ]
+        };
+
+        const promise = service.updateSampleData(payload);
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData`);
+        req.flush(mockResponse);
+
+        try {
+          await promise;
+          fail('Expected error to be thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ApiResponseError);
+          expect((error as ApiResponseError).validationErrors[0].errDesc).toBe('Invalid customer type code');
+        }
+      });
+
+      it('should throw generic error when fails without validation errors', async () => {
+        const payload: SampleDataPayload = {
+          CustNum: 1001,
+          CustTypeCode: 'A',
+          CandyLiker: true
+        };
+        const mockResponse = {
+          success: false
+        };
+
+        const promise = service.updateSampleData(payload);
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData`);
+        req.flush(mockResponse);
+
+        try {
+          await promise;
+          fail('Expected error to be thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(Error);
+          expect((error as Error).message).toContain('Failed to update customer record');
+        }
+      });
+    });
+
+    describe('deleteSampleData', () => {
+      it('should delete customer via HTTP DELETE', async () => {
+        const mockResponse = {
+          success: true,
+          data: null
+        };
+
+        const promise = service.deleteSampleData(1008);
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData/1008`);
+        expect(req.request.method).toBe('DELETE');
+        req.flush(mockResponse);
+
+        await promise;
+        expect().nothing(); // Just verify no error thrown
+      });
+
+      it('should throw ApiResponseError when delete fails with validation errors', async () => {
+        const mockResponse = {
+          success: false,
+          validationErrors: [{ errDesc: 'Customer not found' }]
+        };
+
+        const promise = service.deleteSampleData(9999);
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData/9999`);
+        req.flush(mockResponse);
+
+        try {
+          await promise;
+          fail('Expected error to be thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ApiResponseError);
+          expect((error as ApiResponseError).validationErrors[0].errDesc).toBe('Customer not found');
+        }
+      });
+
+      it('should throw generic error when fails without validation errors', async () => {
+        const mockResponse = {
+          success: false
+        };
+
+        const promise = service.deleteSampleData(1001);
+        
+        const req = httpMock.expectOne(`${apiBaseUrl}SampleData/1001`);
+        req.flush(mockResponse);
+
+        try {
+          await promise;
+          fail('Expected error to be thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(Error);
+          expect((error as Error).message).toContain('Failed to delete customer record');
+        }
+      });
+    });
+  });
+
+  describe('Constructor Effect Edge Cases', () => {
+    it('should save UDC options to localStorage when loaded', (done) => {
+      const setItemSpy = spyOn(localStorage, 'setItem');
+      
+      // Load UDC options which triggers the effect
+      service.loadUDCOptions().then(() => {
+        // Wait for effect to run
+        setTimeout(() => {
+          expect(setItemSpy).toHaveBeenCalledWith(
+            'sampleData_udcOptions',
+            jasmine.any(String)
+          );
+          const savedData = JSON.parse(setItemSpy.calls.mostRecent().args[1]);
+          expect(savedData.length).toBeGreaterThan(0);
+          done();
+        }, 50);
+      });
     });
   });
 });

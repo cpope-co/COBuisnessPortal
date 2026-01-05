@@ -1,3 +1,5 @@
+/// <reference path="../support/index.d.ts" />
+
 import { mockRegister, mockCategoryManagers, mockRecaptcha, UserRole } from '../support/auth-mocks';
 
 describe('Registration Component E2E Tests', () => {

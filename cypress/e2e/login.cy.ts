@@ -1,3 +1,5 @@
+/// <reference path="../support/index.d.ts" />
+
 import { mockLoginSuccess, mockLoginError, mockLogout, setupMockSession, UserRole } from '../support/auth-mocks';
 
 describe('Login and Logout Functionality', () => {
@@ -6,7 +8,7 @@ describe('Login and Logout Functionality', () => {
     cy.clearAllCookies();
     cy.clearAllLocalStorage();
     cy.clearAllSessionStorage();
-    
+
     // Visit the login page
     cy.visit('/auth/login');
   });
@@ -17,12 +19,12 @@ describe('Login and Logout Functionality', () => {
       cy.title().should('include', 'Login');
       cy.contains('h1', 'Chambers & Owen Business Portal').should('be.visible');
       cy.contains('h2', 'Login').should('be.visible');
-      
+
       // Check form elements are present
       cy.get('input[type="email"]').should('be.visible');
       cy.get('input[type="password"]').should('be.visible');
       cy.get('button[type="submit"]').should('contain', 'Login');
-      
+
       // Check navigation links
       cy.contains('a', 'Forgot credentials?').should('be.visible');
       cy.contains('a', 'Register').should('be.visible');
@@ -31,7 +33,7 @@ describe('Login and Logout Functionality', () => {
     it('should have proper form validation', () => {
       // Test empty form submission
       cy.get('button[type="submit"]').click();
-      
+
       // Should show validation errors for required fields
       cy.get('input[type="email"]').should('have.class', 'ng-invalid');
       cy.get('input[type="password"]').should('have.class', 'ng-invalid');
@@ -42,7 +44,7 @@ describe('Login and Logout Functionality', () => {
       cy.get('input[type="email"]').type('invalid-email');
       cy.get('input[type="password"]').type('somepassword');
       cy.get('button[type="submit"]').click();
-      
+
       // Email field should be invalid
       cy.get('input[type="email"]').should('have.class', 'ng-invalid');
     });
@@ -54,10 +56,10 @@ describe('Login and Logout Functionality', () => {
       cy.get('input[type="email"]').type(Cypress.env('invalidEmail'));
       cy.get('input[type="password"]').type(Cypress.env('invalidPassword'));
       cy.get('button[type="submit"]').click();
-      
+
       // Should show error message
       cy.contains('Invalid email or password').should('be.visible');
-      
+
       // Should remain on login page
       cy.url().should('include', '/auth/login');
     });
@@ -69,7 +71,7 @@ describe('Login and Logout Functionality', () => {
       // Enter valid credentials
       cy.get('input[type="email"]').type(Cypress.env('testEmail'));
       cy.get('input[type="password"]').type(Cypress.env('testPassword'));
-      
+
       cy.get('button[type="submit"]').click();
 
       // Wait for login request
@@ -80,7 +82,7 @@ describe('Login and Logout Functionality', () => {
 
       // Navigate to home manually to simulate successful login redirect
       cy.visit('/home');
-      
+
       // Should show navigation elements for logged-in user
       cy.get('mat-toolbar').should('contain', 'Chambers & Owen');
       cy.get('button').should('contain', 'Profile');
@@ -128,7 +130,7 @@ describe('Login and Logout Functionality', () => {
     it('should display logout option in profile menu', () => {
       // Click profile menu
       cy.get('button').contains('Profile').click();
-      
+
       // Wait for menu to appear and check options
       cy.get('[role="menu"]').should('be.visible');
       cy.get('a[mat-menu-item]').contains('Profile').should('be.visible');
@@ -145,13 +147,13 @@ describe('Login and Logout Functionality', () => {
 
       // Should redirect to login page
       cy.url().should('include', '/auth/login');
-      
+
       // Should clear session storage (main logout verification)
       cy.window().then((win) => {
         expect(win.sessionStorage.getItem('user')).to.be.null;
         expect(win.sessionStorage.getItem('token')).to.be.null;
       });
-      
+
       // Verify we're back on login page with proper elements
       cy.contains('h2', 'Login').should('be.visible');
     });
@@ -169,13 +171,13 @@ describe('Login and Logout Functionality', () => {
 
       // Should still redirect to login (client-side logout)
       cy.url().should('include', '/auth/login');
-      
+
       // Verify session is cleared even on network error
       cy.window().then((win) => {
         expect(win.sessionStorage.getItem('user')).to.be.null;
         expect(win.sessionStorage.getItem('token')).to.be.null;
       });
-      
+
       // Verify we're on login page
       cy.contains('h2', 'Login').should('be.visible');
     });
@@ -188,7 +190,7 @@ describe('Login and Logout Functionality', () => {
 
       // Try to access protected route
       cy.visit('/home');
-      
+
       // Should redirect to login
       cy.url().should('include', '/auth/login');
     });
@@ -200,13 +202,13 @@ describe('Login and Logout Functionality', () => {
       setupMockSession(UserRole.Admin);
 
       cy.visit('/home');
-      
+
       // Should show logged-in state
       cy.get('button').contains('Profile').should('be.visible');
-      
+
       // Refresh page
       cy.reload();
-      
+
       // Should still be logged in
       cy.get('button').contains('Profile').should('be.visible');
       cy.url().should('include', '/home');
@@ -217,7 +219,7 @@ describe('Login and Logout Functionality', () => {
       setupMockSession(UserRole.Admin, true);
 
       cy.visit('/home');
-      
+
       // Should redirect to login due to expired token
       cy.url().should('include', '/auth/login');
     });
@@ -228,11 +230,11 @@ describe('Login and Logout Functionality', () => {
       // Test keyboard navigation by focusing elements directly
       cy.get('input[type="email"]').focus();
       cy.focused().should('have.attr', 'type', 'email');
-      
+
       // Use realPress from cypress-real-events or simulate tab with keyboard
       cy.get('input[type="password"]').focus();
       cy.focused().should('have.attr', 'type', 'password');
-      
+
       cy.get('button[type="submit"]').focus();
       cy.focused().should('contain', 'Login');
     });

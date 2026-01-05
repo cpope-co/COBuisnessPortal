@@ -1,5 +1,5 @@
 @if(menuItems()) { 
-    <nav role="navigation" aria-label="Main navigation">
+    <nav role="navigation" aria-label="Main navigation" [attr.data-menu-loaded]="menuLoaded()">
         <mat-nav-list role="menubar">
             @for(menuItem of menuItems(); track $index) {
                 @if(menuItem.options?.heading) {

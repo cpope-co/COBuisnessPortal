@@ -219,6 +219,17 @@ describe('Customer', () => {
       const result = component.formatYesNo(formHandling as any);
       expect(result).toBe('No');
     });
+
+    it('should handle FormHandling with zero value as falsy', () => {
+      const formHandling = {
+        value: 0,
+        Validators: [],
+        ErrorMessages: {}
+      };
+      
+      const result = component.formatYesNo(formHandling as any);
+      expect(result).toBe('No');
+    });
   });
 
   describe('onBack', () => {
@@ -247,6 +258,35 @@ describe('Customer', () => {
       component.onEdit();
       
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/sample/customer', 1005, 'edit']);
+    });
+
+    it('should not navigate if customer is null', async () => {
+      mockService.getSampleDataById.and.returnValue(Promise.resolve(null as any));
+      await component.loadCustomer();
+      
+      component.onEdit();
+      
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+    });
+
+    it('should not navigate if CustNumber is 0', async () => {
+      const customerWithZeroId = { ...MOCK_CUSTOMERS[0], CustNumber: 0 };
+      mockService.getSampleDataById.and.returnValue(Promise.resolve(customerWithZeroId));
+      await component.loadCustomer();
+      
+      component.onEdit();
+      
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+    });
+
+    it('should not navigate if CustNumber is undefined', async () => {
+      const customerWithoutId = { ...MOCK_CUSTOMERS[0], CustNumber: undefined as any };
+      mockService.getSampleDataById.and.returnValue(Promise.resolve(customerWithoutId));
+      await component.loadCustomer();
+      
+      component.onEdit();
+      
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
     });
   });
 
@@ -303,6 +343,22 @@ describe('Customer', () => {
       
       await component.onDelete();
       
+      expect(mockService.deleteSampleData).not.toHaveBeenCalled();
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+    });
+
+    it('should return early if customer is null', async () => {
+      // Create new component with service returning null
+      mockService.getSampleDataById.and.returnValue(Promise.resolve(null as any));
+      const nullFixture = TestBed.createComponent(Customer);
+      const nullComponent = nullFixture.componentInstance;
+      await nullFixture.whenStable();
+      
+      spyOn(window, 'confirm');
+      
+      await nullComponent.onDelete();
+      
+      expect(window.confirm).not.toHaveBeenCalled();
       expect(mockService.deleteSampleData).not.toHaveBeenCalled();
       expect(mockRouter.navigate).not.toHaveBeenCalled();
     });

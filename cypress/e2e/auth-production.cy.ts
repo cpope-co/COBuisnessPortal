@@ -1,3 +1,5 @@
+/// <reference path="../support/index.d.ts" />
+
 import { mockLoginSuccess, mockLoginError, mockLogout, setupMockSession, UserRole } from '../support/auth-mocks';
 
 describe('Authentication E2E Tests - Production Ready', () => {

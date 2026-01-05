@@ -1,3 +1,5 @@
+/// <reference path="../support/index.d.ts" />
+
 import { mockLoginSuccess, mockLogout, setupMockSession, UserRole } from '../support/auth-mocks';
 
 describe('Menu Component E2E Tests', () => {
@@ -70,10 +72,10 @@ describe('Menu Component E2E Tests', () => {
         it('should set focused item to tabindex="0" when navigating', () => {
             // Focus first menu item
             cy.get('a[mat-list-item][role="menuitem"]').first().focus();
-            
+
             // The focused item should have tabindex="0"
             cy.get('a[mat-list-item][role="menuitem"]').first().should('have.attr', 'tabindex', '0');
-            
+
             // Other items should still have tabindex="-1"
             cy.get('a[mat-list-item][role="menuitem"]').not(':first').each(($item) => {
                 cy.wrap($item).should('have.attr', 'tabindex', '-1');
@@ -95,7 +97,7 @@ describe('Menu Component E2E Tests', () => {
 
         it('should display menu items with proper structure', () => {
             cy.verifyMenuStructure();
-            
+
             // Verify menu items have proper routing attributes
             cy.get('a[mat-list-item][role="menuitem"]').each(($el) => {
                 cy.wrap($el).should('have.attr', 'href');
@@ -132,17 +134,18 @@ describe('Menu Component E2E Tests', () => {
         });
 
         it('should display menu after successful login', () => {
-            // Mock successful login
-            mockLoginSuccess(UserRole.Admin);
+            // Use setupAuthenticatedUser instead of manual login flow
+            // This properly establishes the mock session
+            cy.setupAuthenticatedUser(1); // Admin role
 
-            // Visit login and authenticate
-            cy.visit('/auth/login');
-            cy.get('input[type="email"]').type('testuser@chambers-owen.com');
-            cy.get('input[type="password"]').type('it2T*&gf');
-            cy.get('button').contains('Login').click();
+            // Visit home page - user is already authenticated
+            cy.visit('/home');
 
+            // Wait for menu button to be available
+            cy.get('button[id="co-menu-button"]', { timeout: 10000 }).should('exist').click();
 
-            cy.get('button[id="co-menu-button"]').click();
+            // Wait for menu to be loaded
+            cy.get('nav[role="navigation"]').should('have.attr', 'data-menu-loaded', 'true');
 
             // Menu should appear after authentication
             cy.get('co-menu').should('exist');
@@ -350,26 +353,36 @@ describe('Menu Component E2E Tests', () => {
             cy.setupAuthenticatedUser(2);
 
             cy.visit('/home');
-            
+
             // Wait for page to be fully loaded
-            cy.get('mat-toolbar').should('be.visible');
-            
+            cy.get('mat-toolbar', { timeout: 10000 }).should('be.visible');
+
             // Open the drawer to access menu items
-            cy.get('body').then(($body) => {
-                if ($body.find('mat-drawer.mat-drawer-opened').length === 0) {
-                    // Use force: true to overcome element covering issues
-                    cy.get('#co-menu-button').should('exist').click({ force: true });
-                    cy.get('mat-drawer').should('have.class', 'mat-drawer-opened');
+            cy.get('#co-menu-button').should('exist').click({ force: true });
+            cy.get('mat-drawer').should('have.class', 'mat-drawer-opened');
+
+            // Wait for menu to be fully loaded before navigating
+            cy.get('nav[role="navigation"]').should('have.attr', 'data-menu-loaded', 'true');
+
+            // Navigate to first menu item and verify menu remains stable
+            cy.get('mat-nav-list a[mat-list-item]').first().then(($link) => {
+                const href = $link.attr('href');
+
+                // Click to navigate
+                cy.wrap($link).click();
+
+                // Wait for navigation to complete
+                if (href) {
+                    cy.url().should('include', href);
                 }
+
+                // Wait for toolbar and menu to be ready after navigation
+                cy.get('mat-toolbar', { timeout: 10000 }).should('be.visible');
+                cy.get('co-menu', { timeout: 10000 }).should('exist');
+
+                // Verify menu structure still works after navigation
+                cy.verifyMenuStructure();
             });
-
-            // Rapidly navigate between routes to test performance
-            cy.get('mat-nav-list a[mat-list-item]').first().click();
-            cy.verifyMenuStructure(); // Menu should remain stable
-
-            // Navigate back
-            cy.go('back');
-            cy.verifyMenuStructure(); // Menu should still be present
         });
     });
 

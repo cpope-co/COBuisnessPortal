@@ -24,6 +24,7 @@ describe('AppComponent', () => {
   let logoutTriggerSignal: any;
   let loginTriggerSignal: any;
   let menuItemsSignal: any;
+  let menuLoadedSignal: any;
 
   beforeEach(async () => {
     routerEventsSubject = new Subject();
@@ -32,6 +33,7 @@ describe('AppComponent', () => {
     
     // Create a writable signal for menu items
     menuItemsSignal = signal<MenuItem[]>([]);
+    menuLoadedSignal = signal<boolean>(false);
     
     const authServiceSpy = jasmine.createSpyObj('AuthService', ['logout'], {
       isLoggedIn: signal(false),
@@ -51,9 +53,17 @@ describe('AppComponent', () => {
       configurable: true
     });
     
+    // Add the menuLoaded signal property to the mock
+    Object.defineProperty(menuServiceSpy, 'menuLoaded', {
+      get: () => menuLoadedSignal,
+      enumerable: true,
+      configurable: true
+    });
+    
     // clearMenuItems should clear the signal
     menuServiceSpy.clearMenuItems.and.callFake(() => {
       menuItemsSignal.set([]);
+      menuLoadedSignal.set(false);
     });
     
     // setMenuItems should update the signal
@@ -145,12 +155,14 @@ describe('AppComponent', () => {
     let loggedInSessionService: jasmine.SpyObj<SessionService>;
     let loggedInMenuService: any;
     let loggedInMenuItemsSignal: any;
+    let loggedInMenuLoadedSignal: any;
 
     beforeEach(async () => {
       TestBed.resetTestingModule();
       
       // Create a new signal for this test
       loggedInMenuItemsSignal = signal<MenuItem[]>([]);
+      loggedInMenuLoadedSignal = signal<boolean>(false);
       
       const loggedInAuthService = jasmine.createSpyObj('AuthService', ['logout'], {
         isLoggedIn: signal(true),
@@ -169,8 +181,16 @@ describe('AppComponent', () => {
         configurable: true
       });
       
+      // Add the menuLoaded signal property to the mock
+      Object.defineProperty(loggedInMenuService, 'menuLoaded', {
+        get: () => loggedInMenuLoadedSignal,
+        enumerable: true,
+        configurable: true
+      });
+      
       loggedInMenuService.clearMenuItems.and.callFake(() => {
         loggedInMenuItemsSignal.set([]);
+        loggedInMenuLoadedSignal.set(false);
       });
       
       loggedInMenuService.setMenuItems.and.callFake((items: MenuItem[]) => {
@@ -214,12 +234,14 @@ describe('AppComponent', () => {
     let loggedOutSessionService: jasmine.SpyObj<SessionService>;
     let loggedOutMenuService: any;
     let loggedOutMenuItemsSignal: any;
+    let loggedOutMenuLoadedSignal: any;
 
     beforeEach(async () => {
       TestBed.resetTestingModule();
       
       // Create a new signal for this test
       loggedOutMenuItemsSignal = signal<MenuItem[]>([]);
+      loggedOutMenuLoadedSignal = signal<boolean>(false);
       
       const loggedOutAuthService = jasmine.createSpyObj('AuthService', ['logout'], {
         isLoggedIn: signal(false),
@@ -238,8 +260,16 @@ describe('AppComponent', () => {
         configurable: true
       });
       
+      // Add the menuLoaded signal property to the mock
+      Object.defineProperty(loggedOutMenuService, 'menuLoaded', {
+        get: () => loggedOutMenuLoadedSignal,
+        enumerable: true,
+        configurable: true
+      });
+      
       loggedOutMenuService.clearMenuItems.and.callFake(() => {
         loggedOutMenuItemsSignal.set([]);
+        loggedOutMenuLoadedSignal.set(false);
       });
       
       loggedOutMenuService.setMenuItems.and.callFake((items: MenuItem[]) => {
@@ -282,7 +312,7 @@ describe('AppComponent', () => {
       component.onLogout();
       
       expect(sessionService.stopSessionCheck).toHaveBeenCalled();
-      expect(authService.logout).toHaveBeenCalled();
+      expect(authService.logout).toHaveBeenCalledWith('manual');
     });
   });
 

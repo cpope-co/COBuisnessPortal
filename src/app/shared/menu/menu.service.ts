@@ -36,6 +36,7 @@ export class MenuService {
     router = inject(Router);
 
     menuItems = signal<MenuItem[]>([]);
+    menuLoaded = signal<boolean>(false);
     routes = signal<Route[]>(routes);
 
     constructor() {
@@ -55,6 +56,7 @@ export class MenuService {
 
     clearMenuItems() {
         this.menuItems.set([]);
+        this.menuLoaded.set(false);
         // Remove sessionStorage
     }
 
@@ -65,6 +67,7 @@ export class MenuService {
         this.clearMenuItems();
         const newMenuItems = this.buildMenu();
         this.menuItems.set(newMenuItems); // Only update signal
+        this.menuLoaded.set(true);
     }
 
     buildMenu(): MenuItem[] {

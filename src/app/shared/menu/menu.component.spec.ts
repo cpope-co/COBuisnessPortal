@@ -19,6 +19,7 @@ describe('MenuComponent', () => {
   let logoutTriggerSignal: any;
   let loginTriggerSignal: any;
   let menuItemsSignal: any;
+  let menuLoadedSignal: any;
 
   const mockUser = {
     id: 1,
@@ -52,6 +53,7 @@ describe('MenuComponent', () => {
     
     // Create a writable signal for menu items
     menuItemsSignal = signal<MenuItem[]>([]);
+    menuLoadedSignal = signal<boolean>(false);
     
     mockMenuService = jasmine.createSpyObj('MenuService', [
       'clearMenuItems',
@@ -65,9 +67,17 @@ describe('MenuComponent', () => {
       configurable: true
     });
     
+    // Add the menuLoaded signal property to the mock
+    Object.defineProperty(mockMenuService, 'menuLoaded', {
+      get: () => menuLoadedSignal,
+      enumerable: true,
+      configurable: true
+    });
+    
     // clearMenuItems should clear the signal
     mockMenuService.clearMenuItems.and.callFake(() => {
       menuItemsSignal.set([]);
+      menuLoadedSignal.set(false);
     });
     
     mockAuthService = jasmine.createSpyObj('AuthService', [], {
@@ -162,14 +172,21 @@ describe('MenuComponent', () => {
       });
       
       const emptyMenuSignal = signal<MenuItem[]>([]);
+      const emptyMenuLoadedSignal = signal<boolean>(false);
       const noUserMenuService = jasmine.createSpyObj('MenuService', ['clearMenuItems', 'refreshMenu']);
       Object.defineProperty(noUserMenuService, 'menuItems', {
         get: () => emptyMenuSignal,
         enumerable: true,
         configurable: true
       });
+      Object.defineProperty(noUserMenuService, 'menuLoaded', {
+        get: () => emptyMenuLoadedSignal,
+        enumerable: true,
+        configurable: true
+      });
       noUserMenuService.clearMenuItems.and.callFake(() => {
         emptyMenuSignal.set([]);
+        emptyMenuLoadedSignal.set(false);
       });
       
       TestBed.configureTestingModule({

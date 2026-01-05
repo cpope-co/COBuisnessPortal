@@ -56,6 +56,13 @@ export class EditCustomer {
     try {
       const id = +this.activatedRoute.snapshot.paramMap.get('id')!;
       const data = await this.sampleApplicationService.getSampleDataById(id);
+      
+      if (!data) {
+        this.messagesService.showMessage('Customer not found.', 'danger');
+        this.router.navigate(['/sample/customers']);
+        return;
+      }
+      
       this.#customerSignal.set(data);
       
       // Build form after loading data

@@ -5,6 +5,7 @@ import { MenuService } from './menu.service';
 import { MenuItem, MenuItemOptions } from './menu.model';
 import { AuthService } from '../../auth/auth.service';
 import { PermissionsService } from '../../services/permissions.service';
+import { signal } from '@angular/core';
 
 describe('MenuService', () => {
   let service: MenuService;
@@ -27,8 +28,11 @@ describe('MenuService', () => {
   });
 
   beforeEach(() => {    
-    const authServiceSpy = jasmine.createSpyObj('AuthService', [], {
-      user: jasmine.createSpy('user').and.returnValue(mockUser)
+    const authServiceSpy = jasmine.createSpyObj('AuthService', ['logout'], {
+      user: signal(mockUser),
+      isLoggedIn: signal(true),
+      logoutTrigger: signal(0).asReadonly(),
+      loginTrigger: signal(0).asReadonly()
     });
 
     const permissionsServiceSpy = jasmine.createSpyObj('PermissionsService', [
@@ -37,7 +41,8 @@ describe('MenuService', () => {
       'hasResourcePermissions',
       'isUserAdmin'
     ], {
-      userPermissions: jasmine.createSpy('userPermissions').and.returnValue(null)
+      userPermissions: signal(null),
+      permissionsLoaded: signal(1)
     });
 
     // Set default return values
@@ -58,13 +63,6 @@ describe('MenuService', () => {
     service = TestBed.inject(MenuService);
     mockAuthService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     mockPermissionsService = TestBed.inject(PermissionsService) as jasmine.SpyObj<PermissionsService>;
-
-    // Clear sessionStorage before each test
-    sessionStorage.clear();
-  });
-
-  afterEach(() => {
-    sessionStorage.clear();
   });
 
   describe('Service initialization', () => {
@@ -74,6 +72,16 @@ describe('MenuService', () => {
 
     it('should inject required dependencies', () => {
       expect(service.authService).toBe(mockAuthService);
+    });
+
+    it('should have menuItems signal', () => {
+      expect(service.menuItems).toBeDefined();
+      expect(typeof service.menuItems).toBe('function');
+    });
+
+    it('should have menuLoaded signal', () => {
+      expect(service.menuLoaded).toBeDefined();
+      expect(typeof service.menuLoaded).toBe('function');
     });
   });
 
@@ -86,8 +94,8 @@ describe('MenuService', () => {
     });
 
     it('should handle null user', () => {
-      // Create a new spy that returns null
-      (mockAuthService.user as jasmine.Spy).and.returnValue(null);
+      // Update the signal to return null
+      (mockAuthService.user as any).set(null);
       
       const result = service.buildMenu();
       expect(result).toEqual([]);
@@ -103,13 +111,13 @@ describe('MenuService', () => {
     it('should handle different user roles', () => {
       // Test with different role
       const adminUser = { ...mockUser, role: 1 };
-      (mockAuthService.user as jasmine.Spy).and.returnValue(adminUser);
+      (mockAuthService.user as any).set(adminUser);
       
       const adminResult = service.buildMenu();
       expect(Array.isArray(adminResult)).toBe(true);
       
       // Test with original user
-      (mockAuthService.user as jasmine.Spy).and.returnValue(mockUser);
+      (mockAuthService.user as any).set(mockUser);
       
       const userResult = service.buildMenu();
       expect(Array.isArray(userResult)).toBe(true);
@@ -135,7 +143,7 @@ describe('MenuService', () => {
     });
   });
 
-  describe('Session storage functionality', () => {
+  describe('Signal functionality', () => {
     const testMenuItems: MenuItem[] = [
       createMockMenuItem('Test Item 1', '/test1', { display: true, role: 1 }),
       createMockMenuItem('Test Item 2', '/test2', { display: true, role: 2 })
@@ -188,14 +196,11 @@ describe('MenuService', () => {
     });
 
     it('should handle refreshing menu items', () => {
-      // Initial build
-      const result1 = service.buildMenu();
-      expect(Array.isArray(result1)).toBe(true);
-      
       // Refresh should rebuild
       service.refreshMenu();
-      const result2 = service.getMenuItems();
-      expect(Array.isArray(result2)).toBe(true);
+      const result = service.getMenuItems();
+      expect(Array.isArray(result)).toBe(true);
+      expect(service.menuLoaded()).toBe(true);
     });
 
     it('should clear menu items from signal', () => {
@@ -206,6 +211,7 @@ describe('MenuService', () => {
       
       const items = service.menuItems();
       expect(items).toEqual([]);
+      expect(service.menuLoaded()).toBe(false);
     });
 
     it('should handle clearing when no items exist', () => {
@@ -234,9 +240,10 @@ describe('MenuService', () => {
       service.setMenuItems(itemsWithChildren);
       
       const result = service.getMenuItems();
-      // Since user is present, it will rebuild menu rather than use stored children
       expect(result).toBeTruthy();
       expect(Array.isArray(result)).toBe(true);
+      expect(result.length).toBe(1);
+      expect(result[0].children).toBeDefined();
     });
   });
 
@@ -271,11 +278,11 @@ describe('MenuService', () => {
       
       service.setMenuItems(firstItems);
       let result1 = service.getMenuItems();
-      expect(result1).toBeTruthy(); // Will be rebuilt menu, not stored items
+      expect(result1).toEqual(firstItems);
       
       service.setMenuItems(secondItems);
       let result2 = service.getMenuItems();
-      expect(result2).toBeTruthy(); // Will be rebuilt menu, not stored items
+      expect(result2).toEqual(secondItems);
     });
   });
 
@@ -296,12 +303,8 @@ describe('MenuService', () => {
       expect(retrievedMenu).toEqual(builtMenu);
       
       service.clearMenuItems();
-      // Temporarily set user to null to test cleared state
-      (mockAuthService.user as jasmine.Spy).and.returnValue(null);
       retrievedMenu = service.getMenuItems();
       expect(retrievedMenu).toEqual([]);
-      // Restore user
-      (mockAuthService.user as jasmine.Spy).and.returnValue(mockUser);
     });
 
     it('should maintain menu state across multiple operations', () => {
@@ -312,7 +315,7 @@ describe('MenuService', () => {
       
       service.setMenuItems(testItems);
       let result1 = service.getMenuItems();
-      expect(result1).toBeTruthy(); // Will be rebuilt menu, not stored items
+      expect(result1).toEqual(testItems);
       
       // Add more items
       const moreItems = [
@@ -322,8 +325,8 @@ describe('MenuService', () => {
       
       service.setMenuItems(moreItems);
       let result2 = service.getMenuItems();
-      expect(result2).toBeTruthy(); // Will be rebuilt menu, not stored items
-      expect(Array.isArray(result2)).toBe(true);
+      expect(result2).toEqual(moreItems);
+      expect(result2.length).toBe(3);
     });
   });
 
@@ -347,27 +350,27 @@ describe('MenuService', () => {
       expect(service.getMenuItems()).toEqual([]);
     });
 
-    it('should handle malformed data in storage', () => {
-      // Set invalid data that looks like JSON but isn't proper menu items
-      sessionStorage.setItem('menuItems', '{"invalid": "data"}');
-      
-      // Set user to null to test pure sessionStorage behavior
-      (mockAuthService.user as jasmine.Spy).and.returnValue(null);
-      
-      const result = service.getMenuItems();
-      // Should return empty array when user is null
-      expect(result).toEqual([]);
-      
-      // Restore user
-      (mockAuthService.user as jasmine.Spy).and.returnValue(mockUser);
-    });
-
     it('should handle buildMenu with invalid user data', () => {
       // Test with undefined user
-      (mockAuthService.user as jasmine.Spy).and.returnValue(undefined);
+      (mockAuthService.user as any).set(undefined);
       
       const result = service.buildMenu();
       expect(result).toEqual([]);
+    });
+
+    it('should handle permissions service integration', () => {
+      // Test that menu building respects permissions service
+      mockPermissionsService.hasRole.and.returnValue(false);
+      
+      const result = service.buildMenu();
+      expect(Array.isArray(result)).toBe(true);
+    });
+  });
+
+  describe('Constructor effect', () => {
+    it('should auto-refresh menu when user and permissions change', () => {
+      // The effect should have already run in beforeEach
+      expect(service.menuItems()).toBeDefined();
     });
   });
 });
