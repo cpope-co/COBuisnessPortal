@@ -53,8 +53,8 @@ describe('Login and Logout Functionality', () => {
   describe('Login Functionality', () => {
     it('should show error message for invalid credentials', () => {
       // Use invalid credentials
-      cy.get('input[type="email"]').type(Cypress.env('invalidEmail'));
-      cy.get('input[type="password"]').type(Cypress.env('invalidPassword'));
+      cy.get('input[type="email"]').type('invalid@example.com');
+      cy.get('input[type="password"]').type('wrongpassword');
       cy.get('button[type="submit"]').click();
 
       // Should show error message
@@ -69,8 +69,8 @@ describe('Login and Logout Functionality', () => {
       mockLoginSuccess(UserRole.Admin);
 
       // Enter valid credentials
-      cy.get('input[type="email"]').type(Cypress.env('testEmail'));
-      cy.get('input[type="password"]').type(Cypress.env('testPassword'));
+      cy.get('input[type="email"]').type('admin@example.com');
+      cy.get('input[type="password"]').type('password123');
 
       cy.get('button[type="submit"]').click();
 
@@ -92,8 +92,8 @@ describe('Login and Logout Functionality', () => {
       // Mock network error
       mockLoginError('network');
 
-      cy.get('input[type="email"]').type(Cypress.env('testEmail'));
-      cy.get('input[type="password"]').type(Cypress.env('testPassword'));
+      cy.get('input[type="email"]').type('test@example.com');
+      cy.get('input[type="password"]').type('password123');
       cy.get('button[type="submit"]').click();
 
       cy.wait('@loginRequest');
