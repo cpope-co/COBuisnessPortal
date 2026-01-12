@@ -1,0 +1,10 @@
+[
+  {
+    "CustNumber": 1001,
+    "CustName": "Yundt - Shields",
+    "CustAddress": "76526 Dillan Dale, New Albert, NJ 48513-4339",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": true
+  }
+]

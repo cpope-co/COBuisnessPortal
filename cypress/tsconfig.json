@@ -9,11 +9,16 @@
     ],
     "esModuleInterop": true,
     "isolatedModules": false,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "typeRoots": [
+      "../node_modules/@types",
+      "./support"
+    ]
   },
   "include": [
     "**/*.ts",
-    "**/*.js"
+    "**/*.js",
+    "support/index.d.ts"
   ],
   "exclude": []
 }

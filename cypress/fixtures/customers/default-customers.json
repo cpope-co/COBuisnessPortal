@@ -1,0 +1,66 @@
+[
+  {
+    "CustNumber": 1001,
+    "CustName": "Halvorson, Deckow and Doyle",
+    "CustAddress": "6967 Rogahn Vista, North Eliaschester, SD 97674-3479",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1002,
+    "CustName": "Schiller, D'Amore and Balistreri",
+    "CustAddress": "904 Metz Canyon, Rancho Santa Margarita, SD 80224-4715",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1003,
+    "CustName": "Runte - Ward",
+    "CustAddress": "2438 Jubilee Close, New Cierra, CT 75968-4375",
+    "CustTypeCode": "C",
+    "CustTypeDesc": "Budget Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1004,
+    "CustName": "Frami - Schiller",
+    "CustAddress": "9952 Hillside Close, Danielabury, NC 77891",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1005,
+    "CustName": "Harvey, Shanahan and Treutel",
+    "CustAddress": "22601 Pollich Terrace, McCulloughcester, IL 40965-6495",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1006,
+    "CustName": "Mante - Morissette",
+    "CustAddress": "420 Kohler Brooks, Raynorcester, MA 97136",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1007,
+    "CustName": "Crist Group",
+    "CustAddress": "354 Tillman Radial, North Clovis, WA 90540-3466",
+    "CustTypeCode": "C",
+    "CustTypeDesc": "Budget Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1008,
+    "CustName": "Satterfield, Jacobs and Schimmel",
+    "CustAddress": "398 High Street, Stratford, WV 03911",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": false
+  }
+]

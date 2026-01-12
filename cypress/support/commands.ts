@@ -9,6 +9,15 @@ import {
   UserRole 
 } from './auth-mocks';
 
+// Import fixture validation utilities
+import './validate-fixtures';
+
+// Import cypress-axe for accessibility testing
+import 'cypress-axe';
+
+// Import customer-specific commands
+import './customers-commands';
+
 // Type declarations for custom commands
 declare global {
   namespace Cypress {

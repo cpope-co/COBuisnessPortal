@@ -1,0 +1,66 @@
+{
+  "loadCustomersFailed": {
+    "success": false,
+    "validationErrors": [
+      {
+        "errDesc": "Failed to load sample data."
+      }
+    ]
+  },
+  "loadCustomerFailed": {
+    "success": false,
+    "validationErrors": [
+      {
+        "errDesc": "Failed to load customer."
+      }
+    ]
+  },
+  "customerNotFound": {
+    "success": false,
+    "validationErrors": [
+      {
+        "errDesc": "Customer record not found."
+      }
+    ]
+  },
+  "deleteCustomerFailed": {
+    "success": false,
+    "validationErrors": [
+      {
+        "errDesc": "Failed to delete customer."
+      }
+    ]
+  },
+  "updateCustomerFailed": {
+    "success": false,
+    "validationErrors": [
+      {
+        "errDesc": "Failed to save customer."
+      }
+    ]
+  },
+  "validationError": {
+    "success": false,
+    "validationErrors": [
+      {
+        "errDesc": "Please correct the errors on the form."
+      }
+    ]
+  },
+  "customerConflict": {
+    "success": false,
+    "validationErrors": [
+      {
+        "errDesc": "Customer record already exists."
+      }
+    ]
+  },
+  "serverError": {
+    "success": false,
+    "validationErrors": [
+      {
+        "errDesc": "Internal server error occurred."
+      }
+    ]
+  }
+}

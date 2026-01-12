@@ -1,4 +1,5 @@
 import { defineConfig } from "cypress";
+import { execSync } from 'child_process';
 
 export default defineConfig({
   e2e: {
@@ -21,8 +22,25 @@ export default defineConfig({
     defaultCommandTimeout: 10000,
     requestTimeout: 10000,
     responseTimeout: 10000,
+    retries: {
+      runMode: 2,
+      openMode: 0
+    },
     setupNodeEvents(on, config) {
       require('cypress-mochawesome-reporter/plugin')(on);
+      
+      // Generate customer fixtures before tests run
+      on('before:run', () => {
+        console.log('Generating customer fixtures...');
+        try {
+          execSync('npx ts-node --esm cypress/fixtures/customers/generate-fixtures.ts', {
+            stdio: 'inherit'
+          });
+        } catch (error) {
+          console.error('Failed to generate fixtures:', error);
+        }
+      });
+      
       return config;
     }
   },

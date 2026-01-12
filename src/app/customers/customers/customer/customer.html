@@ -34,11 +34,11 @@
         </div>
     </mat-card-content>
     <mat-card-actions align="end">
-        <button mat-button (click)="onBack()">Back to List</button>
-        <button mat-raised-button color="warn" class="mx-1" (click)="onDelete()">
+        <button mat-button data-testid="back-button" (click)="onBack()">Back to List</button>
+        <button mat-raised-button color="warn" class="mx-1" data-testid="delete-button" (click)="onDelete()">
             Delete
         </button>
-        <button mat-raised-button color="primary" (click)="onEdit()">
+        <button mat-raised-button color="primary" data-testid="edit-button" (click)="onEdit()">
             Edit
         </button>
     </mat-card-actions>

@@ -34,6 +34,7 @@
             <div class="row justify-content-xl-start justify-content-xxl-center">
                 <div class="col-12 col-xl-6 col-xxl-4">
                     <co-select
+                        data-testid="customer-type-select"
                         [formGroup]="form"
                         [label]="'Customer Type'"
                         [formControlName]="'CustTypeCode'"
@@ -42,6 +43,7 @@
                         [model]="customerForm"
                     />
                     <app-checkbox
+                        data-testid="candy-checkbox"
                         [formGroup]="form"
                         [label]="'Likes Candy'"
                         [formControlName]="'CandyLiker'"
@@ -54,8 +56,8 @@
         </form>
     </mat-card-content>
     <mat-card-actions align="end">
-        <button mat-button color="warn" (click)="onCancel($event)">Cancel</button>
-        <button mat-raised-button color="primary" (click)="onSave()">
+        <button mat-button color="warn" data-testid="cancel-button" (click)="onCancel($event)">Cancel</button>
+        <button mat-raised-button color="primary" data-testid="save-button" (click)="onSave()">
             Save
         </button>
     </mat-card-actions>

@@ -1,0 +1,602 @@
+[
+  {
+    "CustNumber": 1001,
+    "CustName": "Muller, Schiller and Keeling",
+    "CustAddress": "4074 Kaley Bypass, York, NY 78178-0289",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1002,
+    "CustName": "Williamson - Hilpert",
+    "CustAddress": "185 W Broad Street, East Jaimefield, NY 45660-2080",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1003,
+    "CustName": "Kulas, Schowalter and Brakus",
+    "CustAddress": "482 Berge Via, Schroedermouth, AK 18593",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1004,
+    "CustName": "Farrell LLC",
+    "CustAddress": "1437 N Monroe Street, Los Angeles, VT 55780",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1005,
+    "CustName": "Gutkowski, Welch and Bashirian",
+    "CustAddress": "738 Jonas Crescent, West Marlenview, WA 53674-0525",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1006,
+    "CustName": "Fahey - Schinner",
+    "CustAddress": "4308 Euna Viaduct, Jacobsonchester, MI 17420",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1007,
+    "CustName": "Hansen, Maggio and Feil",
+    "CustAddress": "893 Lowell Valley, Gleichnerton, PA 26988",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1008,
+    "CustName": "Stamm and Sons",
+    "CustAddress": "3177 Crown Street, San Ramon, UT 17817",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1009,
+    "CustName": "Borer, Daugherty and Thiel",
+    "CustAddress": "30509 Terrill Cape, Port Emilia, LA 84631-3080",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1010,
+    "CustName": "Johnson, Stehr and Batz",
+    "CustAddress": "92735 Stracke Hollow, Vitoworth, IN 29496-2743",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1011,
+    "CustName": "Bednar, Keebler and Streich",
+    "CustAddress": "598 Toy Meadows, North Domingo, CA 69584",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1012,
+    "CustName": "Torp - Runolfsdottir",
+    "CustAddress": "451 Daphney Mission, North Burdetteside, WI 05618",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1013,
+    "CustName": "Littel - O'Keefe",
+    "CustAddress": "8727 Damon Crossing, Minot, IA 10644",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1014,
+    "CustName": "Beier, Koss and Connelly",
+    "CustAddress": "4388 Gina Lodge, Mesquite, SC 47449-5305",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1015,
+    "CustName": "Kuhn Inc",
+    "CustAddress": "42037 Kaleb Expressway, Tempe, MI 54399-8606",
+    "CustTypeCode": "C",
+    "CustTypeDesc": "Budget Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1016,
+    "CustName": "Dooley LLC",
+    "CustAddress": "52464 Leopold Ports, West Ezequiel, PA 96787",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1017,
+    "CustName": "Murphy Group",
+    "CustAddress": "5120 Crystel Falls, East Brennonworth, RI 20321-8836",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1018,
+    "CustName": "Hane - Predovic",
+    "CustAddress": "27693 Myles Corners, East Edmund, AK 96030",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1019,
+    "CustName": "Abshire - Goyette",
+    "CustAddress": "739 Laurence Parkway, Yorba Linda, WV 16902",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1020,
+    "CustName": "Friesen, Sauer and Mueller",
+    "CustAddress": "616 8th Avenue, Fort Kayden, VT 17183",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1021,
+    "CustName": "Greenfelder, Reinger and Streich",
+    "CustAddress": "65089 Lodge Lane, Delbertport, CO 94538-3730",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1022,
+    "CustName": "Boyle Inc",
+    "CustAddress": "7714 Raoul Ways, East Duncan, ME 20949-6387",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1023,
+    "CustName": "Dooley, Casper and Wisoky",
+    "CustAddress": "556 Lou Meadow, Loweberg, NV 75005",
+    "CustTypeCode": "C",
+    "CustTypeDesc": "Budget Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1024,
+    "CustName": "Green, Altenwerth and Beer",
+    "CustAddress": "3698 Julianne Shores, Charlotte, NC 45854",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1025,
+    "CustName": "Pagac, Braun and Daugherty",
+    "CustAddress": "73494 W Elm Street, Lake Emely, WI 19940-0990",
+    "CustTypeCode": "C",
+    "CustTypeDesc": "Budget Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1026,
+    "CustName": "Gerhold - Metz",
+    "CustAddress": "32263 Benny Harbors, New Brennan, VT 48564-8520",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1027,
+    "CustName": "Durgan - Turner",
+    "CustAddress": "81101 Alfredo Ramp, Fort Giovanni, NE 52160-0634",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1028,
+    "CustName": "Bruen, Lesch and Labadie",
+    "CustAddress": "7022 Barrows River, Raleigh, WA 84610-6940",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1029,
+    "CustName": "Lakin, Nikolaus and Kiehn",
+    "CustAddress": "76331 Jana Station, Lake Jazlyn, MA 40672",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1030,
+    "CustName": "Donnelly LLC",
+    "CustAddress": "261 Bogisich Port, New Catharinemouth, AK 47686-9146",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1031,
+    "CustName": "DuBuque, Weber and Fahey",
+    "CustAddress": "61874 River Street, Laverneview, MN 65845",
+    "CustTypeCode": "C",
+    "CustTypeDesc": "Budget Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1032,
+    "CustName": "Mitchell - Haag",
+    "CustAddress": "1656 Chester Divide, Kshlerinboro, NV 70553-4908",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1033,
+    "CustName": "Dach and Sons",
+    "CustAddress": "605 Jose Extension, New Alysson, MD 39954-2030",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1034,
+    "CustName": "Ondricka, Pouros and Hane",
+    "CustAddress": "42892 Valley Road, Geovanniside, KS 85050",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1035,
+    "CustName": "Wuckert Group",
+    "CustAddress": "26999 Graham Coves, New Otto, VT 71396",
+    "CustTypeCode": "C",
+    "CustTypeDesc": "Budget Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1036,
+    "CustName": "Collier, Farrell and Legros",
+    "CustAddress": "69062 Marvin Overpass, Gerlachborough, RI 07073",
+    "CustTypeCode": "C",
+    "CustTypeDesc": "Budget Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1037,
+    "CustName": "Bernhard - Will",
+    "CustAddress": "9418 W Chestnut Street, North Graciela, NM 20123",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1038,
+    "CustName": "Gottlieb - Kshlerin",
+    "CustAddress": "9269 Kautzer Estates, Port Ellsworthchester, MO 33640",
+    "CustTypeCode": "C",
+    "CustTypeDesc": "Budget Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1039,
+    "CustName": "Harber, Douglas and Zemlak",
+    "CustAddress": "2797 West Avenue, Sipeshaven, CA 99772-3693",
+    "CustTypeCode": "C",
+    "CustTypeDesc": "Budget Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1040,
+    "CustName": "Zulauf - Collins",
+    "CustAddress": "889 Ward Lane, Bismarck, NJ 38952-0681",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1041,
+    "CustName": "Cronin - Johns",
+    "CustAddress": "74089 Marcelino Branch, Kihnhaven, ND 59649",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1042,
+    "CustName": "Schamberger, Crona and Runolfsson",
+    "CustAddress": "62013 Market Street, West Lexusview, MI 52833-4417",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1043,
+    "CustName": "Tromp LLC",
+    "CustAddress": "16162 Reese Passage, Albany, WA 54851-3721",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1044,
+    "CustName": "Hackett - Bauch",
+    "CustAddress": "930 King Street, Rowland Heights, IA 10348-6130",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1045,
+    "CustName": "Barrows - O'Reilly",
+    "CustAddress": "6679 Dickens Harbors, Pembroke Pines, AR 32520-9859",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1046,
+    "CustName": "Wintheiser - Hand",
+    "CustAddress": "855 Schuster Summit, South Clairchester, DE 00956-6681",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1047,
+    "CustName": "Kemmer - Heaney",
+    "CustAddress": "5069 S Maple Street, Baileytown, NJ 47737-3915",
+    "CustTypeCode": "C",
+    "CustTypeDesc": "Budget Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1048,
+    "CustName": "Metz Group",
+    "CustAddress": "82882 Feeney Well, Giachester, VA 79953-8991",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1049,
+    "CustName": "Fadel Inc",
+    "CustAddress": "23772 Howe Points, Gradyberg, RI 72229-3278",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1050,
+    "CustName": "Bergstrom and Sons",
+    "CustAddress": "721 Abernathy Walk, East Randalshire, VA 18006",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1051,
+    "CustName": "Greenholt, Hackett and Carroll",
+    "CustAddress": "248 N Jefferson Street, Port Metaburgh, NJ 15494-1596",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1052,
+    "CustName": "Stehr, Konopelski and Zulauf",
+    "CustAddress": "1527 Claire Pine, New Joshua, MT 10463-2272",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1053,
+    "CustName": "Torp - Shanahan",
+    "CustAddress": "6639 Marcelino Garden, Fort Loricester, TN 12282",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1054,
+    "CustName": "Veum - Stroman",
+    "CustAddress": "1267 Osinski Highway, Briannestad, TN 29800-9936",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1055,
+    "CustName": "Koepp Group",
+    "CustAddress": "79662 Dark Lane, North Karianne, MS 47999",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1056,
+    "CustName": "Thiel, Grady and Emard",
+    "CustAddress": "974 Christopher Canyon, Mayrachester, KY 87450-9961",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1057,
+    "CustName": "Farrell LLC",
+    "CustAddress": "44450 Lupe Squares, Bednarburgh, VA 54734",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1058,
+    "CustName": "Runolfsson - Rice",
+    "CustAddress": "306 E Jefferson Street, South Wilton, MA 65184-9781",
+    "CustTypeCode": "C",
+    "CustTypeDesc": "Budget Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1059,
+    "CustName": "Kshlerin - Herman",
+    "CustAddress": "7519 River Road, Moreno Valley, CO 59437-5180",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1060,
+    "CustName": "Erdman, Farrell and Russel",
+    "CustAddress": "41589 Smith Cliffs, New Mitchellfurt, FL 33120-8445",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1061,
+    "CustName": "Lynch - Smith",
+    "CustAddress": "9464 Jackson Avenue, Port Evangeline, NJ 15033-6688",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1062,
+    "CustName": "Pouros, Beatty and Rice",
+    "CustAddress": "725 Legros Port, Gorczanyfield, RI 14252",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1063,
+    "CustName": "Ernser Group",
+    "CustAddress": "595 Bednar Turnpike, Hesselcester, WY 32903-4657",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1064,
+    "CustName": "Feil - Braun",
+    "CustAddress": "8076 Pfannerstill Wall, East Whitney, FL 43536",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1065,
+    "CustName": "Streich, Welch and Rempel",
+    "CustAddress": "6510 Stanley Road, Schusterworth, SD 08380",
+    "CustTypeCode": "C",
+    "CustTypeDesc": "Budget Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1066,
+    "CustName": "Braun - Reynolds",
+    "CustAddress": "90927 Isabell Corner, Fort Kelleybury, NV 83203-1647",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1067,
+    "CustName": "Von and Sons",
+    "CustAddress": "1142 Dark Lane, Myriamtown, IA 84635",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1068,
+    "CustName": "Botsford - Wisozk",
+    "CustAddress": "3623 Mertie Circle, North Rosie, DE 10076",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1069,
+    "CustName": "Boyle - Bruen",
+    "CustAddress": "5835 Ridge Road, Friesenmouth, NE 01633-8655",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1070,
+    "CustName": "Kunde - Gleason",
+    "CustAddress": "7768 Larkin Road, Brannonberg, NJ 85971",
+    "CustTypeCode": "B",
+    "CustTypeDesc": "Standard Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1071,
+    "CustName": "Sporer Group",
+    "CustAddress": "7906 Fay Extensions, Edinburg, WI 99961-4067",
+    "CustTypeCode": "C",
+    "CustTypeDesc": "Budget Customer",
+    "CandyLiker": false
+  },
+  {
+    "CustNumber": 1072,
+    "CustName": "Mills Group",
+    "CustAddress": "4613 Stiedemann Ferry, Framifort, DE 38820",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1073,
+    "CustName": "Hegmann, Bernhard and MacGyver",
+    "CustAddress": "79198 Lottie Course, Rosalynboro, WI 21834-6673",
+    "CustTypeCode": "A",
+    "CustTypeDesc": "Premium Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1074,
+    "CustName": "Schulist Inc",
+    "CustAddress": "19228 Alexandra Road, East Jay, WY 12493",
+    "CustTypeCode": "C",
+    "CustTypeDesc": "Budget Customer",
+    "CandyLiker": true
+  },
+  {
+    "CustNumber": 1075,
+    "CustName": "Swift - Stoltenberg",
+    "CustAddress": "73404 Parisian Lane, Irving, NC 43550",
+    "CustTypeCode": "D",
+    "CustTypeDesc": "Wholesale Customer",
+    "CandyLiker": true
+  }
+]

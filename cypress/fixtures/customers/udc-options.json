@@ -1,0 +1,18 @@
+[
+  {
+    "id": "A",
+    "name": "Premium Customer"
+  },
+  {
+    "id": "B",
+    "name": "Standard Customer"
+  },
+  {
+    "id": "C",
+    "name": "Budget Customer"
+  },
+  {
+    "id": "D",
+    "name": "Wholesale Customer"
+  }
+]
