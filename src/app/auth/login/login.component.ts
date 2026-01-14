@@ -32,14 +32,14 @@ export class LoginComponent implements OnInit {
   formHandlerService = inject(FormHandlingService);
 
   ngOnInit() {
-    // Check for logout message in query parameters
-    const msg = this.route.snapshot.queryParams['msg'];
-    const severity = this.route.snapshot.queryParams['severity'] || 'info';
+    // Check for logout message in router state
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation?.extras.state || window.history.state;
     
-    
-    if (msg) {
+    if (state?.msg) {
+      const msg = state.msg;
+      const severity = state.severity || 'info';
       this.messageService.showMessage(msg, severity as 'success' | 'warning' | 'danger' | 'info');
-      // Don't clear query params - let them stay in URL, they're harmless and informative
     }
   }
 

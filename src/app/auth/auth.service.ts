@@ -378,9 +378,9 @@ export class AuthService {
             const message = messages[reason];
             this.#isLoggingOut.set(false);
             
-            
+            // Pass message via router state instead of query parameters
             this.router.navigate(['auth/login'], { 
-                queryParams: { msg: message.text, severity: message.severity }
+                state: { msg: message.text, severity: message.severity }
             });
         }
     }
